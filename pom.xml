@@ -20,7 +20,10 @@
 
     <!-- project dependencies -->
     <vertx.version>3.2.0</vertx.version>
+    <guava.version>18.0</guava.version>
 
+    <jsr305.version>3.0.1</jsr305.version>
+    <junit.version>4.12</junit.version>
   </properties>
 
   <repositories>
@@ -43,8 +46,57 @@
         <artifactId>vertx-core</artifactId>
         <version>${vertx.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <!-- TODO - check if we can assume this dependency is provided-->
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-codegen</artifactId>
+        <version>${vertx.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <scope>provided</scope>
+        <optional>true</optional>
+        <version>${jsr305.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
