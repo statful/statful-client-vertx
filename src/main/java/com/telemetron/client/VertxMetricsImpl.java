@@ -1,11 +1,10 @@
 package com.telemetron.client;
 
+import com.telemetron.collector.HttpClientMetricsImpl;
 import com.telemetron.collector.HttpClientRequestMetrics;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.metrics.impl.DummyVertxMetrics;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
@@ -15,11 +14,6 @@ import io.vertx.core.spi.metrics.HttpClientMetrics;
  * Extending DummyVertxMetrics to avoid having to extend all methods even if we don't want to implement them
  */
 public final class VertxMetricsImpl extends DummyVertxMetrics {
-
-    /**
-     * Internal logger
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(VertxMetricsImpl.class);
 
     /**
      * Vertx instance
