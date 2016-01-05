@@ -18,15 +18,13 @@ import java.util.stream.Collectors;
 @RunWith(VertxUnitRunner.class)
 public class UDPSenderTest {
 
-    private Vertx vertx;
-
     private DatagramSocket receiver;
 
     private UDPSender victim;
 
     @Before
     public void setUp() throws Exception {
-        vertx = Vertx.vertx();
+        Vertx vertx = Vertx.vertx();
 
         TelemetronMetricsOptions options = new TelemetronMetricsOptions();
         options.setPort(1234).setHost("0.0.0.0");
