@@ -1,14 +1,17 @@
 package com.telemetron.client;
 
-import com.telemetron.verticles.DummyVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.spi.metrics.HttpClientMetrics;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.mockito.Mockito.mock;
+import static org.vertx.testtools.VertxAssert.assertNotNull;
 
 @RunWith(VertxUnitRunner.class)
 public class VertxMetricsImplTest {
@@ -28,16 +31,11 @@ public class VertxMetricsImplTest {
         vertx = Vertx.vertx(options);
     }
 
+
     @Test
-    public void testVerticleDeployMetricCollection(TestContext context) {
-        Async async = context.async();
-
-        DummyVerticle dummyVerticle = new DummyVerticle();
-        vertx.deployVerticle(dummyVerticle, deploy -> {
-            context.assertTrue(deploy.succeeded());
-            async.complete();
-        });
+    public void testHttpClientMetricCreation() {
+        VertxMetricsImpl victim = new VertxMetricsImpl(vertx, telemetronMetricsOptions);
+        HttpClientMetrics createdMetrics = victim.createMetrics(mock(HttpClient.class), mock(HttpClientOptions.class));
+        assertNotNull(createdMetrics);
     }
-
-
 }
