@@ -1,7 +1,9 @@
-package com.telemetron.client;
+package com.telemetron.sender;
 
 import com.google.common.collect.Lists;
+import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.metric.DataPoint;
+import com.telemetron.sender.UDPSender;
 import io.vertx.core.Vertx;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.ext.unit.Async;

@@ -1,5 +1,6 @@
-package com.telemetron.client;
+package com.telemetron.sender;
 
+import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.metric.DataPoint;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
