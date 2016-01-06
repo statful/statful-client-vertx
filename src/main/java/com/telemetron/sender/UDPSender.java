@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Responsible for the UDP transport
  */
-public final class UDPSender {
+public final class UDPSender implements Sender {
 
     /**
      * Logger for transport errors
@@ -46,21 +46,12 @@ public final class UDPSender {
         this.socket = vertx.createDatagramSocket(new DatagramSocketOptions());
     }
 
-    /**
-     * Sender method that gets a list of datapoints and sends them
-     *
-     * @param metrics     metrics to be sent. Each instance is responsible for creating the full metric line including tags
-     * @param sentHandler handler called if you want to be notified after the metrics are sent.
-     */
+    @Override
     public void send(@Nonnull final List<DataPoint> metrics, @Nonnull final Handler<AsyncResult<Void>> sentHandler) {
         this.send(metrics, Optional.of(sentHandler));
     }
 
-    /**
-     * Sender method that gets a list of datapoints and sends them
-     *
-     * @param metrics metrics to be sent. Each instance is responsible for creating the full metric line including tags
-     */
+    @Override
     public void send(@Nonnull final List<DataPoint> metrics) {
         this.send(metrics, Optional.empty());
     }

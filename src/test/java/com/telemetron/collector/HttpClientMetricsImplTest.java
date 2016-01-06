@@ -1,8 +1,6 @@
 package com.telemetron.collector;
 
 
-import com.telemetron.collector.HttpClientMetricsImpl;
-import com.telemetron.collector.HttpClientRequestMetrics;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.net.SocketAddress;
