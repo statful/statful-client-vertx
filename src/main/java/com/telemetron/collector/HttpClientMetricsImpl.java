@@ -1,5 +1,6 @@
 package com.telemetron.collector;
 
+import com.telemetron.tag.Tags;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.WebSocket;
@@ -8,30 +9,51 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 
+import javax.annotation.Nullable;
+
 
 /**
  * HttpClient metrics collector
  */
 public final class HttpClientMetricsImpl implements HttpClientMetrics<HttpClientRequestMetrics, SocketAddress, SocketAddress> {
 
-    /**
-     * Internal logger, should only be used in trace / info to log everything that happens metrics collection wise
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientMetricsImpl.class);
 
+    /**
+     * Only requests that contain a tracking tag will be tracked
+     *
+     * @inheritDoc
+     */
     @Override
+    @Nullable
     public HttpClientRequestMetrics requestBegin(final SocketAddress socketMetric, final SocketAddress localAddress,
                                                  final SocketAddress remoteAddress, final HttpClientRequest request) {
 
+        // extract request tag to identify the metric and confirm that we want to track it
+        String requestTag = request.headers().get(Tags.TRACK_HEADER.toString());
 
-        // Create client request metric
-        HttpClientRequestMetrics metric = new HttpClientRequestMetrics(remoteAddress);
-        metric.start();
+        HttpClientRequestMetrics metric = null;
+
+        if (requestTag != null) {
+            request.headers().remove(Tags.TRACK_HEADER.toString());
+            // Create client request metric
+            metric = new HttpClientRequestMetrics(requestTag, remoteAddress);
+            metric.start();
+        }
+
         return metric;
     }
 
+    /**
+     * @param requestMetric If the request is not be tracked this will be null
+     * @param response      http client response
+     */
     @Override
-    public void responseEnd(final HttpClientRequestMetrics requestMetric, final HttpClientResponse response) {
+    public void responseEnd(@Nullable final HttpClientRequestMetrics requestMetric, final HttpClientResponse response) {
+
+        if (requestMetric == null) {
+            return;
+        }
 
         final long responseTime = requestMetric.elapsed();
 

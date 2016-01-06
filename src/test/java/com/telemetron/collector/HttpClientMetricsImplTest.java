@@ -1,14 +1,15 @@
 package com.telemetron.collector;
 
 
+import com.telemetron.tag.Tags;
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.net.SocketAddress;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class HttpClientMetricsImplTest {
@@ -22,15 +23,37 @@ public class HttpClientMetricsImplTest {
     }
 
     @Test
+    public void testUntaggedRequest() {
+
+        SocketAddress socketMetric = mock(SocketAddress.class);
+        SocketAddress localAddress = mock(SocketAddress.class);
+        SocketAddress remoteAddress = mock(SocketAddress.class);
+        HttpClientRequest request = mock(HttpClientRequest.class);
+        MultiMap headers = mock(MultiMap.class);
+
+        when(headers.get(eq(Tags.TRACK_HEADER.toString()))).thenReturn(null);
+        when(request.headers()).thenReturn(headers);
+
+        HttpClientRequestMetrics metrics = victim.requestBegin(socketMetric, localAddress, remoteAddress, request);
+
+        assertNull(metrics);
+    }
+
+    @Test
     public void testRequestBegin() {
 
         SocketAddress socketMetric = mock(SocketAddress.class);
         SocketAddress localAddress = mock(SocketAddress.class);
         SocketAddress remoteAddress = mock(SocketAddress.class);
         HttpClientRequest request = mock(HttpClientRequest.class);
+        MultiMap headers = mock(MultiMap.class);
+
+        when(headers.get(eq(Tags.TRACK_HEADER.toString()))).thenReturn("tag");
+        when(request.headers()).thenReturn(headers);
 
         HttpClientRequestMetrics metrics = victim.requestBegin(socketMetric, localAddress, remoteAddress, request);
 
+        assertNotNull(metrics);
         assertEquals(remoteAddress, metrics.getAddress());
     }
 
@@ -39,7 +62,7 @@ public class HttpClientMetricsImplTest {
 
         SocketAddress remoteAddress = mock(SocketAddress.class);
         HttpClientResponse response = mock(HttpClientResponse.class);
-        HttpClientRequestMetrics metrics = new HttpClientRequestMetrics(remoteAddress);
+        HttpClientRequestMetrics metrics = new HttpClientRequestMetrics("tag", remoteAddress);
         when(remoteAddress.host()).thenReturn("host");
         victim.responseEnd(metrics, response);
 

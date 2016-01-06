@@ -16,7 +16,7 @@ public class HttpClientRequestMetricsTest {
     @Before
     public void init () {
         mockSocketAddress = mock(SocketAddress.class);
-        victim = new HttpClientRequestMetrics(mockSocketAddress);
+        victim = new HttpClientRequestMetrics("tag", mockSocketAddress);
     }
 
     @Test
