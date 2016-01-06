@@ -51,4 +51,11 @@ public final class HttpClientRequestMetrics {
     public SocketAddress getAddress() {
         return address;
     }
+
+    /**
+     * @return String with tag value to be sent to telemetron
+     */
+    public String getRequestTag() {
+        return requestTag;
+    }
 }
