@@ -67,6 +67,15 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      */
     private static final Integer DEFAULT_FLUSH_SIZE = 10;
 
+    /**
+     * Default flush interval at which metrics are sent
+     */
+    private static final long DEFAULT_FLUSH_INTERVAL = 30000;
+
+    /**
+     * Default transport definition
+     */
+    private static final Transport DEFAULT_TRANSPORT = Transport.UDP;
 
     /**
      * Telemetron host, default value {@value #DEFAULT_HOST}
@@ -86,7 +95,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     /**
      * Defines the transport to be used to set which type of transport will be used to push the metrics.
      */
-    private Transport transport;
+    private Transport transport = DEFAULT_TRANSPORT;
 
     /**
      * Defines whether to use https or not, default value {@value #DEFAULT_SECURE}
@@ -135,6 +144,11 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     private int flushSize = DEFAULT_FLUSH_SIZE;
 
     /**
+     * Defines the interval at which metrics should be flushed / sent to telemetron
+     */
+    private long flushInterval = DEFAULT_FLUSH_INTERVAL;
+
+    /**
      * Empty constructor that provides default values, all of which should be overridable
      */
     public TelemetronMetricsOptions() {
@@ -161,6 +175,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
         this.sampleRate = other.sampleRate;
         this.namespace = other.namespace;
         this.flushSize = other.flushSize;
+        this.flushInterval = other.flushInterval;
     }
 
 
@@ -178,7 +193,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param host target telemetron host
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setHost(@Nonnull final String host) {
+    public TelemetronMetricsOptions setHost(@Nonnull final String host) {
         this.host = Optional.of(requireNonNull(host));
         return this;
     }
@@ -189,7 +204,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @return string with host
      */
     @Nonnull
-    public final String getHost() {
+    public String getHost() {
         return host.orElse(DEFAULT_HOST);
     }
 
@@ -197,7 +212,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param port target telemetron port
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setPort(@Nonnull final Integer port) {
+    public TelemetronMetricsOptions setPort(@Nonnull final Integer port) {
         this.port = Optional.of(requireNonNull(port));
         return this;
     }
@@ -208,7 +223,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @return Integer with port
      */
     @Nonnull
-    public final Integer getPort() {
+    public Integer getPort() {
         return port.orElse(DEFAULT_PORT);
     }
 
@@ -216,7 +231,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param prefix to be applied
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setPrefix(@Nonnull final String prefix) {
+    public TelemetronMetricsOptions setPrefix(@Nonnull final String prefix) {
         this.prefix = requireNonNull(prefix);
         return this;
     }
@@ -228,7 +243,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @throws NullPointerException if prefix is undefined
      */
     @Nonnull
-    public final String getPrefix() {
+    public String getPrefix() {
         requireNonNull(prefix, "Prefix must be set");
         return prefix;
     }
@@ -237,7 +252,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param transport to be used to send metrics to telemetron
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setTransport(@Nonnull final Transport transport) {
+    public TelemetronMetricsOptions setTransport(@Nonnull final Transport transport) {
         this.transport = requireNonNull(transport);
         return this;
     }
@@ -249,7 +264,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @throws NullPointerException if transport is undefined
      */
     @Nonnull
-    public final Transport getTransport() {
+    public Transport getTransport() {
         requireNonNull(transport, "Transport must be defined");
         return transport;
     }
@@ -258,7 +273,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param secure to be used with HTTP transport and define it it should use a secure connection
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setSecure(final boolean secure) {
+    public TelemetronMetricsOptions setSecure(final boolean secure) {
         this.secure = Optional.of(secure);
         return this;
     }
@@ -269,7 +284,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @return true if secure is to be used, false otherwise
      */
     @Nonnull
-    public final Boolean isSecure() {
+    public Boolean isSecure() {
         return secure.orElse(DEFAULT_SECURE);
     }
 
@@ -277,7 +292,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param timeout defines timeout for the client reporter (http / tcp transports)
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setTimeout(final int timeout) {
+    public TelemetronMetricsOptions setTimeout(final int timeout) {
         this.timeout = Optional.of(timeout);
         return this;
     }
@@ -287,7 +302,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      *
      * @return int value in milliseconds
      */
-    public final int getTimeout() {
+    public int getTimeout() {
         return timeout.orElse(DEFAULT_TIMEOUT);
     }
 
@@ -295,7 +310,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param token set application token
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setToken(@Nonnull final String token) {
+    public TelemetronMetricsOptions setToken(@Nonnull final String token) {
         this.token = Optional.of(requireNonNull(token));
         return this;
     }
@@ -306,7 +321,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @return String token
      * @throws IllegalArgumentException if no token is configured
      */
-    public final String getToken() {
+    public String getToken() {
         return token.orElseThrow(IllegalArgumentException::new);
     }
 
@@ -314,7 +329,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param app defines application name to add to the metrics
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setApp(@Nullable final String app) {
+    public TelemetronMetricsOptions setApp(@Nullable final String app) {
         this.app = Optional.ofNullable(app);
         return this;
     }
@@ -324,7 +339,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      *
      * @return {@link Optional#empty()} if nothing is defined, string value if defined
      */
-    public final Optional<String> getApp() {
+    public Optional<String> getApp() {
         return app;
     }
 
@@ -332,7 +347,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param dryrun set the system to not send any metrics when flushing the buffer
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setDryrun(final boolean dryrun) {
+    public TelemetronMetricsOptions setDryrun(final boolean dryrun) {
         this.dryrun = dryrun;
         return this;
     }
@@ -342,7 +357,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      *
      * @return true if metrics should be not be sent false otherwise
      */
-    public final boolean isDryrun() {
+    public boolean isDryrun() {
         return dryrun;
     }
 
@@ -352,7 +367,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param tags sets a list of tags to be applied
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setTags(@Nonnull final List<String> tags) {
+    public TelemetronMetricsOptions setTags(@Nonnull final List<String> tags) {
         this.tags = new ArrayList<>(tags);
         return this;
     }
@@ -361,7 +376,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @return List of tags to be applied
      */
     @Nonnull
-    public final List<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
@@ -369,7 +384,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param sampleRate set rate sampling. Valid range [1-100]
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setSampleRate(final int sampleRate) {
+    public TelemetronMetricsOptions setSampleRate(final int sampleRate) {
         if (sampleRate < MIN_SAMPLE_RATE || sampleRate > MAX_SAMPLE_RATE) {
             throw new IllegalArgumentException("Invalid sample rate. Valid values between [1-100]. Provided:" + sampleRate);
         }
@@ -380,7 +395,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     /**
      * @return int value with the defined sample rate
      */
-    public final int getSampleRate() {
+    public int getSampleRate() {
         return sampleRate;
     }
 
@@ -388,7 +403,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param namespace set namespace to be applied to the to all metrics, can be overridden in method calls
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setNamespace(@Nonnull final String namespace) {
+    public TelemetronMetricsOptions setNamespace(@Nonnull final String namespace) {
         this.namespace = Optional.of(requireNonNull(namespace));
         return this;
     }
@@ -397,7 +412,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @return String with the namespace value to apply to metrics
      */
     @Nonnull
-    public final String getNamespace() {
+    public String getNamespace() {
         return namespace.orElse(DEFAULT_NAMESPACE);
     }
 
@@ -405,15 +420,31 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param flushSize Defined the periodicity (number of elements collected) of buffer flushes, default value {@value #DEFAULT_FLUSH_SIZE}
      * @return a reference to this, so the API can be used fluently
      */
-    public final TelemetronMetricsOptions setFlushSize(final int flushSize) {
+    public TelemetronMetricsOptions setFlushSize(final int flushSize) {
         this.flushSize = flushSize;
         return this;
     }
 
     /**
-     * @return in value with the size of the flush buffer
+     * @return int value with the size of the flush buffer
      */
-    public final int getFlushSize() {
+    public int getFlushSize() {
         return flushSize;
+    }
+
+    /**
+     * @return int value  of the milliseconds between buffer flushes
+     */
+    public long getFlushInterval() {
+        return flushInterval;
+    }
+
+    /**
+     * @param flushInterval long value  of the milliseconds between buffer flushes
+     * @return a reference to this, so the API can be used fluently
+     */
+    public TelemetronMetricsOptions setFlushInterval(final long flushInterval) {
+        this.flushInterval = flushInterval;
+        return this;
     }
 }

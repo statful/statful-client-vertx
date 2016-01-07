@@ -22,7 +22,7 @@ public class SenderFactoryTest {
     @Test(expected = NullPointerException.class)
     public void testNullVertx() {
         SenderFactory factory = new SenderFactory();
-        factory.sender(null, null);
+        factory.create(null, null);
     }
 
     @SuppressWarnings("all")
@@ -30,7 +30,7 @@ public class SenderFactoryTest {
     public void testNullOptions() {
         Vertx vertx = mock(Vertx.class);
         SenderFactory factory = new SenderFactory();
-        factory.sender(vertx, null);
+        factory.create(vertx, null);
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -39,7 +39,7 @@ public class SenderFactoryTest {
         TelemetronMetricsOptions options = new TelemetronMetricsOptions();
         options.setTransport(Transport.HTTP);
 
-        victim.sender(vertx,options);
+        victim.create(vertx,options);
     }
 
     @Test
@@ -48,6 +48,6 @@ public class SenderFactoryTest {
         TelemetronMetricsOptions options = new TelemetronMetricsOptions();
         options.setTransport(Transport.UDP);
 
-        assertTrue(victim.sender(vertx,options) instanceof UDPSender);
+        assertTrue(victim.create(vertx,options) instanceof UDPSender);
     }
 }

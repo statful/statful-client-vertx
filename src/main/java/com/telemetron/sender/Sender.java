@@ -25,4 +25,10 @@ public interface Sender {
      * @param metrics metrics to be sent. Each instance is responsible for creating the full metric line including tags
      */
     void send(@Nonnull List<DataPoint> metrics);
+
+    /**
+     * Stores metric in a buffer to be sent
+     * @param dataPoint metric to be stored
+     */
+    void addMetric(final DataPoint dataPoint);
 }

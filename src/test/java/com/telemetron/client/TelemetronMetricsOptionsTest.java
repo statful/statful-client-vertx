@@ -68,9 +68,9 @@ public class TelemetronMetricsOptionsTest {
         victim.setTransport(null);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testMandatorySetTransport() {
-        victim.getTransport();
+    @Test
+    public void testMandatorySetDefaultTransport() {
+        assertEquals(Transport.UDP, victim.getTransport());
     }
 
     @Test

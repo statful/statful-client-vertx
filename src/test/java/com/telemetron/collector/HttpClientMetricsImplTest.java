@@ -1,25 +1,33 @@
 package com.telemetron.collector;
 
 
+import com.telemetron.client.TelemetronMetricsOptions;
+import com.telemetron.metric.HttpClientDataPoint;
+import com.telemetron.sender.Sender;
 import com.telemetron.tag.Tags;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.net.SocketAddress;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class HttpClientMetricsImplTest {
 
-
     private HttpClientMetricsImpl victim;
+    private Sender sender;
+    private TelemetronMetricsOptions telemetronMetricsOptions;
 
     @Before
     public void setup() {
-        victim = new HttpClientMetricsImpl();
+        sender = mock(Sender.class);
+        telemetronMetricsOptions = mock(TelemetronMetricsOptions.class);
+        victim = new HttpClientMetricsImpl(sender, telemetronMetricsOptions);
     }
 
     @Test
@@ -62,11 +70,13 @@ public class HttpClientMetricsImplTest {
 
         SocketAddress remoteAddress = mock(SocketAddress.class);
         HttpClientResponse response = mock(HttpClientResponse.class);
-        HttpClientRequestMetrics metrics = new HttpClientRequestMetrics("tag", remoteAddress);
+        HttpClientRequestMetrics metrics = new HttpClientRequestMetrics("tag", remoteAddress, HttpMethod.GET);
         when(remoteAddress.host()).thenReturn("host");
         victim.responseEnd(metrics, response);
 
-        verify(remoteAddress, times(1)).host();
+        ArgumentCaptor<HttpClientDataPoint> captor = ArgumentCaptor.forClass(HttpClientDataPoint.class);
+        verify(sender,times(1)).addMetric(captor.capture());
+        assertNotNull(captor.getValue());
     }
 
     @Test
