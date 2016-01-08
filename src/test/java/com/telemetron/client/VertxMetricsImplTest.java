@@ -1,7 +1,6 @@
 package com.telemetron.client;
 
 import com.telemetron.sender.Sender;
-import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
