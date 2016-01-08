@@ -43,8 +43,7 @@ public abstract class MetricsHolder implements Sender {
     public final void addMetric(final DataPoint dataPoint) {
         boolean inserted = this.buffer.offer(dataPoint);
         if (!inserted) {
-            LOGGER.warn("metric could not be added to buffer, sending it directly {0} ", dataPoint.toMetricLine());
-            this.send(Lists.newArrayList(dataPoint));
+            LOGGER.warn("metric could not be added to buffer, discarding it {0} ", dataPoint.toMetricLine());
         }
     }
 
