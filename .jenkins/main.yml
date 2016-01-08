@@ -6,7 +6,7 @@
 ###############
 ### PROJECT
 - project:
-    name: ''
+    name: 'vertx-telemetron-client'
     project_version: '1.0'
     giturl: git@bitbucket.org:mindera/telemetron-client-vertx.git
     jobs:
