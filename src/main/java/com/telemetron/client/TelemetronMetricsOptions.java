@@ -1,14 +1,12 @@
 package com.telemetron.client;
 
+import com.google.common.collect.Lists;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.metrics.MetricsOptions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 
@@ -78,6 +76,16 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     private static final Transport DEFAULT_TRANSPORT = Transport.UDP;
 
     /**
+     * Default tags to be applied for Timer metrics
+     */
+    private static final ArrayList<Aggregation> DEFAULT_TIMER_AGGREGATIONS = Lists.newArrayList(Aggregation.AVG, Aggregation.P90, Aggregation.COUNT);
+
+    /**
+     * Default value for Aggregations Frequency for Timer metrics
+     */
+    private static final AggregationFreq DEFAULT_TIMER_FREQUENCY = AggregationFreq.FREQ_10;
+
+    /**
      * Telemetron host, default value {@value #DEFAULT_HOST}
      */
     private Optional<String> host = Optional.empty();
@@ -126,6 +134,16 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * Tags to be applied, default value {@link Collections#emptyList()}
      */
     private List<String> tags = Collections.emptyList();
+
+    /**
+     * List of aggregations to be applied on Timer metrics
+     */
+    private List<Aggregation> timerAggregations = DEFAULT_TIMER_AGGREGATIONS;
+
+    /**
+     * Frequency of aggregation to be applied on Timer metrics
+     */
+    private AggregationFreq timerFrequency = DEFAULT_TIMER_FREQUENCY;
 
     /**
      * Global rate sampling. Valid range [1-100], default value {@link #DEFAULT_SAMPLE_RATE}
@@ -445,6 +463,42 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      */
     public TelemetronMetricsOptions setFlushInterval(final long flushInterval) {
         this.flushInterval = flushInterval;
+        return this;
+    }
+
+    /**
+     * @return a copy of the aggregations applied on timer metrics
+     */
+    @Nonnull
+    public List<Aggregation> getTimerAggregations() {
+        return Lists.newArrayList(timerAggregations);
+    }
+
+    /**
+     * @param timerAggregations list of aggregations to apply
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Nonnull
+    public TelemetronMetricsOptions setTimerAggregations(@Nonnull final List<Aggregation> timerAggregations) {
+        this.timerAggregations = Lists.newArrayList(Objects.requireNonNull(timerAggregations));
+        return this;
+    }
+
+    /**
+     * @return the frequency to be applied on timer metrics
+     */
+    @Nonnull
+    public AggregationFreq getTimerFrequency() {
+        return timerFrequency;
+    }
+
+    /**
+     * @param timerFrequency the frequency to apply on the aggregations
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Nonnull
+    public TelemetronMetricsOptions setTimerFrequency(@Nonnull final AggregationFreq timerFrequency) {
+        this.timerFrequency = Objects.requireNonNull(timerFrequency);
         return this;
     }
 }

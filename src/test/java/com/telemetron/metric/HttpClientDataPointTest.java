@@ -1,5 +1,8 @@
 package com.telemetron.metric;
 
+import com.google.common.collect.Lists;
+import com.telemetron.client.Aggregation;
+import com.telemetron.client.AggregationFreq;
 import com.telemetron.client.TelemetronMetricsOptions;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +23,8 @@ public class HttpClientDataPointTest {
         this.options = mock(TelemetronMetricsOptions.class);
         when(this.options.getPrefix()).thenReturn("prefix");
         when(this.options.getNamespace()).thenReturn("namespace");
+        when(this.options.getTimerAggregations()).thenReturn(Lists.newArrayList(Aggregation.P95));
+        when(this.options.getTimerFrequency()).thenReturn(AggregationFreq.FREQ_10);
     }
 
     @Test
@@ -30,5 +35,7 @@ public class HttpClientDataPointTest {
         final String expected = "prefix\\.namespace\\.timer,request=name,verb=verb,statusCode=200 1000 \\d.* p95,FREQ_10";
         Matcher matcher = Pattern.compile(expected).matcher(victim.toMetricLine());
         assertTrue(matcher.matches());
+
+
     }
 }

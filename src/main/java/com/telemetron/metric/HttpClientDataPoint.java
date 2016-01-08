@@ -1,8 +1,5 @@
 package com.telemetron.metric;
 
-import com.google.common.collect.Lists;
-import com.telemetron.client.Aggregation;
-import com.telemetron.client.AggregationFreq;
 import com.telemetron.client.TelemetronMetricsOptions;
 
 
@@ -42,6 +39,13 @@ public final class HttpClientDataPoint implements DataPoint {
     private final int responseCode;
 
     /**
+     * Timestamp of metric creation
+     */
+    private final long unixTimeStamp;
+
+    /**
+     * constructor for a HttpClient Timer based metric, will calculate the unix timestamp of the metric on creation
+     *
      * @param options      Telemetron options to be used when building the metric line
      * @param name         Name of the operation that you are tracking
      * @param httpVerb     Representation of the http verb request
@@ -55,6 +59,7 @@ public final class HttpClientDataPoint implements DataPoint {
         this.verb = httpVerb;
         this.duration = duration;
         this.responseCode = responseCode;
+        this.unixTimeStamp = this.getUnixTimeStamp();
     }
 
     @Override
@@ -68,9 +73,9 @@ public final class HttpClientDataPoint implements DataPoint {
                 .withTag("verb", this.verb)
                 .withTag("statusCode", String.valueOf(this.responseCode))
                 .withValue(String.valueOf(this.duration))
-                .withTimestamp(getUnixTimeStamp())
-                .withAggregations(Lists.newArrayList(Aggregation.P95))
-                .withAggregationFrequency(AggregationFreq.FREQ_10)
+                .withTimestamp(this.unixTimeStamp)
+                .withAggregations(this.options.getTimerAggregations())
+                .withAggregationFrequency(this.options.getTimerFrequency())
                 .build();
     }
 
