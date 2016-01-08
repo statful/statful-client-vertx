@@ -4,9 +4,7 @@ package com.telemetron.client;
  * Contains all supported aggregations
  */
 public enum Aggregation {
-    /**
-     * Average aggregation
-     */
+
     AVG("avg"),
     /**
      * Percentile 90 aggregation
