@@ -1,6 +1,7 @@
 package com.telemetron.collector;
 
 
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.net.SocketAddress;
 
 /**
@@ -16,6 +17,10 @@ public final class HttpClientRequestMetrics {
      * Request address target
      */
     private final SocketAddress address;
+    /**
+     * Http verb for the request
+     */
+    private final HttpMethod method;
 
     /**
      * System timestamp of request start
@@ -25,10 +30,12 @@ public final class HttpClientRequestMetrics {
     /**
      * @param requestTag    String with the tag to be applied to identify this request
      * @param remoteAddress target remote address
+     * @param method        http verb for the request
      */
-    public HttpClientRequestMetrics(final String requestTag, final SocketAddress remoteAddress) {
+    public HttpClientRequestMetrics(final String requestTag, final SocketAddress remoteAddress, final HttpMethod method) {
         this.requestTag = requestTag;
         this.address = remoteAddress;
+        this.method = method;
     }
 
     /**
@@ -57,5 +64,12 @@ public final class HttpClientRequestMetrics {
      */
     public String getRequestTag() {
         return requestTag;
+    }
+
+    /**
+     * @return String representation of the http verb for this request
+     */
+    public String getMethod() {
+        return method.toString();
     }
 }

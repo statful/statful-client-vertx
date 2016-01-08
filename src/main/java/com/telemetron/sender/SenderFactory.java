@@ -22,7 +22,7 @@ public final class SenderFactory {
      * @return correct client instance for the configuration provided
      */
     @Nonnull
-    public Sender sender(@Nonnull final Vertx vertx, @Nonnull final TelemetronMetricsOptions options) {
+    public Sender create(@Nonnull final Vertx vertx, @Nonnull final TelemetronMetricsOptions options) {
 
         Objects.requireNonNull(vertx);
         Objects.requireNonNull(options);

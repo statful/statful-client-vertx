@@ -15,16 +15,24 @@ public class TelemetronMetricsFactoryImplTest {
 
     private TelemetronMetricsFactoryImpl victim;
 
+    private TelemetronMetricsOptions telemetronOptions;
+
+    private Vertx vertx;
+
+    private VertxOptions vertxOptions;
+
     @Before
     public void init() {
+
+        this.vertx = mock(Vertx.class);
+        this.vertxOptions = mock(VertxOptions.class);
+        this.telemetronOptions = mock(TelemetronMetricsOptions.class);
+
         victim = new TelemetronMetricsFactoryImpl();
     }
 
     @Test
     public void testCreationWithNonTelemetronOptionsShouldBeDisabledByDefault() {
-
-        Vertx vertx = mock(Vertx.class);
-        VertxOptions vertxOptions = mock(VertxOptions.class);
 
         when(vertxOptions.getMetricsOptions()).thenReturn(mock(MetricsOptions.class));
 
@@ -33,11 +41,10 @@ public class TelemetronMetricsFactoryImplTest {
 
     @Test
     public void testCreationWithTelemetronOptionsEnabled() {
-        Vertx vertx = mock(Vertx.class);
-        VertxOptions vertxOptions = mock(VertxOptions.class);
-        TelemetronMetricsOptions telemetronOptions = mock(TelemetronMetricsOptions.class);
 
+        when(telemetronOptions.getTransport()).thenReturn(Transport.UDP);
         when(telemetronOptions.isEnabled()).thenReturn(true);
+
         when(vertxOptions.getMetricsOptions()).thenReturn(telemetronOptions);
 
         assertTrue(victim.metrics(vertx, vertxOptions).isEnabled());

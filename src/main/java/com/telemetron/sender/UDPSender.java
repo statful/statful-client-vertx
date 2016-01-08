@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Responsible for the UDP transport
  */
-public final class UDPSender implements Sender {
+public final class UDPSender extends MetricsHolder {
 
     /**
      * Logger for transport errors
@@ -42,6 +42,7 @@ public final class UDPSender implements Sender {
      * @param options Telemetron options to configure host and port
      */
     public UDPSender(final Vertx vertx, final TelemetronMetricsOptions options) {
+        super(vertx, options);
         this.options = options;
         this.socket = vertx.createDatagramSocket(new DatagramSocketOptions());
     }

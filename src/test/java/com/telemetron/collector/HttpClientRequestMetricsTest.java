@@ -1,5 +1,6 @@
 package com.telemetron.collector;
 
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.net.SocketAddress;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,7 @@ public class HttpClientRequestMetricsTest {
     @Before
     public void init () {
         mockSocketAddress = mock(SocketAddress.class);
-        victim = new HttpClientRequestMetrics("tag", mockSocketAddress);
+        victim = new HttpClientRequestMetrics("tag", mockSocketAddress, HttpMethod.GET);
     }
 
     @Test
