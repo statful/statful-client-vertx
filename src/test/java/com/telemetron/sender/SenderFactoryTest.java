@@ -2,6 +2,7 @@ package com.telemetron.sender;
 
 import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.client.Transport;
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,41 +14,48 @@ public class SenderFactoryTest {
 
     private SenderFactory victim;
 
+    private Context context;
+    private Vertx vertx;
+
     @Before
     public void setup() {
+        context = mock(Context.class);
+        vertx = mock(Vertx.class);
+
         victim = new SenderFactory();
     }
 
     @SuppressWarnings("all")
     @Test(expected = NullPointerException.class)
     public void testNullVertx() {
-        SenderFactory factory = new SenderFactory();
-        factory.create(null, null);
+        victim.create(null, null, null);
+    }
+
+    @SuppressWarnings("all")
+    @Test(expected = NullPointerException.class)
+    public void testNullContext() {
+        victim.create(vertx, null, null);
     }
 
     @SuppressWarnings("all")
     @Test(expected = NullPointerException.class)
     public void testNullOptions() {
-        Vertx vertx = mock(Vertx.class);
-        SenderFactory factory = new SenderFactory();
-        factory.create(vertx, null);
+        victim.create(vertx, context, null);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnsupportedTransport() {
-        Vertx vertx = mock(Vertx.class);
         TelemetronMetricsOptions options = new TelemetronMetricsOptions();
         options.setTransport(Transport.HTTP);
 
-        victim.create(vertx,options);
+        victim.create(vertx, context, options);
     }
 
     @Test
     public void testSenderCreationTransport() {
-        Vertx vertx = mock(Vertx.class);
         TelemetronMetricsOptions options = new TelemetronMetricsOptions();
         options.setTransport(Transport.UDP);
 
-        assertTrue(victim.create(vertx,options) instanceof UDPSender);
+        assertTrue(victim.create(vertx, context, options) instanceof UDPSender);
     }
 }

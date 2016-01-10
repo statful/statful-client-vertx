@@ -1,7 +1,6 @@
 package com.telemetron.sender;
 
 import com.google.common.collect.Lists;
-import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.metric.DataPoint;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
@@ -27,12 +26,11 @@ public abstract class MetricsHolder implements Sender {
     private final ArrayBlockingQueue<DataPoint> buffer;
 
     /**
-     * @param vertx   vertx instance to be used to flush metrics
-     * @param options to get the flush interval and flush size from
+     * Initializes the internal buffer. Implementers must call {@link #configureFlushInterval(Vertx, long, int)} to init
+     * the process of sending metrics
      */
-    public MetricsHolder(final Vertx vertx, final TelemetronMetricsOptions options) {
+    public MetricsHolder() {
         this.buffer = new ArrayBlockingQueue<>(MAX_BUFFER_SIZE);
-        this.configureFlushInterval(vertx, options.getFlushInterval(), options.getFlushSize());
     }
 
     /**
@@ -47,7 +45,13 @@ public abstract class MetricsHolder implements Sender {
         }
     }
 
-    private void configureFlushInterval(final Vertx vertx, final long flushInterval, final int flushSize) {
+    /**
+     * Methods uses vertx instance to set a periodic interval
+     * @param vertx instance to create the periodic interval on
+     * @param flushInterval time between flushes
+     * @param flushSize number of elments to clean from the buffer
+     */
+    protected void configureFlushInterval(final Vertx vertx, final long flushInterval, final int flushSize) {
         vertx.setPeriodic(flushInterval, timerId -> flush(flushSize));
     }
 

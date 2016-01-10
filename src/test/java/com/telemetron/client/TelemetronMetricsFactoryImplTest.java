@@ -1,5 +1,6 @@
 package com.telemetron.client;
 
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
@@ -21,12 +22,17 @@ public class TelemetronMetricsFactoryImplTest {
 
     private VertxOptions vertxOptions;
 
+    private Context context;
+
     @Before
     public void init() {
 
         this.vertx = mock(Vertx.class);
         this.vertxOptions = mock(VertxOptions.class);
         this.telemetronOptions = mock(TelemetronMetricsOptions.class);
+        this.context = mock(Context.class);
+
+        when(vertx.getOrCreateContext()).thenReturn(context);
 
         victim = new TelemetronMetricsFactoryImpl();
     }

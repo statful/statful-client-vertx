@@ -2,6 +2,7 @@ package com.telemetron.client;
 
 import com.telemetron.sender.Sender;
 import com.telemetron.sender.SenderFactory;
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
@@ -26,7 +27,9 @@ public class TelemetronMetricsFactoryImpl implements VertxMetricsFactory {
             telemetronMetricsOptions = new TelemetronMetricsOptions();
         }
 
-        final Sender sender = new SenderFactory().create(vertx, telemetronMetricsOptions);
+        final Context context = vertx.getOrCreateContext();
+        final Sender sender = new SenderFactory().create(vertx, context, telemetronMetricsOptions);
+
         return new VertxMetricsImpl(sender, telemetronMetricsOptions);
     }
 

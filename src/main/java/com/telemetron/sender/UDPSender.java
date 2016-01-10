@@ -2,10 +2,7 @@ package com.telemetron.sender;
 
 import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.metric.DataPoint;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.datagram.DatagramSocketOptions;
 import io.vertx.core.logging.Logger;
@@ -35,16 +32,23 @@ public final class UDPSender extends MetricsHolder {
     /**
      * Holds the socket to avoid recreation
      */
-    private final DatagramSocket socket;
+    private DatagramSocket socket;
 
     /**
      * @param vertx   vertx instance to create the socket from
+     * @param context of execution to run operations that need vertx initialized
      * @param options Telemetron options to configure host and port
      */
-    public UDPSender(final Vertx vertx, final TelemetronMetricsOptions options) {
-        super(vertx, options);
+    public UDPSender(final Vertx vertx, final Context context, final TelemetronMetricsOptions options) {
+        super();
         this.options = options;
-        this.socket = vertx.createDatagramSocket(new DatagramSocketOptions());
+
+        // the following code is being executed asynchronously on the same context, to make sure that vertx is properly initialized
+        // so that we can open a socket and configure a interval
+        context.runOnContext(aVoid -> {
+            this.socket = vertx.createDatagramSocket(new DatagramSocketOptions());
+            this.configureFlushInterval(vertx, this.options.getFlushInterval(), this.options.getFlushSize());
+        });
     }
 
     @Override

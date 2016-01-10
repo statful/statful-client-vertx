@@ -3,7 +3,6 @@ package com.telemetron.sender;
 import com.google.common.collect.Lists;
 import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.metric.DataPoint;
-import com.telemetron.sender.UDPSender;
 import io.vertx.core.Vertx;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.ext.unit.Async;
@@ -20,6 +19,8 @@ import java.util.stream.Collectors;
 @RunWith(VertxUnitRunner.class)
 public class UDPSenderTest {
 
+    private static final String HOST = "0.0.0.0";
+    private static final int PORT = 1239;
     private DatagramSocket receiver;
 
     private UDPSender victim;
@@ -29,9 +30,9 @@ public class UDPSenderTest {
         Vertx vertx = Vertx.vertx();
 
         TelemetronMetricsOptions options = new TelemetronMetricsOptions();
-        options.setPort(1234).setHost("0.0.0.0");
+        options.setPort(PORT).setHost(HOST);
 
-        this.victim = new UDPSender(vertx, options);
+        this.victim = new UDPSender(vertx, vertx.getOrCreateContext(), options);
         this.receiver = vertx.createDatagramSocket();
     }
 
@@ -43,7 +44,7 @@ public class UDPSenderTest {
         final List<DataPoint> dataPoints = metricLines.stream().map(DummyDataPoint::new).collect(Collectors.toList());
 
         // configure receiver and desired assertions
-        this.receiver.listen(1234, "0.0.0.0", event -> {
+        this.receiver.listen(PORT, HOST, event -> {
             context.assertTrue(event.succeeded());
             receiver.handler(packet -> {
                 context.assertNotNull(packet.data());
