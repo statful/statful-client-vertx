@@ -28,7 +28,15 @@ public interface Sender {
 
     /**
      * Stores metric in a buffer to be sent
+     *
      * @param dataPoint metric to be stored
      */
     void addMetric(final DataPoint dataPoint);
+
+    /**
+     * Closes the sender
+     *
+     * @param handler to execute when closed
+     */
+    void close(final Handler<AsyncResult<Void>> handler);
 }
