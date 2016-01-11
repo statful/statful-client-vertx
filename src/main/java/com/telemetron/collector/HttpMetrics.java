@@ -76,7 +76,6 @@ abstract class HttpMetrics implements Metrics {
         }
 
         final long responseTime = requestMetric.elapsed();
-        // check response status
 
         sender.addMetric(new HttpClientDataPoint(options, requestMetric.getRequestTag(), requestMetric.getMethod(), responseTime, statusCode, type));
     }
