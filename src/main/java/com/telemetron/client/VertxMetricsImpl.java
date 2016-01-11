@@ -1,13 +1,17 @@
 package com.telemetron.client;
 
 import com.telemetron.collector.HttpClientMetricsImpl;
-import com.telemetron.collector.HttpClientRequestMetrics;
+import com.telemetron.collector.HttpRequestMetrics;
+import com.telemetron.collector.HttpServerMetricsImpl;
 import com.telemetron.sender.Sender;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.metrics.impl.DummyVertxMetrics;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
+import io.vertx.core.spi.metrics.HttpServerMetrics;
 
 /**
  * VertxMetrics SPI implementation for Telemetron metrics collection
@@ -40,8 +44,13 @@ public final class VertxMetricsImpl extends DummyVertxMetrics {
      * @inheritDoc
      */
     @Override
-    public HttpClientMetrics<HttpClientRequestMetrics, SocketAddress, SocketAddress> createMetrics(final HttpClient client, final HttpClientOptions options) {
+    public HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress> createMetrics(final HttpClient client, final HttpClientOptions options) {
         return new HttpClientMetricsImpl(sender, telemetronOptions);
+    }
+
+    @Override
+    public HttpServerMetrics createMetrics(final HttpServer server, final SocketAddress localAddress, final HttpServerOptions options) {
+        return new HttpServerMetricsImpl(sender, telemetronOptions);
     }
 
     /**
