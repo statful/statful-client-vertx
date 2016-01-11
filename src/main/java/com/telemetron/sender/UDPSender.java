@@ -40,7 +40,8 @@ public final class UDPSender extends MetricsHolder {
      * @param options Telemetron options to configure host and port
      */
     public UDPSender(final Vertx vertx, final Context context, final TelemetronMetricsOptions options) {
-        super();
+        super(options);
+
         this.options = options;
 
         // the following code is being executed asynchronously on the same context, to make sure that vertx is properly initialized
