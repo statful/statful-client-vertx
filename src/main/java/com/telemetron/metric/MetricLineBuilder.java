@@ -14,6 +14,11 @@ import java.util.stream.Collectors;
 public final class MetricLineBuilder {
 
     /**
+     * Optional application name to be added to the tag list
+     */
+    private Optional<String> app;
+
+    /**
      * Prefix to be set in the metric
      */
     private String prefix;
@@ -52,7 +57,8 @@ public final class MetricLineBuilder {
     private AggregationFreq frequency = AggregationFreq.FREQ_10;
 
     /**
-     * builds the metric following telemetron s
+     * builds the metric following telemetron spec
+     *
      * @return String with the formatted metric
      */
     @Nonnull
@@ -62,6 +68,9 @@ public final class MetricLineBuilder {
         sb.append(this.prefix).append(".").append(this.namespace);
 
         sb.append(".").append(metricName);
+
+        // merge application to the tag list
+        this.app.ifPresent(application -> this.tags.put("app", application));
 
         toStringTags().ifPresent(stringTag -> sb.append(",").append(stringTag));
 
@@ -96,6 +105,14 @@ public final class MetricLineBuilder {
                 .map(entry -> entry.getKey() + "=" + entry.getValue()).collect(Collectors.joining(",")));
     }
 
+    /**
+     * @param application application name to be added to
+     * @return a reference to this, so the API can be used fluently
+     */
+    public MetricLineBuilder withApp(@Nonnull final Optional<String> application) {
+        this.app = application;
+        return this;
+    }
 
     /**
      * @param prefixToAdd to be added to the metric
@@ -131,7 +148,7 @@ public final class MetricLineBuilder {
     }
 
     /**
-     * @param tagName of the tag to be added to the metric
+     * @param tagName  of the tag to be added to the metric
      * @param tagValue of the tag to be added to the metric
      * @return a reference to this, so the API can be used fluently
      */
@@ -158,7 +175,6 @@ public final class MetricLineBuilder {
     }
 
     /**
-     *
      * @param timestampToAdd to be added to the metric
      * @return a reference to this, so the API can be used fluently
      */

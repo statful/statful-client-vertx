@@ -6,6 +6,8 @@ import com.telemetron.client.AggregationFreq;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 
 
@@ -22,6 +24,7 @@ public class MetricLineBuilderTest {
         victim.withTag("tagName", "tagValue");
         victim.withTimestamp(1);
         victim.withValue("value");
+        victim.withApp(Optional.empty());
     }
 
     @Test
@@ -40,6 +43,7 @@ public class MetricLineBuilderTest {
         victim.withMetricName("timer");
         victim.withTimestamp(1);
         victim.withValue("value");
+        victim.withApp(Optional.empty());
 
         String result = victim.build();
         String expected = "prefix.namespace.timer value 1";

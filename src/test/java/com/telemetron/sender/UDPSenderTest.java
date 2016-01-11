@@ -3,6 +3,8 @@ package com.telemetron.sender;
 import com.google.common.collect.Lists;
 import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.metric.DataPoint;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.ext.unit.Async;
@@ -36,6 +38,16 @@ public class UDPSenderTest {
         this.receiver = vertx.createDatagramSocket();
     }
 
+    /**
+     * Not using junit @after annotation since we want to wait for the servers to close
+     *
+     * @param async used to finish the test
+     */
+    private void teardown(Async async) {
+        this.victim.close(event -> async.complete());
+    }
+
+
     @Test
     public void testSend(TestContext context) throws Exception {
         Async async = context.async();
@@ -55,13 +67,11 @@ public class UDPSenderTest {
                 context.assertEquals(2, metrics.size());
 
                 context.assertTrue(metrics.containsAll(metricLines));
-
-                async.complete();
+                this.receiver.close(ignore -> this.teardown(async));
             });
             receiver.endHandler(end -> receiver.close());
             receiver.exceptionHandler(context::fail);
         });
-
 
         victim.send(dataPoints);
     }
@@ -69,11 +79,14 @@ public class UDPSenderTest {
     @Test
     public void testSendNoListenerSuccess(TestContext context) throws Exception {
 
+        Async async = context.async();
+
         final List<String> metricLines = Lists.newArrayList("line1", "line2");
 
         List<DataPoint> dataPoints = metricLines.stream().map(DummyDataPoint::new).collect(Collectors.toList());
         victim.send(dataPoints, result -> {
             context.assertTrue(result.succeeded());
+            teardown(async);
         });
     }
 

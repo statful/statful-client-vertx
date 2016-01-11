@@ -7,6 +7,7 @@ import com.telemetron.client.TelemetronMetricsOptions;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +26,7 @@ public class HttpClientDataPointTest {
         when(this.options.getNamespace()).thenReturn("namespace");
         when(this.options.getTimerAggregations()).thenReturn(Lists.newArrayList(Aggregation.P95));
         when(this.options.getTimerFrequency()).thenReturn(AggregationFreq.FREQ_10);
+        when(this.options.getApp()).thenReturn(Optional.empty());
     }
 
     @Test
@@ -33,9 +35,9 @@ public class HttpClientDataPointTest {
 
         // using a regex for match since the metric will include a timestamp that we don't really want to test here
         final String expected = "prefix\\.namespace\\.timer,request=name,verb=verb,statusCode=200 1000 \\d.* p95,FREQ_10";
-        Matcher matcher = Pattern.compile(expected).matcher(victim.toMetricLine());
-        assertTrue(matcher.matches());
+        final String actual = victim.toMetricLine();
 
-
+        Matcher matcher = Pattern.compile(expected).matcher(actual);
+        assertTrue("\nExpected: " + expected + "\n" + actual, matcher.matches());
     }
 }

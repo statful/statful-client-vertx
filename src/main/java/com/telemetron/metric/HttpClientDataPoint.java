@@ -76,6 +76,7 @@ public final class HttpClientDataPoint implements DataPoint {
                 .withTimestamp(this.unixTimeStamp)
                 .withAggregations(this.options.getTimerAggregations())
                 .withAggregationFrequency(this.options.getTimerFrequency())
+                .withApp(this.options.getApp())
                 .build();
     }
 
