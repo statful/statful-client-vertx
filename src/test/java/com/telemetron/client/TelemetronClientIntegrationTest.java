@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RunWith(VertxUnitRunner.class)
-public class TelemetronClientIntegration {
+public class TelemetronClientIntegrationTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TelemetronClientIntegration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TelemetronClientIntegrationTest.class);
 
     private static final String HOST = "0.0.0.0";
     private static final int UDP_PORT = 1234;
@@ -49,6 +49,8 @@ public class TelemetronClientIntegration {
         this.vertx = Vertx.vertx(vertxOptions);
         this.metricsReceiver = vertx.createDatagramSocket();
         this.httpReceiver = vertx.createHttpServer();
+
+        LOGGER.error("TelemetronClientIntegrationTest");
     }
 
     @Test

@@ -3,16 +3,23 @@ package com.telemetron.client;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.metrics.MetricsOptions;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(VertxUnitRunner.class)
 public class TelemetronMetricsFactoryImplTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TelemetronMetricsFactoryImplTest.class);
 
     private TelemetronMetricsFactoryImpl victim;
 
@@ -35,6 +42,7 @@ public class TelemetronMetricsFactoryImplTest {
         when(vertx.getOrCreateContext()).thenReturn(context);
 
         victim = new TelemetronMetricsFactoryImpl();
+        LOGGER.error("TelemetronMetricsFactoryImplTest");
     }
 
     @Test
