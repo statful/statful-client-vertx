@@ -75,4 +75,9 @@ public final class UDPSender extends MetricsHolder {
             }
         });
     }
+
+    @Override
+    public void close(final Handler<AsyncResult<Void>> handler) {
+        this.socket.close(handler);
+    }
 }
