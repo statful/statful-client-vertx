@@ -47,15 +47,31 @@ public class TelemetronClientIntegrationTest {
 
         VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
         this.vertx = Vertx.vertx(vertxOptions);
-        this.metricsReceiver = vertx.createDatagramSocket();
-        this.httpReceiver = vertx.createHttpServer();
+        this.metricsReceiver = this.vertx.createDatagramSocket();
+        this.httpReceiver = this.vertx.createHttpServer();
+    }
 
-        LOGGER.error("TelemetronClientIntegrationTest");
+    /**
+     * Not using junit @after annotation since we want to wait for the servers to close
+     *
+     * @param async used to finish the test
+     */
+    private void teardown(Async async) {
+        this.httpReceiver.close(aVoid -> this.metricsReceiver.close(aVoid1 -> async.complete()));
     }
 
     @Test
-    public void testHttpTimerClientMetrics(TestContext context) throws Exception {
+    public void testHttpTimerClientMetrics(TestContext context) {
+        testTimerMetric(this.vertx, context, "type=client");
+    }
 
+    @Test
+    public void testHttpServerTimerMetrics(TestContext context) {
+        Vertx metricsDisabled = Vertx.vertx();
+        testTimerMetric(metricsDisabled, context, "type=server");
+    }
+
+    protected void testTimerMetric(Vertx vertx, TestContext context, String tagMatcher) {
         Async asnyc = context.async();
 
         final List<String> requests = Lists.newArrayList("X-1-X", "X-2-X", "X-3-X", "X-4-X", "X-5-X");
@@ -70,26 +86,28 @@ public class TelemetronClientIntegrationTest {
                 String metric = packet.data().toString();
                 LOGGER.info(metric);
 
-                List<String> toRemove = requests.stream().filter(metric::contains).collect(Collectors.toList());
-                requests.removeAll(toRemove);
+                if (metric.contains(tagMatcher)) {
+                    List<String> toRemove = requests.stream().filter(metric::contains).collect(Collectors.toList());
+                    requests.removeAll(toRemove);
 
-                if (requests.isEmpty()) {
-                    asnyc.complete();
+                    if (requests.isEmpty()) {
+                        teardown(asnyc);
+                    }
                 }
             });
         });
 
         this.setupHttpServer();
 
-        this.makeHttpRequests(context, requests);
+        this.makeHttpRequests(vertx, context, requests);
     }
 
-    private void makeHttpRequests(TestContext context, List<String> requests) {
+    private void makeHttpRequests(Vertx vertx, TestContext context, List<String> requests) {
         requests.forEach(requestValue -> {
             // confirm that all requests have a 200 status code
-            HttpClientRequest request1 = vertx.createHttpClient().get(HTTP_PORT, HOST, "/" + requestValue, event -> context.assertTrue(event.statusCode() == 200));
-            request1.headers().add(Tags.TRACK_HEADER.toString(), requestValue);
-            request1.end();
+            HttpClientRequest request = vertx.createHttpClient().get(HTTP_PORT, HOST, "/" + requestValue, event -> context.assertTrue(event.statusCode() == 200));
+            request.headers().add(Tags.TRACK_HEADER.toString(), requestValue);
+            request.end();
         });
     }
 
