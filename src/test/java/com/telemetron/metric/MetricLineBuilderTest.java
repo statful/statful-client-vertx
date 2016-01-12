@@ -58,7 +58,6 @@ public class MetricLineBuilderTest {
         String result = victim.build();
         String expected = "prefix.namespace.timer,tagName=tagValue value 1";
         assertEquals(expected, result);
-        System.out.println(result);
     }
 
     @Test
@@ -68,7 +67,7 @@ public class MetricLineBuilderTest {
         victim.withAggregationFrequency(AggregationFreq.FREQ_120);
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer,tagName=tagValue value 1 avg,FREQ_120";
+        String expected = "prefix.namespace.timer,tagName=tagValue value 1 avg,120";
         assertEquals(expected, result);
     }
 }
