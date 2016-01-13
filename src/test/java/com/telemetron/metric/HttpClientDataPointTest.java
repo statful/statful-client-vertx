@@ -34,7 +34,7 @@ public class HttpClientDataPointTest {
         HttpClientDataPoint victim = new HttpClientDataPoint(this.options, "name", "verb", 1000, 200, HttpClientDataPoint.Type.CLIENT);
         
         // using a regex for match since the metric will include a timestamp that we don't really want to test here
-        final String expected = "prefix\\.namespace\\.timer,request=name,verb=verb,transport=http,type=client,statusCode=200 1000 \\d.* p95,FREQ_10";
+        final String expected = "prefix\\.namespace\\.timer,request=name,verb=verb,transport=http,type=client,statusCode=200 1000 \\d.* p95,10";
         final String actual = victim.toMetricLine();
         
         Matcher matcher = Pattern.compile(expected).matcher(victim.toMetricLine());
