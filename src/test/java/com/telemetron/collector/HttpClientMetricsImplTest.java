@@ -42,7 +42,7 @@ public class HttpClientMetricsImplTest {
         when(headers.get(eq(Tags.TRACK_HEADER.toString()))).thenReturn(null);
         when(request.headers()).thenReturn(headers);
 
-        HttpClientRequestMetrics metrics = victim.requestBegin(socketMetric, localAddress, remoteAddress, request);
+        HttpRequestMetrics metrics = victim.requestBegin(socketMetric, localAddress, remoteAddress, request);
 
         assertNull(metrics);
     }
@@ -59,7 +59,7 @@ public class HttpClientMetricsImplTest {
         when(headers.get(eq(Tags.TRACK_HEADER.toString()))).thenReturn("tag");
         when(request.headers()).thenReturn(headers);
 
-        HttpClientRequestMetrics metrics = victim.requestBegin(socketMetric, localAddress, remoteAddress, request);
+        HttpRequestMetrics metrics = victim.requestBegin(socketMetric, localAddress, remoteAddress, request);
 
         assertNotNull(metrics);
         assertEquals(remoteAddress, metrics.getAddress());
@@ -70,7 +70,7 @@ public class HttpClientMetricsImplTest {
 
         SocketAddress remoteAddress = mock(SocketAddress.class);
         HttpClientResponse response = mock(HttpClientResponse.class);
-        HttpClientRequestMetrics metrics = new HttpClientRequestMetrics("tag", remoteAddress, HttpMethod.GET);
+        HttpRequestMetrics metrics = new HttpRequestMetrics("tag", remoteAddress, HttpMethod.GET);
         when(remoteAddress.host()).thenReturn("host");
         victim.responseEnd(metrics, response);
 

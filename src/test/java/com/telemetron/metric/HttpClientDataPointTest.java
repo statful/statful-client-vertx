@@ -31,13 +31,13 @@ public class HttpClientDataPointTest {
 
     @Test
     public void testMetricLine() {
-        HttpClientDataPoint victim = new HttpClientDataPoint(this.options, "name", "verb", 1000, 200);
-
+        HttpClientDataPoint victim = new HttpClientDataPoint(this.options, "name", "verb", 1000, 200, HttpClientDataPoint.Type.CLIENT);
+        
         // using a regex for match since the metric will include a timestamp that we don't really want to test here
-        final String expected = "prefix\\.namespace\\.timer,request=name,verb=verb,statusCode=200 1000 \\d.* p95,FREQ_10";
+        final String expected = "prefix\\.namespace\\.timer,request=name,verb=verb,transport=http,type=client,statusCode=200 1000 \\d.* p95,FREQ_10";
         final String actual = victim.toMetricLine();
-
-        Matcher matcher = Pattern.compile(expected).matcher(actual);
-        assertTrue("\nExpected: " + expected + "\n" + actual, matcher.matches());
+        
+        Matcher matcher = Pattern.compile(expected).matcher(victim.toMetricLine());
+        assertTrue("\nexpected: " + expected + "\nactual: " + actual + "\n", matcher.matches());
     }
 }
