@@ -66,7 +66,7 @@ public class UDPSenderTest {
     public void testNothingToSend(TestContext testContext) {
 
         this.setup(false, Optional.empty(), Optional.empty());
-        
+
         Async async = testContext.async();
 
         Vertx vertx = mock(Vertx.class);
@@ -85,7 +85,7 @@ public class UDPSenderTest {
         UDPSender sender = new UDPSender(vertx, context, options);
         sender.send(Collections.emptyList());
 
-        verify(datagramSocket, times(0)).send(anyString(), anyInt(),anyString(), Matchers.<Handler<AsyncResult<DatagramSocket>>>any());
+        verify(datagramSocket, times(0)).send(anyString(), anyInt(), anyString(), Matchers.<Handler<AsyncResult<DatagramSocket>>>any());
 
         this.teardown(async);
     }
