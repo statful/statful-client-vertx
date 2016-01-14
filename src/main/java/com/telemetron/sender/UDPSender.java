@@ -65,6 +65,10 @@ public final class UDPSender extends MetricsHolder {
     private void send(@Nonnull final List<DataPoint> metrics, final Optional<Handler<AsyncResult<Void>>> endHandler) {
         Objects.requireNonNull(metrics);
 
+        if (metrics.isEmpty()) {
+            // nothing to send
+            return;
+        }
         final String toSendMetrics = metrics.stream().map(DataPoint::toMetricLine).collect(Collectors.joining("\n"));
 
         socket.send(toSendMetrics, options.getPort(), options.getHost(), handler -> {

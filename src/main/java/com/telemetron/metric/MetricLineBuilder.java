@@ -82,7 +82,7 @@ public final class MetricLineBuilder {
                         sb.append(" ")
                                 .append(stringAggregation)
                                 .append(",")
-                                .append(frequency)
+                                .append(frequency.getValue())
         );
 
         return sb.toString();

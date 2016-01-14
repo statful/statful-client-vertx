@@ -3,6 +3,7 @@ package com.telemetron.sender;
 import com.google.common.collect.Lists;
 import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.metric.DataPoint;
+import io.vertx.core.*;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.datagram.DatagramSocket;
@@ -11,11 +12,17 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(VertxUnitRunner.class)
 public class UDPSenderTest {
@@ -53,6 +60,34 @@ public class UDPSenderTest {
      */
     private void teardown(Async async) {
         this.victim.close(event -> async.complete());
+    }
+
+    @Test
+    public void testNothingToSend(TestContext testContext) {
+
+        this.setup(false, Optional.empty(), Optional.empty());
+        
+        Async async = testContext.async();
+
+        Vertx vertx = mock(Vertx.class);
+        when(vertx.setTimer(anyLong(), Matchers.<Handler<Long>>any())).thenReturn(1L);
+
+        Context context = mock(Context.class);
+        Mockito.doNothing().when(context).runOnContext(Matchers.<Handler<Void>>any());
+
+        DatagramSocket datagramSocket = mock(DatagramSocket.class);
+        when(vertx.createDatagramSocket()).thenReturn(datagramSocket);
+
+        TelemetronMetricsOptions options = mock(TelemetronMetricsOptions.class);
+        when(options.getFlushInterval()).thenReturn(10L);
+        when(options.getFlushSize()).thenReturn(10);
+
+        UDPSender sender = new UDPSender(vertx, context, options);
+        sender.send(Collections.emptyList());
+
+        verify(datagramSocket, times(0)).send(anyString(), anyInt(),anyString(), Matchers.<Handler<AsyncResult<DatagramSocket>>>any());
+
+        this.teardown(async);
     }
 
     @Test
