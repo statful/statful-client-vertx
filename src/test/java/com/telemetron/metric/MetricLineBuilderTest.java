@@ -20,7 +20,7 @@ public class MetricLineBuilderTest {
         victim = new MetricLineBuilder();
         victim.withPrefix("prefix");
         victim.withNamespace("namespace");
-        victim.withMetricName("timer");
+        victim.withMetricType("timer");
         victim.withTag("tagName", "tagValue");
         victim.withTimestamp(1);
         victim.withValue("value");
@@ -40,7 +40,7 @@ public class MetricLineBuilderTest {
         victim = new MetricLineBuilder();
         victim.withPrefix("prefix");
         victim.withNamespace("namespace");
-        victim.withMetricName("timer");
+        victim.withMetricType("timer");
         victim.withTimestamp(1);
         victim.withValue("value");
         victim.withApp(Optional.empty());

@@ -103,7 +103,7 @@ public final class HttpClientDataPoint implements DataPoint {
         return new MetricLineBuilder()
                 .withPrefix(this.options.getPrefix())
                 .withNamespace(this.options.getNamespace())
-                .withMetricName("timer")
+                .withMetricType("timer")
                 .withTag("transport", "http")
                 .withTag("type", this.type.value)
                 .withTag("request", this.name)
