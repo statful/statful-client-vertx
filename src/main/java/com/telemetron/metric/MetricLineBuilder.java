@@ -1,5 +1,6 @@
 package com.telemetron.metric;
 
+import com.google.common.base.Strings;
 import com.telemetron.client.Aggregation;
 import com.telemetron.client.AggregationFreq;
 
@@ -65,7 +66,11 @@ public final class MetricLineBuilder {
     public String build() {
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(this.prefix).append(".").append(this.namespace);
+        sb.append(this.prefix);
+
+        if (!Strings.isNullOrEmpty(this.namespace)) {
+            sb.append(".").append(this.namespace);
+        }
 
         sb.append(".").append(metricName);
 
