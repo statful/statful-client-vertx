@@ -46,7 +46,7 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
      */
     @Override
     public SocketAddress upgrade(final HttpRequestMetrics requestMetric, final ServerWebSocket serverWebSocket) {
-        return null;
+        return requestMetric.getAddress();
     }
 
     /**
@@ -54,7 +54,7 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
      */
     @Override
     public SocketAddress connected(final SocketAddress socketMetric, final ServerWebSocket serverWebSocket) {
-        return null;
+        return socketMetric;
     }
 
     /**
@@ -70,7 +70,7 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
      */
     @Override
     public SocketAddress connected(final SocketAddress remoteAddress, final String remoteName) {
-        return null;
+        return remoteAddress;
     }
 
     /**
