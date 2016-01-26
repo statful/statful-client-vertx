@@ -24,14 +24,14 @@ public abstract class TimerMetric {
      * initializes the timer
      */
     public void start() {
-        this.start = System.nanoTime();
+        this.start = System.currentTimeMillis();
     }
 
     /**
      * @return long with the time from start up until now
      */
     public long elapsed() {
-        return System.nanoTime() - start;
+        return System.currentTimeMillis() - start;
     }
 
     /**
