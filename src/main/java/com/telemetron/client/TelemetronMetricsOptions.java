@@ -1,12 +1,14 @@
 package com.telemetron.client;
 
 import com.google.common.collect.Lists;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.metrics.MetricsOptions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -108,12 +110,12 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     /**
      * Defines whether to use https or not, default value {@value #DEFAULT_SECURE}
      */
-    private Optional<Boolean> secure = Optional.empty();
+    private Optional<Boolean> secure = Optional.of(DEFAULT_SECURE);
 
     /**
      * Defines timeout for the client reporter (http / tcp transports), default value {@value #DEFAULT_TIMEOUT}
      */
-    private Optional<Integer> timeout = Optional.empty();
+    private Optional<Integer> timeout = Optional.of(DEFAULT_TIMEOUT);
 
     /**
      * Application token, to be used by the http transport
@@ -121,7 +123,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     private Optional<String> token = Optional.empty();
 
     /**
-     * Optional value to mapp to an extra TAG defining the application
+     * Optional value to map to an extra TAG defining the application
      */
     private Optional<String> app = Optional.empty();
 
@@ -167,6 +169,11 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     private long flushInterval = DEFAULT_FLUSH_INTERVAL;
 
     /**
+     * Configures a path to read the configuration from a file
+     */
+    private String configPath;
+
+    /**
      * Empty constructor that provides default values, all of which should be overridable
      */
     public TelemetronMetricsOptions() {
@@ -194,17 +201,50 @@ public class TelemetronMetricsOptions extends MetricsOptions {
         this.namespace = other.namespace;
         this.flushSize = other.flushSize;
         this.flushInterval = other.flushInterval;
+        this.timerAggregations = other.timerAggregations;
+        this.timerFrequency = other.timerFrequency;
     }
 
 
     /**
      * Constructor to create a configuration based on a json object
      *
-     * @param json {@link JsonObject} to read the configuration from
+     * @param config {@link JsonObject} to read the configuration from
      */
-    public TelemetronMetricsOptions(final JsonObject json) {
-        super(json);
-        throw new RuntimeException("Not implemented yet");
+    public TelemetronMetricsOptions(final JsonObject config) {
+        super(config);
+
+        this.host = Optional.of(config.getString("host", DEFAULT_HOST));
+        this.port = Optional.of(config.getInteger("port", DEFAULT_PORT));
+        this.prefix = config.getString("prefix");
+        this.transport = Transport.valueOf(config.getString("transport", DEFAULT_TRANSPORT.toString()));
+        this.secure = Optional.of(config.getBoolean("secure", DEFAULT_SECURE));
+        this.timeout = Optional.of(config.getInteger("timeout", DEFAULT_TIMEOUT));
+        this.token = Optional.ofNullable(config.getString("token"));
+        this.app = Optional.ofNullable(config.getString("app"));
+        this.dryrun = config.getBoolean("dryrun", DEFAULT_DRY_RUN);
+
+        this.tags = config.getJsonArray("tags", new JsonArray())
+                .stream()
+                .map(String.class::cast)
+                .collect(Collectors.toList());
+
+        this.sampleRate = config.getInteger("sampleRate", DEFAULT_SAMPLE_RATE);
+        this.namespace = Optional.ofNullable(config.getString("namespace", null));
+        this.flushSize = config.getInteger("flushSize", DEFAULT_FLUSH_SIZE);
+        this.flushInterval = config.getLong("flushInterval", DEFAULT_FLUSH_INTERVAL);
+
+        final JsonArray configTimerAggregations = config.getJsonArray("timerAggregations", new JsonArray());
+
+        if (configTimerAggregations != null && !configTimerAggregations.isEmpty()) {
+            this.timerAggregations = configTimerAggregations
+                    .stream()
+                    .map(String.class::cast)
+                    .map(Aggregation::valueOf)
+                    .collect(Collectors.toList());
+        }
+
+        this.timerFrequency = AggregationFreq.valueOf(config.getString("timerFrequency", DEFAULT_TIMER_FREQUENCY.toString()));
     }
 
     /**
@@ -499,6 +539,34 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     @Nonnull
     public TelemetronMetricsOptions setTimerFrequency(@Nonnull final AggregationFreq timerFrequency) {
         this.timerFrequency = Objects.requireNonNull(timerFrequency);
+        return this;
+    }
+
+    /**
+     * Allows setting enabled as a jvm argument
+     *
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Override
+    public TelemetronMetricsOptions setEnabled(final boolean enable) {
+        return (TelemetronMetricsOptions) super.setEnabled(enable);
+    }
+
+    /**
+     * @return path to load the configuration from
+     */
+    public String getConfigPath() {
+        return configPath;
+    }
+
+    /**
+     * Sets a config path to read the configuration from
+     *
+     * @param configPath path to be set
+     * @return a reference to this, so the API can be used fluently
+     */
+    public TelemetronMetricsOptions setConfigPath(final String configPath) {
+        this.configPath = configPath;
         return this;
     }
 }

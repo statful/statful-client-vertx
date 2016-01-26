@@ -214,9 +214,43 @@ public class TelemetronMetricsOptionsTest {
         assertEquals(victim.isEnabled(), copy.isEnabled());
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testNotImplementedJsonCtor() {
-        new TelemetronMetricsOptions(new JsonObject());
-    }
+    @Test
+    public void testJsonObjectConstructor() {
 
+        JsonObject configuration = new JsonObject()
+                .put("host", "host")
+                .put("port", 1111)
+                .put("prefix", "prefix")
+                .put("transport", Transport.HTTP.toString())
+                .put("secure", false)
+                .put("timeout", 100)
+                .put("token", "token")
+                .put("app", "tests")
+                .put("dryrun", true)
+                .put("tags", Lists.newArrayList("a", "b", "c"))
+                .put("sampleRate", 100)
+                .put("namespace", "ns")
+                .put("flushSize", 1)
+                .put("flushInterval", 10)
+                .put("timerAggregations", Lists.newArrayList(Aggregation.AVG.toString(), Aggregation.COUNT.toString()))
+                .put("timerFrequency", AggregationFreq.FREQ_10.toString());
+
+        victim = new TelemetronMetricsOptions(configuration);
+        assertEquals(victim.getHost(), "host");
+        assertEquals(victim.getPort(), new Integer(1111));
+        assertEquals(victim.getPrefix(), "prefix");
+        assertEquals(victim.getTransport(), Transport.HTTP);
+        assertFalse(victim.isSecure());
+        assertEquals(victim.getTimeout(), 100);
+        assertEquals(victim.getToken(), "token");
+        assertEquals(victim.getApp().get(), "tests");
+        assertTrue(victim.isDryrun());
+        assertTrue(victim.getTags().containsAll(Lists.newArrayList("a", "b", "c")));
+        assertEquals(victim.getSampleRate(), 100);
+        assertEquals(victim.getNamespace(), "ns");
+        assertEquals(victim.getFlushSize(), 1);
+        assertEquals(victim.getFlushInterval(), 10);
+        assertTrue(victim.getTimerAggregations().containsAll(Lists.newArrayList(Aggregation.AVG, Aggregation.COUNT)));
+        assertEquals(victim.getTimerFrequency(), AggregationFreq.FREQ_10);
+    }
 }

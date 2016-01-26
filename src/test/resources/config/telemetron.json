@@ -1,0 +1,17 @@
+{
+  "host": "host",
+  "port": 1111,
+  "prefix": "prefix",
+  "transport": "UDP",
+  "secure": false,
+  "app": "application",
+  "dryrun": false,
+  "sampleRate": 100,
+  "namespace": "namespace",
+  "timerAggregations": [
+    "AVG",
+    "COUNT"
+  ],
+  "timerFrequency": "FREQ_10",
+  "enabled": true
+}
