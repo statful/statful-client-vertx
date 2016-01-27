@@ -33,6 +33,11 @@ public final class MetricLineBuilder {
     private String metricType;
 
     /**
+     * Metric name to be added to the metric
+     */
+    private String metricName;
+
+    /**
      * Tags to be applied in the metric
      */
     private Map<String, String> tags;
@@ -73,6 +78,8 @@ public final class MetricLineBuilder {
         }
 
         sb.append(".").append(metricType);
+
+        sb.append(".").append(metricName);
 
         // merge application to the tag list
         this.app.ifPresent(application -> this.tags.put("app", application));
@@ -140,6 +147,18 @@ public final class MetricLineBuilder {
         this.namespace = namespaceToAdd;
         return this;
     }
+
+    /**
+     * @param metricNameToAdd to be added to the metric
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Nonnull
+    public MetricLineBuilder withMetricName(@Nonnull final String metricNameToAdd) {
+        Objects.requireNonNull(metricNameToAdd);
+        this.metricName = metricNameToAdd;
+        return this;
+    }
+
 
     /**
      * @param metricTypeToAdd to be added to the metric

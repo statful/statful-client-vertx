@@ -46,6 +46,11 @@ public final class HttpClientDataPoint implements DataPoint {
     private final TelemetronMetricsOptions options;
 
     /**
+     * Metric name
+     */
+    private final String metricName;
+
+    /**
      * Name of the operation that you are tracking
      */
     private final String name;
@@ -79,16 +84,19 @@ public final class HttpClientDataPoint implements DataPoint {
      * constructor for a HttpClient Timer based metric, will calculate the unix timestamp of the metric on creation
      *
      * @param options      Telemetron options to be used when building the metric line
+     * @param metricName   name of the metric
      * @param name         Name of the operation that you are tracking
      * @param httpVerb     Representation of the http verb request
      * @param duration     Duration of the request
      * @param responseCode Http code to be added as tag
      * @param type         if this metric belongs to http server or client
      */
-    public HttpClientDataPoint(final TelemetronMetricsOptions options, final String name, final String httpVerb, final long duration, final int responseCode,
+    public HttpClientDataPoint(final TelemetronMetricsOptions options, final String metricName, final String name, final String httpVerb, final long duration,
+                               final int responseCode,
                                final Type type) {
 
         this.options = options;
+        this.metricName = metricName;
         this.name = name;
         this.verb = httpVerb;
         this.duration = duration;
@@ -104,6 +112,7 @@ public final class HttpClientDataPoint implements DataPoint {
                 .withPrefix(this.options.getPrefix())
                 .withNamespace(this.options.getNamespace())
                 .withMetricType("timer")
+                .withMetricName(this.metricName)
                 .withTag("transport", "http")
                 .withTag("type", this.type.value)
                 .withTag("request", this.name)

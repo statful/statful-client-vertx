@@ -21,6 +21,7 @@ public class MetricLineBuilderTest {
         victim.withPrefix("prefix");
         victim.withNamespace("namespace");
         victim.withMetricType("timer");
+        victim.withMetricName("execution");
         victim.withTag("tagName", "tagValue");
         victim.withTimestamp(1);
         victim.withValue("value");
@@ -30,7 +31,7 @@ public class MetricLineBuilderTest {
     @Test
     public void testBuildWithoutAggregations() {
         String result = victim.build();
-        String expected = "prefix.namespace.timer,tagName=tagValue value 1";
+        String expected = "prefix.namespace.timer.execution,tagName=tagValue value 1";
         assertEquals(expected, result);
     }
 
@@ -41,12 +42,13 @@ public class MetricLineBuilderTest {
         victim.withPrefix("prefix");
         victim.withNamespace("namespace");
         victim.withMetricType("timer");
+        victim.withMetricName("execution");
         victim.withTimestamp(1);
         victim.withValue("value");
         victim.withApp(Optional.empty());
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer value 1";
+        String expected = "prefix.namespace.timer.execution value 1";
         assertEquals(expected, result);
     }
 
@@ -56,7 +58,7 @@ public class MetricLineBuilderTest {
         victim.withAggregationFrequency(AggregationFreq.FREQ_120);
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer,tagName=tagValue value 1";
+        String expected = "prefix.namespace.timer.execution,tagName=tagValue value 1";
         assertEquals(expected, result);
     }
 
@@ -67,7 +69,7 @@ public class MetricLineBuilderTest {
         victim.withAggregationFrequency(AggregationFreq.FREQ_120);
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer,tagName=tagValue value 1 avg,120";
+        String expected = "prefix.namespace.timer.execution,tagName=tagValue value 1 avg,120";
         assertEquals(expected, result);
     }
 }
