@@ -68,7 +68,7 @@ abstract class HttpMetrics implements Metrics {
      *
      * @param requestMetric If the request is not be tracked this will be null
      * @param statusCode    http status code
-     * @param type          wether this metric is from a client or server
+     * @param type          whether this metric is from a client or server
      */
     protected void httpRequestEnd(@Nullable final HttpRequestMetrics requestMetric, final int statusCode, final HttpClientDataPoint.Type type) {
         if (requestMetric == null) {
@@ -77,7 +77,9 @@ abstract class HttpMetrics implements Metrics {
 
         final long responseTime = requestMetric.elapsed();
 
-        sender.addMetric(new HttpClientDataPoint(options, requestMetric.getRequestTag(), requestMetric.getMethod(), responseTime, statusCode, type));
+        sender.addMetric(
+                new HttpClientDataPoint(options, "execution", requestMetric.getRequestTag(), requestMetric.getMethod(), responseTime, statusCode, type)
+        );
     }
 
 

@@ -28,7 +28,12 @@ public final class MetricLineBuilder {
      */
     private String namespace;
     /**
-     * Metric name to be set in the metric
+     * Metric type to be set in the metric
+     */
+    private String metricType;
+
+    /**
+     * Metric name to be added to the metric
      */
     private String metricName;
 
@@ -71,6 +76,8 @@ public final class MetricLineBuilder {
         if (!Strings.isNullOrEmpty(this.namespace)) {
             sb.append(".").append(this.namespace);
         }
+
+        sb.append(".").append(metricType);
 
         sb.append(".").append(metricName);
 
@@ -142,13 +149,25 @@ public final class MetricLineBuilder {
     }
 
     /**
-     * @param metricNametoAdd to be added to the metric
+     * @param metricNameToAdd to be added to the metric
      * @return a reference to this, so the API can be used fluently
      */
     @Nonnull
-    public MetricLineBuilder withMetricName(@Nonnull final String metricNametoAdd) {
-        Objects.requireNonNull(metricNametoAdd);
-        this.metricName = metricNametoAdd;
+    public MetricLineBuilder withMetricName(@Nonnull final String metricNameToAdd) {
+        Objects.requireNonNull(metricNameToAdd);
+        this.metricName = metricNameToAdd;
+        return this;
+    }
+
+
+    /**
+     * @param metricTypeToAdd to be added to the metric
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Nonnull
+    public MetricLineBuilder withMetricType(@Nonnull final String metricTypeToAdd) {
+        Objects.requireNonNull(metricTypeToAdd);
+        this.metricType = metricTypeToAdd;
         return this;
     }
 
