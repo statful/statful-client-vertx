@@ -1,6 +1,7 @@
 package com.telemetron.client;
 
 import com.google.common.collect.Lists;
+import com.telemetron.utils.Pair;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.metrics.MetricsOptions;
@@ -8,6 +9,8 @@ import io.vertx.core.metrics.MetricsOptions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -174,6 +177,16 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     private String configPath;
 
     /**
+     * Holds the list of patterns and replacements to be run against http server requests urls
+     */
+    private List<Pair<String, String>> patterns = Collections.emptyList();
+
+    /**
+     * Holds list of patterns for URLs that should be ignored and not collected.
+     */
+    private List<String> httpServerPathsIgnore = Collections.emptyList();
+
+    /**
      * Empty constructor that provides default values, all of which should be overridable
      */
     public TelemetronMetricsOptions() {
@@ -245,6 +258,15 @@ public class TelemetronMetricsOptions extends MetricsOptions {
         }
 
         this.timerFrequency = AggregationFreq.valueOf(config.getString("timerFrequency", DEFAULT_TIMER_FREQUENCY.toString()));
+
+        this.patterns = config.getJsonArray("http-server-url-patterns", new JsonArray()).stream()
+                .map(JsonObject.class::cast)
+                .map(entry -> new Pair<>(entry.getString("pattern"), entry.getString("replacement")))
+                .collect(Collectors.toList());
+
+        this.httpServerPathsIgnore = config.getJsonArray("http-server-ignore-url-patterns", new JsonArray()).stream()
+                .map(String.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -568,5 +590,42 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     public TelemetronMetricsOptions setConfigPath(final String configPath) {
         this.configPath = configPath;
         return this;
+    }
+
+    /**
+     * Allows to set regex that will be executed against the http server requests to replace parts of it and avoid
+     * polluting the metrics system with lots of tags
+     *
+     * @param patternsToAdd A pair with the regex and it's replacement
+     * @return a reference to this, so the API can be used fluently
+     */
+    public TelemetronMetricsOptions setHttpServerMatchAndReplacePatterns(@Nonnull final List<Pair<String, String>> patternsToAdd) {
+        this.patterns = requireNonNull(Lists.newArrayList(patternsToAdd));
+        return this;
+    }
+
+    /**
+     * @return  the list of patterns and replacements to apply on request urls
+     */
+    @Nonnull
+    public List<Pair<String, String>> getPatterns() {
+        return patterns;
+    }
+
+    /**
+     * Allows to set regex that will make urls be ignored and not collected
+     * @param pathsToIgnore regular expressions to be used to ignore urls
+     * @return a reference to this, so the API can be used fluently
+     */
+    public TelemetronMetricsOptions setHttpServerIgnorePaths(@Nonnull final List<String> pathsToIgnore) {
+        this.httpServerPathsIgnore = requireNonNull(Lists.newArrayList(pathsToIgnore));
+        return this;
+    }
+
+    /**
+     * @return list of patterns to be ignored and not collected
+     */
+    public List<String> getHttpServerPathsIgnore() {
+        return httpServerPathsIgnore;
     }
 }

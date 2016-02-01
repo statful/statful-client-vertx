@@ -2,6 +2,7 @@ package com.telemetron.client;
 
 import com.google.common.collect.Lists;
 import com.telemetron.tag.Tags;
+import com.telemetron.utils.Pair;
 import io.netty.util.internal.ThreadLocalRandom;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RunWith(VertxUnitRunner.class)
@@ -36,6 +38,9 @@ public class TelemetronClientIntegrationTest {
     @Before
     public void setUp() throws Exception {
 
+        List<Pair<String, String>> matchReplace = Lists.newArrayList();
+        matchReplace.add(new Pair<>("\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}", "_uuid_"));
+
         TelemetronMetricsOptions options = new TelemetronMetricsOptions();
         options.setPort(UDP_PORT)
                 .setHost(HOST)
@@ -43,7 +48,9 @@ public class TelemetronClientIntegrationTest {
                 .setFlushInterval(1000)
                 .setFlushSize(20)
                 .setPrefix("testing")
-                .setEnabled(true);
+                .setEnabled(true)
+                .setHttpServerMatchAndReplacePatterns(matchReplace)
+                .setHttpServerIgnorePaths(Lists.newArrayList(".*ignore.*"));
 
         VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
         this.vertx = Vertx.vertx(vertxOptions);
@@ -62,19 +69,28 @@ public class TelemetronClientIntegrationTest {
 
     @Test
     public void testHttpTimerClientMetrics(TestContext context) {
-        testTimerMetric(this.vertx, context, "type=client");
+        testTimerMetric(this.vertx, context, "type=client", Optional.<String>empty());
     }
 
     @Test
     public void testHttpServerTimerMetrics(TestContext context) {
         Vertx metricsDisabled = Vertx.vertx();
-        testTimerMetric(metricsDisabled, context, "type=server");
+        testTimerMetric(metricsDisabled, context, "type=server", Optional.<String>empty());
     }
 
-    protected void testTimerMetric(Vertx vertx, TestContext context, String tagMatcher) {
+    @Test
+    public void testHttpServerTimerMetricsWithIgnoreEntry(TestContext context) {
+        Vertx metricsDisabled = Vertx.vertx();
+        testTimerMetric(metricsDisabled, context, "type=server", Optional.of("/should/ignore/"));
+    }
+
+    protected void testTimerMetric(Vertx vertx, TestContext context, String tagMatcher, Optional<String> toIgnore) {
         Async asnyc = context.async();
 
         final List<String> requests = Lists.newArrayList("X-1-X", "X-2-X", "X-3-X", "X-4-X", "X-5-X");
+        final List<String> requestsWithIgnore = Lists.newArrayList(requests);
+
+        toIgnore.ifPresent(requestsWithIgnore::add);
 
         this.metricsReceiver.listen(UDP_PORT, HOST, event -> {
             if (event.failed()) {
@@ -85,6 +101,9 @@ public class TelemetronClientIntegrationTest {
                 // log metric value
                 String metric = packet.data().toString();
                 LOGGER.info(metric);
+
+                // if there is something that should've been ignored, confirm that a metric is not reported
+                toIgnore.ifPresent(entry -> context.assertFalse(metric.contains(entry)));
 
                 if (metric.contains(tagMatcher)) {
                     List<String> toRemove = requests.stream().filter(metric::contains).collect(Collectors.toList());
@@ -99,7 +118,7 @@ public class TelemetronClientIntegrationTest {
 
         this.setupHttpServer();
 
-        this.makeHttpRequests(vertx, context, requests);
+        this.makeHttpRequests(vertx, context, requestsWithIgnore);
     }
 
     private void makeHttpRequests(Vertx vertx, TestContext context, List<String> requests) {

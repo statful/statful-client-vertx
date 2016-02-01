@@ -13,5 +13,14 @@
     "COUNT"
   ],
   "timerFrequency": "FREQ_10",
-  "enabled": true
+  "enabled": true,
+  "http-server-url-patterns": [
+    {
+      "pattern": "\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}",
+      "replacement": "_uuid_"
+    }
+  ],
+  "http-server-ignore-url-patterns": [
+    "\/static\/.*"
+  ]
 }
