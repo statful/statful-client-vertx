@@ -3,6 +3,7 @@ package com.telemetron.collector;
 import com.telemetron.client.TelemetronMetricsOptions;
 import com.telemetron.metric.HttpClientDataPoint;
 import com.telemetron.sender.Sender;
+import com.telemetron.tag.Tags;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.WebSocket;
@@ -35,9 +36,23 @@ public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClie
     @Nullable
     public HttpRequestMetrics requestBegin(final SocketAddress socketMetric, final SocketAddress localAddress,
                                            final SocketAddress remoteAddress, final HttpClientRequest request) {
-        return httpRequestBegin(remoteAddress, request.headers(), request.method());
-    }
 
+        // extract request tag to identify the metric and confirm that we want to track it
+        String requestTag = request.headers().get(Tags.TRACK_HEADER.toString());
+
+        HttpRequestMetrics metric = null;
+
+        if (requestTag != null) {
+            // Remove tracking header to avoid it propagating to clients
+            request.headers().remove(Tags.TRACK_HEADER.toString());
+
+            // Create client request metric
+            metric = new HttpRequestMetrics(requestTag, remoteAddress, request.method());
+            metric.start();
+        }
+
+        return metric;
+    }
 
     /**
      * Handles request time measurements and builds the data point
@@ -48,7 +63,17 @@ public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClie
     @Override
     public void responseEnd(@Nullable final HttpRequestMetrics requestMetric, final HttpClientResponse response) {
 
-        httpRequestEnd(requestMetric, response.statusCode(), HttpClientDataPoint.Type.CLIENT);
+        if (requestMetric == null) {
+            return;
+        }
+
+        final long responseTime = requestMetric.elapsed();
+
+        super.addMetric(
+                new HttpClientDataPoint(super.getOptions(), "execution", requestMetric.getRequestTag(),
+                        requestMetric.getMethod(), responseTime,
+                        response.statusCode(), HttpClientDataPoint.Type.CLIENT)
+        );
     }
 
     @Override

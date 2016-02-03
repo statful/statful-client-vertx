@@ -1,16 +1,11 @@
 package com.telemetron.collector;
 
 import com.telemetron.client.TelemetronMetricsOptions;
-import com.telemetron.metric.HttpClientDataPoint;
+import com.telemetron.metric.DataPoint;
 import com.telemetron.sender.Sender;
-import com.telemetron.tag.Tags;
-import io.vertx.core.MultiMap;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.Metrics;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -38,50 +33,19 @@ abstract class HttpMetrics implements Metrics {
     }
 
     /**
-     * Only requests that contain a tracking tag will be tracked.
-     * This method removes the tracking header from the header map.
-     *
-     * @param remoteAddress address of the request
-     * @param headers       headers of the request.
-     * @param method        http method of the request
+     * adds a metric to the sender
+     * @param dataPoint to be added
      */
-    protected HttpRequestMetrics httpRequestBegin(final SocketAddress remoteAddress, final MultiMap headers, final HttpMethod method) {
-        // extract request tag to identify the metric and confirm that we want to track it
-        String requestTag = headers.get(Tags.TRACK_HEADER.toString());
-
-        HttpRequestMetrics metric = null;
-
-        if (requestTag != null) {
-            // Remove tracking header to avoid it propagating to clients
-            headers.remove(Tags.TRACK_HEADER.toString());
-
-            // Create client request metric
-            metric = new HttpRequestMetrics(requestTag, remoteAddress, method);
-            metric.start();
-        }
-
-        return metric;
+    protected void addMetric(final DataPoint dataPoint) {
+        this.sender.addMetric(dataPoint);
     }
 
     /**
-     * Handles request time measurements and builds the data point
-     *
-     * @param requestMetric If the request is not be tracked this will be null
-     * @param statusCode    http status code
-     * @param type          whether this metric is from a client or server
+     * @return options for building the datapoint
      */
-    protected void httpRequestEnd(@Nullable final HttpRequestMetrics requestMetric, final int statusCode, final HttpClientDataPoint.Type type) {
-        if (requestMetric == null) {
-            return;
-        }
-
-        final long responseTime = requestMetric.elapsed();
-
-        sender.addMetric(
-                new HttpClientDataPoint(options, "execution", requestMetric.getRequestTag(), requestMetric.getMethod(), responseTime, statusCode, type)
-        );
+    protected TelemetronMetricsOptions getOptions() {
+        return options;
     }
-
 
     /**
      * @inheritDoc
