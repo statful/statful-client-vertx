@@ -34,3 +34,6 @@ out
 *.un~
 Session.vim
 .netrwhist
+
+### Vertx
+.vertx
