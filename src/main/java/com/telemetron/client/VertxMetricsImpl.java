@@ -40,9 +40,6 @@ public final class VertxMetricsImpl extends DummyVertxMetrics {
         this.sender = sender;
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress> createMetrics(final HttpClient client, final HttpClientOptions options) {
         return new HttpClientMetricsImpl(sender, telemetronOptions);
@@ -53,9 +50,6 @@ public final class VertxMetricsImpl extends DummyVertxMetrics {
         return new HttpServerMetricsImpl(sender, telemetronOptions);
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public boolean isEnabled() {
         return this.telemetronOptions.isEnabled();

@@ -29,8 +29,6 @@ public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClie
 
     /**
      * Only requests that contain a tracking tag will be tracked
-     *
-     * @inheritDoc
      */
     @Override
     @Nullable

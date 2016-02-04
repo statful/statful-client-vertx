@@ -47,17 +47,11 @@ abstract class HttpMetrics implements Metrics {
         return options;
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public boolean isEnabled() {
         return true;
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void close() {
 

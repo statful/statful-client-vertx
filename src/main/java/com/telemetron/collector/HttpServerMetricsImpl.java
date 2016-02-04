@@ -46,9 +46,6 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
         this.ignore = options.getHttpServerPathsIgnore().stream().map(Pattern::compile).collect(Collectors.toList());
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public HttpRequestMetrics requestBegin(final SocketAddress socketAddress, final HttpServerRequest request) {
 
@@ -75,9 +72,6 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
         return metric;
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void responseEnd(final HttpRequestMetrics requestMetric, final HttpServerResponse response) {
         if (requestMetric == null) {
@@ -92,65 +86,41 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public SocketAddress upgrade(final HttpRequestMetrics requestMetric, final ServerWebSocket serverWebSocket) {
         return requestMetric.getAddress();
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public SocketAddress connected(final SocketAddress socketMetric, final ServerWebSocket serverWebSocket) {
         return socketMetric;
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void disconnected(final SocketAddress serverWebSocketMetric) {
 
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public SocketAddress connected(final SocketAddress remoteAddress, final String remoteName) {
         return remoteAddress;
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void disconnected(final SocketAddress socketMetric, final SocketAddress remoteAddress) {
 
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void bytesRead(final SocketAddress socketMetric, final SocketAddress remoteAddress, final long numberOfBytes) {
 
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void bytesWritten(final SocketAddress socketMetric, final SocketAddress remoteAddress, final long numberOfBytes) {
 
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void exceptionOccurred(final SocketAddress socketMetric, final SocketAddress remoteAddress, final Throwable t) {
 
