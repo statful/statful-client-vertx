@@ -105,7 +105,7 @@ public abstract class HttpDataPoint implements DataPoint {
 
     protected MetricLineBuilder buildMetricLine() {
 
-        return new MetricLineBuilder()
+        final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
                 .withPrefix(this.options.getPrefix())
                 .withNamespace(this.options.getNamespace())
                 .withMetricType("timer")
@@ -119,6 +119,11 @@ public abstract class HttpDataPoint implements DataPoint {
                 .withAggregations(this.options.getTimerAggregations())
                 .withAggregationFrequency(this.options.getTimerFrequency())
                 .withApp(this.options.getApp());
+
+        // Add global list of tags
+        this.options.getTags().forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));
+
+        return metricLineBuilder;
     }
 
     /**
