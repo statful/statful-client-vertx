@@ -66,7 +66,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     /**
      * Default size of elements that the buffer can old before flushing
      */
-    private static final Integer DEFAULT_FLUSH_SIZE = 10;
+    private static final int DEFAULT_FLUSH_SIZE = 10;
 
     /**
      * Default flush interval at which metrics are sent
