@@ -9,8 +9,6 @@ import io.vertx.core.metrics.MetricsOptions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -81,7 +79,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     private static final Transport DEFAULT_TRANSPORT = Transport.UDP;
 
     /**
-     * Default tags to be applied for Timer metrics
+     * Default aggregations to be applied for Timer metrics
      */
     private static final ArrayList<Aggregation> DEFAULT_TIMER_AGGREGATIONS = Lists.newArrayList(Aggregation.AVG, Aggregation.P90, Aggregation.COUNT);
 
@@ -138,7 +136,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     /**
      * Tags to be applied, default value {@link Collections#emptyList()}
      */
-    private List<String> tags = Collections.emptyList();
+    private List<Pair<String, String>> tags = Collections.emptyList();
 
     /**
      * List of aggregations to be applied on Timer metrics
@@ -239,7 +237,8 @@ public class TelemetronMetricsOptions extends MetricsOptions {
 
         this.tags = config.getJsonArray("tags", new JsonArray())
                 .stream()
-                .map(String.class::cast)
+                .map(JsonObject.class::cast)
+                .map(entry -> new Pair<>(entry.getString("tag"), entry.getString("value")))
                 .collect(Collectors.toList());
 
         this.sampleRate = config.getInteger("sampleRate", DEFAULT_SAMPLE_RATE);
@@ -447,8 +446,8 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @param tags sets a list of tags to be applied
      * @return a reference to this, so the API can be used fluently
      */
-    public TelemetronMetricsOptions setTags(@Nonnull final List<String> tags) {
-        this.tags = new ArrayList<>(tags);
+    public TelemetronMetricsOptions setTags(@Nonnull final List<Pair<String, String>> tags) {
+        this.tags = new ArrayList<>(requireNonNull(tags));
         return this;
     }
 
@@ -456,7 +455,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
      * @return List of tags to be applied
      */
     @Nonnull
-    public List<String> getTags() {
+    public List<Pair<String, String>> getTags() {
         return tags;
     }
 
@@ -605,7 +604,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     }
 
     /**
-     * @return  the list of patterns and replacements to apply on request urls
+     * @return the list of patterns and replacements to apply on request urls
      */
     @Nonnull
     public List<Pair<String, String>> getPatterns() {
@@ -614,6 +613,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
 
     /**
      * Allows to set regex that will make urls be ignored and not collected
+     *
      * @param pathsToIgnore regular expressions to be used to ignore urls
      * @return a reference to this, so the API can be used fluently
      */

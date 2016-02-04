@@ -1,6 +1,7 @@
 package com.telemetron.client;
 
 import com.google.common.collect.Lists;
+import com.telemetron.utils.Pair;
 import io.vertx.core.json.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -132,22 +133,25 @@ public class TelemetronMetricsOptionsTest {
 
     @Test
     public void testDefaultTagList() {
-        assertEquals(Collections.emptyList(), victim.getTags());
+        assertEquals(Collections.<Pair<String, String>>emptyList(), victim.getTags());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSetTags() {
-        List<String> tags = Lists.newArrayList("tag1", "tag2", "tag3");
+        List<Pair<String, String>> tags = Lists.newArrayList(new Pair<>("tag1", "tag1Value"), new Pair<>("tag2", "tag2Value"), new Pair<>("tag1", "tag1Value"));
         victim.setTags(tags);
         assertTrue(tags.containsAll(victim.getTags()));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSetShallowCopyTags() {
-        List<String> tags = Lists.newArrayList("tag1", "tag2", "tag3");
+        List<Pair<String, String>> tags = Lists.newArrayList(new Pair<>("tag1", "tag1Value"), new Pair<>("tag2", "tag2Value"), new Pair<>("tag1", "tag1Value"));
         victim.setTags(tags);
-        tags.add("shouldNotExist");
-        assertFalse(victim.getTags().contains("shouldNotExist"));
+        Pair<String,String> pair = new Pair<>("shouldNotExist", "shouldNotExist");
+        tags.add(pair);
+        assertFalse(victim.getTags().contains(pair));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -192,11 +196,13 @@ public class TelemetronMetricsOptionsTest {
         assertEquals(15, victim.setFlushSize(15).getFlushSize());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCopyCtor() {
         victim.setApp("app").setDryrun(true).setFlushSize(10).setHost("host").setNamespace("namespace")
-                .setPort(9999).setPrefix("prefix").setSampleRate(10).setSecure(true).setTags(Lists.newArrayList("a", "b"))
-                .setTimeout(1000).setToken("token").setTransport(Transport.UDP).setEnabled(true);
+                .setPort(9999).setPrefix("prefix").setSampleRate(10).setSecure(true)
+                .setTimeout(1000).setToken("token").setTransport(Transport.UDP).setEnabled(true)
+                .setTags(Lists.newArrayList(new Pair<>("tag", "value")));
 
         TelemetronMetricsOptions copy = new TelemetronMetricsOptions(victim);
         assertEquals(victim.getApp(), copy.getApp());
@@ -227,7 +233,8 @@ public class TelemetronMetricsOptionsTest {
                 .put("token", "token")
                 .put("app", "tests")
                 .put("dryrun", true)
-                .put("tags", Lists.newArrayList("a", "b", "c"))
+                .put("tags", Lists.newArrayList(new JsonObject().put("tag", "tag1").put("value", "value1"),
+                        new JsonObject().put("tag", "tag2").put("value", "value2")))
                 .put("sampleRate", 100)
                 .put("namespace", "ns")
                 .put("flushSize", 1)
@@ -245,7 +252,7 @@ public class TelemetronMetricsOptionsTest {
         assertEquals(victim.getToken(), "token");
         assertEquals(victim.getApp().get(), "tests");
         assertTrue(victim.isDryrun());
-        assertTrue(victim.getTags().containsAll(Lists.newArrayList("a", "b", "c")));
+        assertTrue(victim.getTags().containsAll(Lists.newArrayList(new Pair<>("tag1", "value1"), new Pair<>("tag2", "value2"))));
         assertEquals(victim.getSampleRate(), 100);
         assertEquals(victim.getNamespace(), "ns");
         assertEquals(victim.getFlushSize(), 1);

@@ -35,6 +35,7 @@ public class TelemetronClientIntegrationTest {
     private HttpServer httpReceiver;
     private Vertx vertx;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
 
@@ -49,6 +50,7 @@ public class TelemetronClientIntegrationTest {
                 .setFlushSize(20)
                 .setPrefix("testing")
                 .setEnabled(true)
+                .setTags(Lists.newArrayList(new Pair<>("global", "value"), new Pair<>("global1", "value1")))
                 .setHttpServerMatchAndReplacePatterns(matchReplace)
                 .setHttpServerIgnorePaths(Lists.newArrayList(".*ignore.*"));
 
@@ -105,7 +107,8 @@ public class TelemetronClientIntegrationTest {
                 // if there is something that should've been ignored, confirm that a metric is not reported
                 toIgnore.ifPresent(entry -> context.assertFalse(metric.contains(entry)));
 
-                if (metric.contains(tagMatcher)) {
+                // check if the desired tag exists and if the defined global tags are being set in all metrics
+                if (metric.contains(tagMatcher) && metric.contains("global=value") && metric.contains("global1=value1")) {
                     List<String> toRemove = requests.stream().filter(metric::contains).collect(Collectors.toList());
                     requests.removeAll(toRemove);
 
