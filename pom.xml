@@ -37,12 +37,12 @@
     <repository>
       <id>mindera-releases</id>
       <name>Mindera Nexus Releases Repository</name>
-      <url>http://nexus.mindera/content/repositories/releases</url>
+      <url>http://nexus.internal.mindera/content/repositories/releases</url>
     </repository>
     <repository>
       <id>mindera-snapshots</id>
       <name>Mindera Nexus Snapshots Repository</name>
-      <url>http://nexus.mindera/content/repositories/snapshots</url>
+      <url>http://nexus.internal.mindera/content/repositories/snapshots</url>
     </repository>
   </repositories>
 
