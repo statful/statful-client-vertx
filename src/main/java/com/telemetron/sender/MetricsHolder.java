@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * To be extended by sender implementations. Contains a buffer to hold on to metrics before sending them
  */
-public abstract class MetricsHolder implements Sender {
+abstract class MetricsHolder implements Sender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsHolder.class);
     /**
@@ -36,9 +36,10 @@ public abstract class MetricsHolder implements Sender {
     /**
      * Initializes the internal buffer. Implementers must call {@link #configureFlushInterval(Vertx, long, int)} to init
      * the process of sending metrics
+     *
      * @param options Telemetron configuration to decide if metrics should be sent or not
      */
-    public MetricsHolder(@Nonnull final TelemetronMetricsOptions options) {
+    MetricsHolder(@Nonnull final TelemetronMetricsOptions options) {
         this.dryrun = options.isDryrun();
         this.buffer = new ArrayBlockingQueue<>(MAX_BUFFER_SIZE);
     }
@@ -51,7 +52,7 @@ public abstract class MetricsHolder implements Sender {
     public final void addMetric(final DataPoint dataPoint) {
         boolean inserted = this.buffer.offer(dataPoint);
         if (!inserted) {
-            LOGGER.warn("metric could not be added to buffer, discarding it {0} ", dataPoint.toMetricLine());
+            LOGGER.warn("metric could not be added to buffer, discarding it {} ", dataPoint.toMetricLine());
         }
     }
 
@@ -62,17 +63,17 @@ public abstract class MetricsHolder implements Sender {
      * @param flushInterval time between flushes
      * @param flushSize     number of elements to clean from the buffer
      */
-    protected void configureFlushInterval(final Vertx vertx, final long flushInterval, final int flushSize) {
+    void configureFlushInterval(final Vertx vertx, final long flushInterval, final int flushSize) {
         vertx.setPeriodic(flushInterval, timerId -> flush(flushSize));
     }
 
     private void flush(final int flushSize) {
         List<DataPoint> toBeSent = Lists.newArrayListWithCapacity(flushSize);
-
         buffer.drainTo(toBeSent, flushSize);
+
         if (dryrun) {
             final String toSendMetrics = toBeSent.stream().map(DataPoint::toMetricLine).collect(Collectors.joining("\n"));
-            LOGGER.info("dryrun: {0}", toSendMetrics);
+            LOGGER.info("dryrun: {}", toSendMetrics);
         } else {
             this.send(toBeSent);
         }
