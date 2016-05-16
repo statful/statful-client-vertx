@@ -21,6 +21,6 @@
     }
   ],
   "http-server-ignore-url-patterns": [
-    "\/static\/.*"
+    "/static/.*"
   ]
 }
