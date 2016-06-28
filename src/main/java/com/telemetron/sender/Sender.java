@@ -30,8 +30,9 @@ public interface Sender {
      * Stores metric in a buffer to be sent
      *
      * @param dataPoint metric to be stored
+     * @return true if the metric was inserted false otherwise
      */
-    void addMetric(final DataPoint dataPoint);
+    boolean addMetric(final DataPoint dataPoint);
 
     /**
      * Closes the sender

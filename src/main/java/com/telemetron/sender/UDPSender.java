@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +41,7 @@ public final class UDPSender extends MetricsHolder {
      * @param options Telemetron options to configure host and port
      */
     public UDPSender(final Vertx vertx, final Context context, final TelemetronMetricsOptions options) {
-        super(options);
+        super(options, new Sampler(options, new Random()));
 
         this.options = options;
 

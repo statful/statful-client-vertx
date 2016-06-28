@@ -46,7 +46,7 @@ public class TelemetronMetricsOptions extends MetricsOptions {
     /**
      * Maximum value allowed for the sample rate
      */
-    private static final Integer MAX_SAMPLE_RATE = 100;
+    public static final Integer MAX_SAMPLE_RATE = 100;
 
     /**
      * Minimum value allowed for the sample rate

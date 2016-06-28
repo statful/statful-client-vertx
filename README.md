@@ -62,7 +62,7 @@ General configuration for a Telemetron client.
     * app [optional] - if specified set a tag ‘app=foo’
     * dryrun [optional] [default: false] - do not actually send metrics when flushing the buffer
     * tags [optional] - global list of tags to set
-    * sampleRate [not supported yet] [optional] [default: 100] [between: 1-100] - global rate sampling
+    * sampleRate [optional] [default: 100] [between: 1-100] - global rate sampling
     * namespace [optional] [default: ‘application’] - default namespace (can be overridden in method calls)
     * flushSize [optional] [default: 10] - defines the periodicity of buffer flushes
     * flushInterval [optional] [default: 0] - Defines an interval to flush the metrics

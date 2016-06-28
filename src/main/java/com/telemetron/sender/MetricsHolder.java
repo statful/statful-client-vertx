@@ -9,6 +9,7 @@ import io.vertx.core.logging.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.stream.Collectors;
 
@@ -34,13 +35,22 @@ abstract class MetricsHolder implements Sender {
     private final boolean dryrun;
 
     /**
+     * Sampler to be used to decide if a metric should be added or not
+     */
+    private Sampling sampler;
+
+    /**
      * Initializes the internal buffer. Implementers must call {@link #configureFlushInterval(Vertx, long, int)} to init
      * the process of sending metrics
      *
      * @param options Telemetron configuration to decide if metrics should be sent or not
+     * @param sampler instance to be used to decide if a metric should be collected or not
      */
-    MetricsHolder(@Nonnull final TelemetronMetricsOptions options) {
-        this.dryrun = options.isDryrun();
+    MetricsHolder(@Nonnull final TelemetronMetricsOptions options, @Nonnull final Sampling sampler) {
+        this.dryrun = Objects.requireNonNull(options).isDryrun();
+
+        this.sampler = Objects.requireNonNull(sampler);
+
         this.buffer = new ArrayBlockingQueue<>(MAX_BUFFER_SIZE);
     }
 
@@ -48,12 +58,19 @@ abstract class MetricsHolder implements Sender {
      * Adds a metric to the buffer. If it fails to add it to the buffer tries to send it directly to the offer
      *
      * @param dataPoint metric to be stored
+     * @return true if the metric was inserted false otherwise
      */
-    public final void addMetric(final DataPoint dataPoint) {
+    public final boolean addMetric(final DataPoint dataPoint) {
+
+        if (!this.sampler.shouldInsert()) {
+            return false;
+        }
+
         boolean inserted = this.buffer.offer(dataPoint);
         if (!inserted) {
             LOGGER.warn("metric could not be added to buffer, discarding it {} ", dataPoint.toMetricLine());
         }
+        return inserted;
     }
 
     /**
