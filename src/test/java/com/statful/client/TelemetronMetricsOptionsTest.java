@@ -1,0 +1,263 @@
+package com.statful.client;
+
+import com.google.common.collect.Lists;
+import com.statful.utils.Pair;
+import io.vertx.core.json.JsonObject;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
+
+public class TelemetronMetricsOptionsTest {
+
+    private TelemetronMetricsOptions victim;
+
+    @Before
+    public void setup() {
+        victim = new TelemetronMetricsOptions();
+    }
+
+    @Test
+    public void testDefaultHost() {
+        // check default host
+        assertEquals("127.0.0.1", victim.getHost());
+    }
+
+    @Test
+    public void testSetHost() {
+        victim.setHost("sampleHost");
+        assertEquals("sampleHost", victim.getHost());
+    }
+
+    @Test
+    public void testDefaultSetPort() {
+        // check default host
+        assertEquals(Integer.valueOf(2013), victim.getPort());
+    }
+
+    @Test
+    public void testSetPort() {
+        victim.setPort(1111);
+        // check default host
+        assertEquals(Integer.valueOf(1111), victim.getPort());
+    }
+
+    @SuppressWarnings("all")
+    @Test(expected = NullPointerException.class)
+    public void testSetNullPrefix() {
+        victim.setPrefix(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testMandatorySetPrefix() {
+        victim.getPrefix();
+    }
+
+    @Test
+    public void testSetPrefix() {
+        victim.setPrefix("prefix");
+        assertEquals("prefix", victim.getPrefix());
+    }
+
+
+    @SuppressWarnings("all")
+    @Test(expected = NullPointerException.class)
+    public void testSetNullTransport() {
+        victim.setTransport(null);
+    }
+
+    @Test
+    public void testMandatorySetDefaultTransport() {
+        assertEquals(Transport.UDP, victim.getTransport());
+    }
+
+    @Test
+    public void testSetTransport() {
+        victim.setTransport(Transport.HTTP);
+        assertEquals(Transport.HTTP, victim.getTransport());
+    }
+
+    @Test
+    public void testDefaultSecure() {
+        assertTrue(victim.isSecure().booleanValue());
+    }
+
+    @Test
+    public void testSetSecure() {
+        victim.setSecure(true);
+        assertTrue(victim.isSecure().booleanValue());
+    }
+
+    @Test
+    public void testDefaultTimeout() {
+        assertEquals(2000, victim.getTimeout());
+    }
+
+    @Test
+    public void testSetTimeout() {
+        assertEquals(100, victim.setTimeout(100).getTimeout());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDefaultToken() {
+        victim.getToken();
+    }
+
+    @Test
+    public void testSetToken() {
+        assertEquals("token", victim.setToken("token").getToken());
+    }
+
+    @Test
+    public void testDefaultApp() {
+        assertFalse(victim.getApp().isPresent());
+    }
+
+    @Test
+    public void testSetApp() {
+        assertEquals("app", victim.setApp("app").getApp().get());
+    }
+
+    @Test
+    public void testDefaultDryRun() {
+        assertFalse(victim.isDryrun());
+    }
+
+    @Test
+    public void testSetDryRun() {
+        assertTrue(victim.setDryrun(true).isDryrun());
+    }
+
+    @Test
+    public void testDefaultTagList() {
+        assertEquals(Collections.<Pair<String, String>>emptyList(), victim.getTags());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSetTags() {
+        List<Pair<String, String>> tags = Lists.newArrayList(new Pair<>("tag1", "tag1Value"), new Pair<>("tag2", "tag2Value"), new Pair<>("tag1", "tag1Value"));
+        victim.setTags(tags);
+        assertTrue(tags.containsAll(victim.getTags()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSetShallowCopyTags() {
+        List<Pair<String, String>> tags = Lists.newArrayList(new Pair<>("tag1", "tag1Value"), new Pair<>("tag2", "tag2Value"), new Pair<>("tag1", "tag1Value"));
+        victim.setTags(tags);
+        Pair<String,String> pair = new Pair<>("shouldNotExist", "shouldNotExist");
+        tags.add(pair);
+        assertFalse(victim.getTags().contains(pair));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetSampleRateInvalidLowerBound() {
+        victim.setSampleRate(-10);
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetSampleRateInvalidUpperBound() {
+        victim.setSampleRate(101);
+    }
+
+    @Test
+    public void testSetSampleRate() {
+        assertEquals(100, victim.setSampleRate(100).getSampleRate());
+    }
+
+    @Test
+    public void testDefaultNameSpace() {
+        assertEquals("application", victim.getNamespace());
+    }
+
+    @SuppressWarnings("all")
+    @Test(expected = NullPointerException.class)
+    public void testSetNullNamespace() {
+        victim.setNamespace(null);
+    }
+
+    @Test
+    public void testSetNamespace() {
+        assertEquals("app", victim.setNamespace("app").getNamespace());
+    }
+
+    @Test
+    public void testDefaultFlushSize() {
+        assertEquals(10, victim.getFlushSize());
+    }
+
+    @Test
+    public void testSetFlushSize() {
+        assertEquals(15, victim.setFlushSize(15).getFlushSize());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCopyCtor() {
+        victim.setApp("app").setDryrun(true).setFlushSize(10).setHost("host").setNamespace("namespace")
+                .setPort(9999).setPrefix("prefix").setSampleRate(10).setSecure(true)
+                .setTimeout(1000).setToken("token").setTransport(Transport.UDP).setEnabled(true)
+                .setTags(Lists.newArrayList(new Pair<>("tag", "value")));
+
+        TelemetronMetricsOptions copy = new TelemetronMetricsOptions(victim);
+        assertEquals(victim.getApp(), copy.getApp());
+        assertEquals(victim.isDryrun(), copy.isDryrun());
+        assertEquals(victim.getFlushSize(), copy.getFlushSize());
+        assertEquals(victim.getNamespace(), copy.getNamespace());
+        assertEquals(victim.getPort(), copy.getPort());
+        assertEquals(victim.getPrefix(), copy.getPrefix());
+        assertEquals(victim.getSampleRate(), copy.getSampleRate());
+        assertEquals(victim.isSecure(), copy.isSecure());
+        assertTrue(victim.getTags().containsAll(copy.getTags()));
+        assertEquals(victim.getTimeout(), copy.getTimeout());
+        assertEquals(victim.getToken(), copy.getToken());
+        assertEquals(victim.getTransport(), copy.getTransport());
+        assertEquals(victim.isEnabled(), copy.isEnabled());
+    }
+
+    @Test
+    public void testJsonObjectConstructor() {
+
+        JsonObject configuration = new JsonObject()
+                .put("host", "host")
+                .put("port", 1111)
+                .put("prefix", "prefix")
+                .put("transport", Transport.HTTP.toString())
+                .put("secure", false)
+                .put("timeout", 100)
+                .put("token", "token")
+                .put("app", "tests")
+                .put("dryrun", true)
+                .put("tags", Lists.newArrayList(new JsonObject().put("tag", "tag1").put("value", "value1"),
+                        new JsonObject().put("tag", "tag2").put("value", "value2")))
+                .put("sampleRate", 100)
+                .put("namespace", "ns")
+                .put("flushSize", 1)
+                .put("flushInterval", 10)
+                .put("timerAggregations", Lists.newArrayList(Aggregation.AVG.toString(), Aggregation.COUNT.toString()))
+                .put("timerFrequency", AggregationFreq.FREQ_10.toString());
+
+        victim = new TelemetronMetricsOptions(configuration);
+        assertEquals(victim.getHost(), "host");
+        assertEquals(victim.getPort(), new Integer(1111));
+        assertEquals(victim.getPrefix(), "prefix");
+        assertEquals(victim.getTransport(), Transport.HTTP);
+        assertFalse(victim.isSecure());
+        assertEquals(victim.getTimeout(), 100);
+        assertEquals(victim.getToken(), "token");
+        assertEquals(victim.getApp().get(), "tests");
+        assertTrue(victim.isDryrun());
+        assertTrue(victim.getTags().containsAll(Lists.newArrayList(new Pair<>("tag1", "value1"), new Pair<>("tag2", "value2"))));
+        assertEquals(victim.getSampleRate(), 100);
+        assertEquals(victim.getNamespace(), "ns");
+        assertEquals(victim.getFlushSize(), 1);
+        assertEquals(victim.getFlushInterval(), 10);
+        assertTrue(victim.getTimerAggregations().containsAll(Lists.newArrayList(Aggregation.AVG, Aggregation.COUNT)));
+        assertEquals(victim.getTimerFrequency(), AggregationFreq.FREQ_10);
+    }
+}
