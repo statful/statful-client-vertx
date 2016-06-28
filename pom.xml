@@ -4,7 +4,7 @@
 
   <groupId>com.mindera.telemetron</groupId>
   <artifactId>telemetron-client-vertx</artifactId>
-  <version>1.0.0-alpha-2-SNAPSHOT</version>
+  <version>1.0.0-alpha-5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <scm>
@@ -25,7 +25,7 @@
     <mockito.version>1.10.19</mockito.version>
 
     <!-- project dependencies -->
-    <vertx.version>3.2.0</vertx.version>
+    <vertx.version>3.2.1</vertx.version>
     <guava.version>18.0</guava.version>
 
     <jsr305.version>3.0.1</jsr305.version>
@@ -37,12 +37,12 @@
     <repository>
       <id>mindera-releases</id>
       <name>Mindera Nexus Releases Repository</name>
-      <url>http://nexus.mindera/content/repositories/releases</url>
+      <url>https://nexus.mindera.com/content/repositories/releases</url>
     </repository>
     <repository>
       <id>mindera-snapshots</id>
       <name>Mindera Nexus Snapshots Repository</name>
-      <url>http://nexus.mindera/content/repositories/snapshots</url>
+      <url>https://nexus.mindera.com/content/repositories/snapshots</url>
     </repository>
   </repositories>
 
@@ -50,12 +50,12 @@
     <repository>
       <id>mindera-releases</id>
       <name>Mindera Nexus Releases Repository</name>
-      <url>http://nexus.mindera/content/repositories/releases</url>
+      <url>https://nexus.mindera.com/content/repositories/releases</url>
     </repository>
     <snapshotRepository>
       <id>mindera-snapshots</id>
       <name>Mindera Nexus Snapshots Repository</name>
-      <url>http://nexus.mindera/content/repositories/snapshots</url>
+      <url>https://nexus.mindera.com/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 

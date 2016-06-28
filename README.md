@@ -113,3 +113,6 @@ into
 
 #####Notes
 Please keep in mind that we are applying the regexes to all urls so the more regexes you want to apply the heavier the execution will be.
+
+## Limitations
+Currently only supports UDP transport 
