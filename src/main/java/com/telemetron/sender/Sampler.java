@@ -23,7 +23,7 @@ public final class Sampler implements Sampling {
 
     /**
      * @param options TelemetronMetricsOptions to extract the sample rate from
-     * @param random instance to generate numbers from
+     * @param random  instance to generate numbers from
      */
     public Sampler(@Nonnull final TelemetronMetricsOptions options, @Nonnull final Random random) {
         this.sampleRate = Objects.requireNonNull(options.getSampleRate());
@@ -36,6 +36,7 @@ public final class Sampler implements Sampling {
      * @return true if it should be inserted false if it should be discarded
      */
     public boolean shouldInsert() {
+        // while this "if" could be simplified this ensures that the random calculation is only done if truly required
         return sampleRate == TelemetronMetricsOptions.MAX_SAMPLE_RATE || this.random.nextInt(TelemetronMetricsOptions.MAX_SAMPLE_RATE) <= this.sampleRate;
     }
 }

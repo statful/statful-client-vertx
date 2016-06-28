@@ -46,7 +46,7 @@ abstract class MetricsHolder implements Sender {
      * @param options Telemetron configuration to decide if metrics should be sent or not
      * @param sampler instance to be used to decide if a metric should be collected or not
      */
-    public MetricsHolder(@Nonnull final TelemetronMetricsOptions options, @Nonnull final Sampling sampler) {
+    MetricsHolder(@Nonnull final TelemetronMetricsOptions options, @Nonnull final Sampling sampler) {
         this.dryrun = Objects.requireNonNull(options).isDryrun();
 
         this.sampler = Objects.requireNonNull(sampler);
