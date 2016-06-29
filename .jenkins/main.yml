@@ -6,9 +6,9 @@
 ###############
 ### PROJECT
 - project:
-    name: 'telemetron-client-vertx'
+    name: 'statful-client-vertx'
     project_version: '1.0'
-    giturl: git@bitbucket.org:mindera/telemetron-client-vertx.git
+    giturl: git@bitbucket.org:mindera/statful-client-vertx.git
     jobs:
       - '{name}-build'
 

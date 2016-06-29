@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.mindera.telemetron</groupId>
-  <artifactId>telemetron-client-vertx</artifactId>
-  <version>1.0.0-alpha-5-SNAPSHOT</version>
+  <groupId>com.statful.client</groupId>
+  <artifactId>client-vertx</artifactId>
+  <version>1.0.0-alpha-1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <scm>
-    <connection>scm:git:ssh://bitbucket.org:mindera/telemetron-client-vertx.git</connection>
-    <developerConnection>scm:git:git@bitbucket.org:mindera/telemetron-client-vertx.git</developerConnection>
-    <url>https://bitbucket.org/mindera/telemetron-client-java.git</url>
+    <connection>scm:git:ssh://bitbucket.org:mindera/statful-client-vertx.git</connection>
+    <developerConnection>scm:git:git@bitbucket.org:mindera/statful-client-vertx.git</developerConnection>
+    <url>https://bitbucket.org/mindera/statful-client-vertx</url>
     <tag>HEAD</tag>
   </scm>
 
