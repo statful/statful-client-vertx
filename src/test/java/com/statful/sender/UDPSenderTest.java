@@ -1,7 +1,7 @@
 package com.statful.sender;
 
 import com.google.common.collect.Lists;
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.DataPoint;
 import io.vertx.core.*;
 import io.vertx.core.Vertx;
@@ -41,7 +41,7 @@ public class UDPSenderTest {
      * Don't forget to call this in your method
      */
     public void setup(boolean isDryRun, Optional<Long> flushInterval, Optional<Integer> flushSize) {
-        TelemetronMetricsOptions options = new TelemetronMetricsOptions();
+        StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setPort(PORT).setHost(HOST).setDryrun(isDryRun);
 
         flushInterval.ifPresent(options::setFlushInterval);
@@ -78,7 +78,7 @@ public class UDPSenderTest {
         DatagramSocket datagramSocket = mock(DatagramSocket.class);
         when(vertx.createDatagramSocket()).thenReturn(datagramSocket);
 
-        TelemetronMetricsOptions options = mock(TelemetronMetricsOptions.class);
+        StatfulMetricsOptions options = mock(StatfulMetricsOptions.class);
         when(options.getFlushInterval()).thenReturn(10L);
         when(options.getFlushSize()).thenReturn(10);
 

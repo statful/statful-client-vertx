@@ -1,6 +1,6 @@
 # README
 
-Project that enables metrics collection for [Vert.x](http://vertx.io/) based projects and report them to [Telemetron](http://telemetron.io/)
+Project that enables metrics collection for [Vert.x](http://vertx.io/) based projects and report them to [Statful](http://statful.com/)
 
 This client leverages the capabilities provided by [Vert.x SPI](http://vertx.io/docs/apidocs/io/vertx/core/spi/metrics/VertxMetrics.html) to collect metrics.
 
@@ -11,8 +11,8 @@ Please check the project pom.xml to see Vert.x version dependency since this wil
 Add the client to your dependencies
 
     <dependency>
-      <groupId>com.mindera.telemetron</groupId>
-      <artifactId>telemetron-client-vertx</artifactId>
+       <groupId>com.statful.client</groupId>
+       <artifactId>client-vertx</artifactId>
       <version>${version-number}</version>
     </dependency>
 
@@ -24,11 +24,11 @@ There are two main ways to configure the client, programmatically or using a con
 
 #### Programmatically
 
-You create an instance of *TelemetronMetricsOptions* set all the parameters that you want and and use it as an argument for *VertxOptions* when creation your *Vertx* instance.
+You create an instance of *StatfulMetricsOptions* set all the parameters that you want and and use it as an argument for *VertxOptions* when creation your *Vertx* instance.
 
 Example:
 
-    TelemetronMetricsOptions options = new TelemetronMetricsOptions().setEnabled(true);
+    StatfulMetricsOptions options = new StatfulMetricsOptions().setEnabled(true);
     // configure remaining desired options...
     VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
     Vertx vertx = Vertx.vertx(vertxOptions);
@@ -39,26 +39,26 @@ You need to provide to parameters when launching your application, one to enable
 
 Example:
 
-    -Dvertx.metrics.options.enabled=true -Dvertx.metrics.options.configPath=config/telemetron.json
+    -Dvertx.metrics.options.enabled=true -Dvertx.metrics.options.configPath=config/statful.json
 
 The configuration file is a simple json document, a sample can be seen bellow
 
     {
-        "host": "telemetron.io",
+        "host": "statful.io",
         "port": 1111,
         ...
     }
 
 ### Configuration
 
-General configuration for a Telemetron client.
+General configuration for a Statful client.
 
     * prefix [required] - global metrics prefix
     * host [optional] [default: '127.0.0.1']
     * port [optional] [default: 2013]
     * secure [not supported yet] [default: true] - enable or disable https
     * timeout [not supported yet] [default: 2000ms] - timeout for http/tcp transports
-    * token [optional] - An authentication token to send to Telemetron
+    * token [optional] - An authentication token to send to Statful
     * app [optional] - if specified set a tag ‘app=foo’
     * dryrun [optional] [default: false] - do not actually send metrics when flushing the buffer
     * tags [optional] - global list of tags to set
@@ -67,7 +67,7 @@ General configuration for a Telemetron client.
     * flushSize [optional] [default: 10] - defines the periodicity of buffer flushes
     * flushInterval [optional] [default: 0] - Defines an interval to flush the metrics
 
-Vertx Telemetron specific configurations
+Vertx Statful specific configurations
 
     * enabled - true if you want to enable metrics false otherwise
     * timerFrequency - aggregation frequency for timer based metrics
@@ -84,7 +84,7 @@ Type of metrics collected
 
 Track the time that takes to execute each request and it's response status code. Currently connection time is not reported
 
-To identify that a request should be tracked you need to add a request header to your request. The name of the header should be extracted from: *com.telemetron.tag.Tags.TRACK_HEADER*, the value should be set to whatever value you want to use for the tag
+To identify that a request should be tracked you need to add a request header to your request. The name of the header should be extracted from: *com.statful.tag.Tags.TRACK_HEADER*, the value should be set to whatever value you want to use for the tag
 
 ####Http Server
 
@@ -112,7 +112,7 @@ into
     /user_uuid_/update
 
 #####Notes
-Please keep in mind that we are applying the regexes to all urls so the more regexes you want to apply the heavier the execution will be.
+Please keep in mind that we are applying the regex to all urls so the more refex you want to apply the heavier the execution will be.
 
 ## Limitations
 Currently only supports UDP transport 

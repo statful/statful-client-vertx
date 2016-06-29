@@ -1,7 +1,7 @@
 package com.statful.sender;
 
 import com.google.common.collect.Lists;
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.DataPoint;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
@@ -43,10 +43,10 @@ abstract class MetricsHolder implements Sender {
      * Initializes the internal buffer. Implementers must call {@link #configureFlushInterval(Vertx, long, int)} to init
      * the process of sending metrics
      *
-     * @param options Telemetron configuration to decide if metrics should be sent or not
+     * @param options Statful configuration to decide if metrics should be sent or not
      * @param sampler instance to be used to decide if a metric should be collected or not
      */
-    MetricsHolder(@Nonnull final TelemetronMetricsOptions options, @Nonnull final Sampling sampler) {
+    MetricsHolder(@Nonnull final StatfulMetricsOptions options, @Nonnull final Sampling sampler) {
         this.dryrun = Objects.requireNonNull(options).isDryrun();
 
         this.sampler = Objects.requireNonNull(sampler);

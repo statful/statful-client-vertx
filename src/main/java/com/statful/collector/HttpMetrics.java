@@ -1,6 +1,6 @@
 package com.statful.collector;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.DataPoint;
 import com.statful.sender.Sender;
 import io.vertx.core.spi.metrics.Metrics;
@@ -21,13 +21,13 @@ abstract class HttpMetrics implements Metrics {
     /**
      * Options to be used by the metrics builder
      */
-    private final TelemetronMetricsOptions options;
+    private final StatfulMetricsOptions options;
 
     /**
      * @param sender  responsible for holding the metrics and sending them
      * @param options options to latter be used by the metrics builder
      */
-    HttpMetrics(@Nonnull final Sender sender, @Nonnull final TelemetronMetricsOptions options) {
+    HttpMetrics(@Nonnull final Sender sender, @Nonnull final StatfulMetricsOptions options) {
         this.sender = Objects.requireNonNull(sender);
         this.options = Objects.requireNonNull(options);
     }
@@ -43,7 +43,7 @@ abstract class HttpMetrics implements Metrics {
     /**
      * @return options for building the datapoint
      */
-    protected TelemetronMetricsOptions getOptions() {
+    protected StatfulMetricsOptions getOptions() {
         return options;
     }
 

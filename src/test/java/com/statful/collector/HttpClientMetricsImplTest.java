@@ -1,7 +1,7 @@
 package com.statful.collector;
 
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.HttpClientDataPoint;
 import com.statful.sender.Sender;
 import com.statful.tag.Tags;
@@ -21,13 +21,13 @@ public class HttpClientMetricsImplTest {
 
     private HttpClientMetricsImpl victim;
     private Sender sender;
-    private TelemetronMetricsOptions telemetronMetricsOptions;
+    private StatfulMetricsOptions statfulMetricsOptions;
 
     @Before
     public void setup() {
         sender = mock(Sender.class);
-        telemetronMetricsOptions = mock(TelemetronMetricsOptions.class);
-        victim = new HttpClientMetricsImpl(sender, telemetronMetricsOptions);
+        statfulMetricsOptions = mock(StatfulMetricsOptions.class);
+        victim = new HttpClientMetricsImpl(sender, statfulMetricsOptions);
     }
 
     @Test

@@ -8,7 +8,7 @@ public enum Tags {
     /**
      * Used to identify requests that you want to track
      */
-    TRACK_HEADER("X-Telemetron");
+    TRACK_HEADER("X-Statful");
 
     /**
      * Value that will be used has header

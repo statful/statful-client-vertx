@@ -1,6 +1,6 @@
 package com.statful.collector;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.HttpClientDataPoint;
 import com.statful.sender.Sender;
 import com.statful.tag.Tags;
@@ -23,7 +23,7 @@ public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClie
      * @param sender  responsible for holding the metrics and sending them
      * @param options options to latter be used by the metrics builder
      */
-    public HttpClientMetricsImpl(@Nonnull final Sender sender, @Nonnull final TelemetronMetricsOptions options) {
+    public HttpClientMetricsImpl(@Nonnull final Sender sender, @Nonnull final StatfulMetricsOptions options) {
         super(sender, options);
     }
 

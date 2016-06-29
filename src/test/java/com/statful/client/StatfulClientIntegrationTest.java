@@ -23,9 +23,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RunWith(VertxUnitRunner.class)
-public class TelemetronClientIntegrationTest {
+public class StatfulClientIntegrationTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TelemetronClientIntegrationTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatfulClientIntegrationTest.class);
 
     private static final String HOST = "0.0.0.0";
     private static final int UDP_PORT = 1234;
@@ -42,7 +42,7 @@ public class TelemetronClientIntegrationTest {
         List<Pair<String, String>> matchReplace = Lists.newArrayList();
         matchReplace.add(new Pair<>("\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}", "_uuid_"));
 
-        TelemetronMetricsOptions options = new TelemetronMetricsOptions();
+        StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setPort(UDP_PORT)
                 .setHost(HOST)
                 .setTransport(Transport.UDP)

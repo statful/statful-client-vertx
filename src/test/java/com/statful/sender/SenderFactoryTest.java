@@ -1,6 +1,6 @@
 package com.statful.sender;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.client.Transport;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -45,7 +45,7 @@ public class SenderFactoryTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnsupportedTransport() {
-        TelemetronMetricsOptions options = new TelemetronMetricsOptions();
+        StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setTransport(Transport.HTTP);
 
         victim.create(vertx, context, options);
@@ -53,7 +53,7 @@ public class SenderFactoryTest {
 
     @Test
     public void testSenderCreationTransport() {
-        TelemetronMetricsOptions options = new TelemetronMetricsOptions();
+        StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setTransport(Transport.UDP);
 
         assertTrue(victim.create(vertx, context, options) instanceof UDPSender);

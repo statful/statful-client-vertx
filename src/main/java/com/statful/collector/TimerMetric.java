@@ -35,7 +35,7 @@ public abstract class TimerMetric {
     }
 
     /**
-     * @return String with tag value to be sent to telemetron
+     * @return String with tag value to be sent to statful
      */
     public String getRequestTag() {
         return requestTag;

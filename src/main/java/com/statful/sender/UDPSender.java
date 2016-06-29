@@ -1,6 +1,6 @@
 package com.statful.sender;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.DataPoint;
 import io.vertx.core.*;
 import io.vertx.core.datagram.DatagramSocket;
@@ -26,9 +26,9 @@ public final class UDPSender extends MetricsHolder {
     private static final Logger LOGGER = LoggerFactory.getLogger(UDPSender.class);
 
     /**
-     * Telemetron options to get
+     * Statful options to configure the sender
      */
-    private final TelemetronMetricsOptions options;
+    private final StatfulMetricsOptions options;
 
     /**
      * Holds the socket to avoid recreation
@@ -38,9 +38,9 @@ public final class UDPSender extends MetricsHolder {
     /**
      * @param vertx   vertx instance to create the socket from
      * @param context of execution to run operations that need vertx initialized
-     * @param options Telemetron options to configure host and port
+     * @param options Statful options to configure host and port
      */
-    public UDPSender(final Vertx vertx, final Context context, final TelemetronMetricsOptions options) {
+    public UDPSender(final Vertx vertx, final Context context, final StatfulMetricsOptions options) {
         super(options, new Sampler(options, new Random()));
 
         this.options = options;

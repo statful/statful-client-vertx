@@ -1,6 +1,6 @@
 package com.statful.sender;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.client.Transport;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
- * Factory responsible for creating a sender instance to push metrics to Telemetron
+ * Factory responsible for creating a sender instance to push metrics to Statful
  */
 public final class SenderFactory {
 
@@ -20,11 +20,11 @@ public final class SenderFactory {
     /**
      * @param vertx vertx instance to be used by the sender
      * @param context of execution to run operations that need vertx initialized
-     * @param options telemetron options to configure the sender
+     * @param options statful options to configure the sender
      * @return correct client instance for the configuration provided
      */
     @Nonnull
-    public Sender create(@Nonnull final Vertx vertx, final Context context,  @Nonnull final TelemetronMetricsOptions options) {
+    public Sender create(@Nonnull final Vertx vertx, final Context context,  @Nonnull final StatfulMetricsOptions options) {
 
         Objects.requireNonNull(vertx);
         Objects.requireNonNull(context);

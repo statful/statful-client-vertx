@@ -11,13 +11,13 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class TelemetronMetricsOptionsTest {
+public class StatfulMetricsOptionsTest {
 
-    private TelemetronMetricsOptions victim;
+    private StatfulMetricsOptions victim;
 
     @Before
     public void setup() {
-        victim = new TelemetronMetricsOptions();
+        victim = new StatfulMetricsOptions();
     }
 
     @Test
@@ -204,7 +204,7 @@ public class TelemetronMetricsOptionsTest {
                 .setTimeout(1000).setToken("token").setTransport(Transport.UDP).setEnabled(true)
                 .setTags(Lists.newArrayList(new Pair<>("tag", "value")));
 
-        TelemetronMetricsOptions copy = new TelemetronMetricsOptions(victim);
+        StatfulMetricsOptions copy = new StatfulMetricsOptions(victim);
         assertEquals(victim.getApp(), copy.getApp());
         assertEquals(victim.isDryrun(), copy.isDryrun());
         assertEquals(victim.getFlushSize(), copy.getFlushSize());
@@ -242,7 +242,7 @@ public class TelemetronMetricsOptionsTest {
                 .put("timerAggregations", Lists.newArrayList(Aggregation.AVG.toString(), Aggregation.COUNT.toString()))
                 .put("timerFrequency", AggregationFreq.FREQ_10.toString());
 
-        victim = new TelemetronMetricsOptions(configuration);
+        victim = new StatfulMetricsOptions(configuration);
         assertEquals(victim.getHost(), "host");
         assertEquals(victim.getPort(), new Integer(1111));
         assertEquals(victim.getPrefix(), "prefix");

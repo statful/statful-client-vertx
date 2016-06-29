@@ -1,6 +1,6 @@
 package com.statful.sender;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -22,10 +22,10 @@ public final class Sampler implements Sampling {
     private final Random random;
 
     /**
-     * @param options TelemetronMetricsOptions to extract the sample rate from
+     * @param options StatfulMetricsOptions to extract the sample rate from
      * @param random  instance to generate numbers from
      */
-    public Sampler(@Nonnull final TelemetronMetricsOptions options, @Nonnull final Random random) {
+    public Sampler(@Nonnull final StatfulMetricsOptions options, @Nonnull final Random random) {
         this.sampleRate = Objects.requireNonNull(options.getSampleRate());
         this.random = Objects.requireNonNull(random);
     }
@@ -37,6 +37,6 @@ public final class Sampler implements Sampling {
      */
     public boolean shouldInsert() {
         // while this "if" could be simplified this ensures that the random calculation is only done if truly required
-        return sampleRate == TelemetronMetricsOptions.MAX_SAMPLE_RATE || this.random.nextInt(TelemetronMetricsOptions.MAX_SAMPLE_RATE) <= this.sampleRate;
+        return sampleRate == StatfulMetricsOptions.MAX_SAMPLE_RATE || this.random.nextInt(StatfulMetricsOptions.MAX_SAMPLE_RATE) <= this.sampleRate;
     }
 }

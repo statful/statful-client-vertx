@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Telemetron metric line builder. Builds metrics lines according to Telemetron specification
+ * Statful metric line builder. Builds metrics lines according to Statful specification
  */
 public final class MetricLineBuilder {
 
@@ -63,7 +63,7 @@ public final class MetricLineBuilder {
     private AggregationFreq frequency = AggregationFreq.FREQ_10;
 
     /**
-     * builds the metric following telemetron spec
+     * builds the metric following Statful spec
      *
      * @return String with the formatted metric
      */

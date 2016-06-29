@@ -6,7 +6,7 @@ package com.statful.metric;
 public interface DataPoint {
 
     /**
-     * Should return a metric line ready to be sent to telemetron
+     * Should return a metric line ready to be sent to statful
      * <b>Implementations should not add line break</b>
      *
      * @return String with the metric value

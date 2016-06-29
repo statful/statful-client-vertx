@@ -1,6 +1,6 @@
 package com.statful.collector;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.HttpClientDataPoint;
 import com.statful.metric.HttpServerDataPoint;
 import com.statful.sender.Sender;
@@ -36,7 +36,7 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
      * @param sender  responsible for holding the metrics and sending them
      * @param options options to latter be used by the metrics builder
      */
-    public HttpServerMetricsImpl(@Nonnull final Sender sender, @Nonnull final TelemetronMetricsOptions options) {
+    public HttpServerMetricsImpl(@Nonnull final Sender sender, @Nonnull final StatfulMetricsOptions options) {
         super(sender, options);
 
         this.replacements = options.getPatterns().stream()

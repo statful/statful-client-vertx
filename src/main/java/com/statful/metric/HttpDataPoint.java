@@ -1,6 +1,6 @@
 package com.statful.metric;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 
 /**
  * Representation of an HttpClient DataPoint. Holds the that of a metric and builds
@@ -39,9 +39,9 @@ public abstract class HttpDataPoint implements DataPoint {
     private static final long TIMESTAMP_DIVIDER = 1000L;
 
     /**
-     * Telemetron options to be used when building the metric line
+     * Statful options to be used when building the metric line
      */
-    private final TelemetronMetricsOptions options;
+    private final StatfulMetricsOptions options;
 
     /**
      * Metric name
@@ -81,7 +81,7 @@ public abstract class HttpDataPoint implements DataPoint {
     /**
      * constructor for a HttpClient Timer based metric, will calculate the unix timestamp of the metric on creation
      *
-     * @param options      Telemetron options to be used when building the metric line
+     * @param options      Statful options to be used when building the metric line
      * @param metricName   name of the metric
      * @param name         Name of the operation that you are tracking
      * @param httpVerb     Representation of the http verb request
@@ -89,7 +89,7 @@ public abstract class HttpDataPoint implements DataPoint {
      * @param responseCode Http code to be added as tag
      * @param type         if this metric belongs to http server or client
      */
-    public HttpDataPoint(final TelemetronMetricsOptions options, final String metricName, final String name, final String httpVerb, final long duration,
+    public HttpDataPoint(final StatfulMetricsOptions options, final String metricName, final String name, final String httpVerb, final long duration,
                          final int responseCode,
                          final Type type) {
 

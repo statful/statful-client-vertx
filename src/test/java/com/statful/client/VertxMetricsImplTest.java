@@ -13,7 +13,7 @@ import static org.vertx.testtools.VertxAssert.assertNotNull;
 
 public class VertxMetricsImplTest {
 
-    private TelemetronMetricsOptions telemetronMetricsOptions;
+    private StatfulMetricsOptions statfulMetricsOptions;
 
     private Sender sender;
 
@@ -21,13 +21,13 @@ public class VertxMetricsImplTest {
     public void setup() {
 
         this.sender = mock(Sender.class);
-        this.telemetronMetricsOptions = mock(TelemetronMetricsOptions.class);
+        this.statfulMetricsOptions = mock(StatfulMetricsOptions.class);
     }
 
 
     @Test
     public void testHttpClientMetricCreation() {
-        VertxMetricsImpl victim = new VertxMetricsImpl(sender, telemetronMetricsOptions);
+        VertxMetricsImpl victim = new VertxMetricsImpl(sender, statfulMetricsOptions);
         HttpClientMetrics createdMetrics = victim.createMetrics(mock(HttpClient.class), mock(HttpClientOptions.class));
         assertNotNull(createdMetrics);
     }

@@ -1,6 +1,6 @@
 package com.statful.sender;
 
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.DataPoint;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -18,7 +18,7 @@ public class MetricsHolderTest {
     @Test
     public void testShouldNotAddMetric() {
 
-        TelemetronMetricsOptions options = mock(TelemetronMetricsOptions.class);
+        StatfulMetricsOptions options = mock(StatfulMetricsOptions.class);
         when(options.isDryrun()).thenReturn(false);
 
         Sampling sampling = mock(Sampling.class);
@@ -31,7 +31,7 @@ public class MetricsHolderTest {
     @Test
     public void testShouldAddMetric() {
 
-        TelemetronMetricsOptions options = mock(TelemetronMetricsOptions.class);
+        StatfulMetricsOptions options = mock(StatfulMetricsOptions.class);
         when(options.isDryrun()).thenReturn(false);
 
         Sampling sampling = mock(Sampling.class);
@@ -44,7 +44,7 @@ public class MetricsHolderTest {
     private static final class DummyMetricsHolder extends MetricsHolder {
 
 
-        public DummyMetricsHolder(TelemetronMetricsOptions options, Sampling sampler) {
+        public DummyMetricsHolder(StatfulMetricsOptions options, Sampling sampler) {
             super(options, sampler);
         }
 

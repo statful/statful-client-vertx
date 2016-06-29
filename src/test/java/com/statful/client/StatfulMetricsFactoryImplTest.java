@@ -17,11 +17,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(VertxUnitRunner.class)
-public class TelemetronMetricsFactoryImplTest {
+public class StatfulMetricsFactoryImplTest {
 
-    private TelemetronMetricsFactoryImpl victim;
+    private StatfulMetricsFactoryImpl victim;
 
-    private TelemetronMetricsOptions telemetronOptions;
+    private StatfulMetricsOptions statfulMetricsOptions;
 
     private Vertx vertx;
 
@@ -34,16 +34,16 @@ public class TelemetronMetricsFactoryImplTest {
 
         this.vertx = mock(Vertx.class);
         this.vertxOptions = mock(VertxOptions.class);
-        this.telemetronOptions = mock(TelemetronMetricsOptions.class);
+        this.statfulMetricsOptions = mock(StatfulMetricsOptions.class);
         this.context = mock(Context.class);
 
         when(vertx.getOrCreateContext()).thenReturn(context);
 
-        victim = new TelemetronMetricsFactoryImpl();
+        victim = new StatfulMetricsFactoryImpl();
     }
 
     @Test
-    public void testCreationWithNonTelemetronOptionsShouldBeDisabledByDefault() {
+    public void testCreationWithNonStatfulOptionsShouldBeDisabledByDefault() {
 
         when(vertxOptions.getMetricsOptions()).thenReturn(mock(MetricsOptions.class));
 
@@ -51,12 +51,12 @@ public class TelemetronMetricsFactoryImplTest {
     }
 
     @Test
-    public void testCreationWithTelemetronOptionsEnabled() {
+    public void testCreationWithStatfulOptionsEnabled() {
 
-        when(telemetronOptions.getTransport()).thenReturn(Transport.UDP);
-        when(telemetronOptions.isEnabled()).thenReturn(true);
+        when(statfulMetricsOptions.getTransport()).thenReturn(Transport.UDP);
+        when(statfulMetricsOptions.isEnabled()).thenReturn(true);
 
-        when(vertxOptions.getMetricsOptions()).thenReturn(telemetronOptions);
+        when(vertxOptions.getMetricsOptions()).thenReturn(statfulMetricsOptions);
 
         assertTrue(victim.metrics(vertx, vertxOptions).isEnabled());
     }
@@ -65,15 +65,15 @@ public class TelemetronMetricsFactoryImplTest {
     public void testCreationFromFile(TestContext context) {
 
         Async async = context.async();
-        TelemetronMetricsOptions options = new TelemetronMetricsOptions();
-        options.setConfigPath("config/telemetron.json")
+        StatfulMetricsOptions options = new StatfulMetricsOptions();
+        options.setConfigPath("config/statful.json")
                 // setting enabled to false, to check that the configuration available on file is used
                 .setEnabled(false);
 
         VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
         Vertx vertx = Vertx.vertx(vertxOptions);
 
-        TelemetronMetricsFactoryImpl victim = new TelemetronMetricsFactoryImpl();
+        StatfulMetricsFactoryImpl victim = new StatfulMetricsFactoryImpl();
 
         assertTrue(victim.metrics(vertx, vertxOptions).isEnabled());
 
@@ -84,15 +84,15 @@ public class TelemetronMetricsFactoryImplTest {
     public void testCreationFromNonExistentFile(TestContext context) {
 
         Async async = context.async();
-        TelemetronMetricsOptions options = new TelemetronMetricsOptions();
-        options.setConfigPath("config/telemetron-not-existent.json")
+        StatfulMetricsOptions options = new StatfulMetricsOptions();
+        options.setConfigPath("config/statful-not-existent.json")
                 // setting enabled to false, to check that the configuration available on file is used
                 .setEnabled(false);
 
         VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
         Vertx vertx = Vertx.vertx(vertxOptions);
 
-        TelemetronMetricsFactoryImpl victim = new TelemetronMetricsFactoryImpl();
+        StatfulMetricsFactoryImpl victim = new StatfulMetricsFactoryImpl();
 
         try {
             victim.metrics(vertx, vertxOptions);
@@ -106,15 +106,15 @@ public class TelemetronMetricsFactoryImplTest {
     public void testCreationFromBadFile(TestContext context) {
 
         Async async = context.async();
-        TelemetronMetricsOptions options = new TelemetronMetricsOptions();
-        options.setConfigPath("config/telemetron-wrong.json")
+        StatfulMetricsOptions options = new StatfulMetricsOptions();
+        options.setConfigPath("config/statful-wrong.json")
                 // setting enabled to false, to check that the configuration available on file is used
                 .setEnabled(false);
 
         VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
         Vertx vertx = Vertx.vertx(vertxOptions);
 
-        TelemetronMetricsFactoryImpl victim = new TelemetronMetricsFactoryImpl();
+        StatfulMetricsFactoryImpl victim = new StatfulMetricsFactoryImpl();
 
         try {
             victim.metrics(vertx, vertxOptions);

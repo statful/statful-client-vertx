@@ -21,28 +21,28 @@ import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * Factory that provides a TelemetronMetrics instance.
+ * Factory that provides a StatfulMetrics instance.
  */
-public class TelemetronMetricsFactoryImpl implements VertxMetricsFactory {
+public class StatfulMetricsFactoryImpl implements VertxMetricsFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TelemetronMetricsFactoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatfulMetricsFactoryImpl.class);
 
     @Override
     public final VertxMetrics metrics(@Nonnull final Vertx vertx, @Nonnull final VertxOptions options) {
         final MetricsOptions metricsOptions = options.getMetricsOptions();
 
-        final TelemetronMetricsOptions telemetronMetricsOptions;
-        if (metricsOptions instanceof TelemetronMetricsOptions) {
-            telemetronMetricsOptions = (TelemetronMetricsOptions) metricsOptions;
+        final StatfulMetricsOptions statfulMetricsOptions;
+        if (metricsOptions instanceof StatfulMetricsOptions) {
+            statfulMetricsOptions = (StatfulMetricsOptions) metricsOptions;
         } else {
-            telemetronMetricsOptions = new TelemetronMetricsOptions();
+            statfulMetricsOptions = new StatfulMetricsOptions();
         }
 
         // check if there is a configuration path set, if so, load configuration from file
-        final TelemetronMetricsOptions effective;
-        String configPath = telemetronMetricsOptions.getConfigPath();
+        final StatfulMetricsOptions effective;
+        String configPath = statfulMetricsOptions.getConfigPath();
         if (Strings.isNullOrEmpty(configPath)) {
-            effective = telemetronMetricsOptions;
+            effective = statfulMetricsOptions;
         } else {
             effective = buildFromFile(vertx, configPath);
         }
@@ -57,7 +57,7 @@ public class TelemetronMetricsFactoryImpl implements VertxMetricsFactory {
      * Loads configuration from a file
      * @throws RuntimeException if the file is invalid or non existent
      */
-    private TelemetronMetricsOptions buildFromFile(final Vertx vertx, final String configPath) {
+    private StatfulMetricsOptions buildFromFile(final Vertx vertx, final String configPath) {
 
         FileResolver fileResolver = new FileResolver(vertx);
         File file = fileResolver.resolveFile(configPath);
@@ -65,7 +65,7 @@ public class TelemetronMetricsFactoryImpl implements VertxMetricsFactory {
         try (Scanner scanner = new Scanner(file)) {
             scanner.useDelimiter("\\A");
             String metricsConfigString = scanner.next();
-            return new TelemetronMetricsOptions(new JsonObject(metricsConfigString));
+            return new StatfulMetricsOptions(new JsonObject(metricsConfigString));
         } catch (IOException | DecodeException exception) {
             LOGGER.error("Error while reading metrics config file", exception);
             throw new RuntimeException("wrong configuration provided");
@@ -74,6 +74,6 @@ public class TelemetronMetricsFactoryImpl implements VertxMetricsFactory {
 
     @Override
     public final MetricsOptions newOptions() {
-        return new TelemetronMetricsOptions();
+        return new StatfulMetricsOptions();
     }
 }

@@ -3,7 +3,7 @@ package com.statful.metric;
 import com.google.common.collect.Lists;
 import com.statful.client.Aggregation;
 import com.statful.client.AggregationFreq;
-import com.statful.client.TelemetronMetricsOptions;
+import com.statful.client.StatfulMetricsOptions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,11 +17,11 @@ import static org.mockito.Mockito.when;
 
 public class HttpClientDataPointTest {
 
-    private TelemetronMetricsOptions options;
+    private StatfulMetricsOptions options;
 
     @Before
     public void setup() {
-        this.options = mock(TelemetronMetricsOptions.class);
+        this.options = mock(StatfulMetricsOptions.class);
         when(this.options.getPrefix()).thenReturn("prefix");
         when(this.options.getNamespace()).thenReturn("namespace");
         when(this.options.getTimerAggregations()).thenReturn(Lists.newArrayList(Aggregation.P95));
