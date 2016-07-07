@@ -116,4 +116,5 @@ Please keep in mind that we are applying the regex to all urls so the more refex
 
 ## Limitations
 Currently only supports UDP transport
+
 Does not support http2 metrics introduced by vertx version 3.3.0
