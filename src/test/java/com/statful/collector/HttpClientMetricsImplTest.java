@@ -21,12 +21,11 @@ public class HttpClientMetricsImplTest {
 
     private HttpClientMetricsImpl victim;
     private Sender sender;
-    private StatfulMetricsOptions statfulMetricsOptions;
 
     @Before
     public void setup() {
         sender = mock(Sender.class);
-        statfulMetricsOptions = mock(StatfulMetricsOptions.class);
+        StatfulMetricsOptions statfulMetricsOptions = mock(StatfulMetricsOptions.class);
         victim = new HttpClientMetricsImpl(sender, statfulMetricsOptions);
     }
 
@@ -42,7 +41,7 @@ public class HttpClientMetricsImplTest {
         when(headers.get(eq(Tags.TRACK_HEADER.toString()))).thenReturn(null);
         when(request.headers()).thenReturn(headers);
 
-        HttpRequestMetrics metrics = victim.requestBegin(socketMetric, localAddress, remoteAddress, request);
+        HttpRequestMetrics metrics = victim.requestBegin(null, socketMetric, localAddress, remoteAddress, request);
 
         assertNull(metrics);
     }
@@ -59,7 +58,7 @@ public class HttpClientMetricsImplTest {
         when(headers.get(eq(Tags.TRACK_HEADER.toString()))).thenReturn("tag");
         when(request.headers()).thenReturn(headers);
 
-        HttpRequestMetrics metrics = victim.requestBegin(socketMetric, localAddress, remoteAddress, request);
+        HttpRequestMetrics metrics = victim.requestBegin(null, socketMetric, localAddress, remoteAddress, request);
 
         assertNotNull(metrics);
         assertEquals(remoteAddress, metrics.getAddress());

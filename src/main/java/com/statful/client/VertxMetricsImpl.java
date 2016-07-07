@@ -4,6 +4,8 @@ import com.statful.collector.HttpClientMetricsImpl;
 import com.statful.collector.HttpRequestMetrics;
 import com.statful.collector.HttpServerMetricsImpl;
 import com.statful.sender.Sender;
+import com.statful.sender.SenderFactory;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServer;
@@ -17,7 +19,7 @@ import io.vertx.core.spi.metrics.HttpServerMetrics;
  * VertxMetrics SPI implementation for statful metrics collection
  * Extending DummyVertxMetrics to avoid having to extend all methods even if we don't want to implement them
  */
-public final class VertxMetricsImpl extends DummyVertxMetrics {
+final class VertxMetricsImpl extends DummyVertxMetrics {
 
     /**
      * Collectors and client configuration
@@ -25,33 +27,47 @@ public final class VertxMetricsImpl extends DummyVertxMetrics {
     private final StatfulMetricsOptions statfulMetricsOptions;
 
     /**
-     * Instance of a sender to push metrics to statful
+     * Instance of a sender to push metrics to statful.
      */
-    private final Sender sender;
+    private Sender sender;
+
+    /**
+     * Vertx instance to be used to create the sender
+     */
+    private final Vertx vertx;
 
     /**
      * Constructor to be used for configuration and creation of a sender
      *
-     * @param sender            client to be used to push metrics to statful
+     * @param vertx                 vertx instance
      * @param statfulMetricsOptions configuration object
      */
-    public VertxMetricsImpl(final Sender sender, final StatfulMetricsOptions statfulMetricsOptions) {
+    VertxMetricsImpl(final Vertx vertx, final StatfulMetricsOptions statfulMetricsOptions) {
+        this.vertx = vertx;
         this.statfulMetricsOptions = statfulMetricsOptions;
-        this.sender = sender;
     }
 
     @Override
-    public HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress> createMetrics(final HttpClient client, final HttpClientOptions options) {
-        return new HttpClientMetricsImpl(sender, statfulMetricsOptions);
+    public HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress, Void, Void> createMetrics(final HttpClient client,
+                                                                                                         final HttpClientOptions options) {
+        return new HttpClientMetricsImpl(this.getOrCreateSender(), statfulMetricsOptions);
     }
 
     @Override
     public HttpServerMetrics createMetrics(final HttpServer server, final SocketAddress localAddress, final HttpServerOptions options) {
-        return new HttpServerMetricsImpl(sender, statfulMetricsOptions);
+        return new HttpServerMetricsImpl(this.getOrCreateSender(), statfulMetricsOptions);
     }
 
     @Override
     public boolean isEnabled() {
         return this.statfulMetricsOptions.isEnabled();
     }
+
+    private Sender getOrCreateSender() {
+        if (this.sender == null) {
+            this.sender = new SenderFactory().create(this.vertx, this.vertx.getOrCreateContext(), statfulMetricsOptions);
+        }
+        return sender;
+    }
+
 }

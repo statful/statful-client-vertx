@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,9 @@ public class StatfulClientIntegrationTest {
                 .setHttpServerIgnorePaths(Lists.newArrayList(".*ignore.*"));
 
         VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
-        this.vertx = Vertx.vertx(vertxOptions);
+
+        this.vertx = Objects.requireNonNull(Vertx.vertx(vertxOptions));
+
         this.metricsReceiver = this.vertx.createDatagramSocket();
         this.httpReceiver = this.vertx.createHttpServer();
     }
@@ -77,7 +80,7 @@ public class StatfulClientIntegrationTest {
     @Test
     public void testHttpServerTimerMetrics(TestContext context) {
         Vertx metricsDisabled = Vertx.vertx();
-        testTimerMetric(metricsDisabled, context, "type=server", Optional.<String>empty());
+        testTimerMetric(metricsDisabled, context, "type=server", Optional.empty());
     }
 
     @Test

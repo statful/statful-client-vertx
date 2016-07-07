@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 /**
  * HttpClient metrics collector
  */
-public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress> {
+public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress, Void, Void> {
 
     /**
      * @param sender  responsible for holding the metrics and sending them
@@ -32,8 +32,11 @@ public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClie
      */
     @Override
     @Nullable
-    public HttpRequestMetrics requestBegin(final SocketAddress socketMetric, final SocketAddress localAddress,
-                                           final SocketAddress remoteAddress, final HttpClientRequest request) {
+    public HttpRequestMetrics requestBegin(final Void endpointMetric,
+                                           final SocketAddress socketMetric,
+                                           final SocketAddress localAddress,
+                                           final SocketAddress remoteAddress,
+                                           final HttpClientRequest request) {
 
         // extract request tag to identify the metric and confirm that we want to track it
         String requestTag = request.headers().get(Tags.TRACK_HEADER.toString());
@@ -50,6 +53,61 @@ public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClie
         }
 
         return metric;
+    }
+
+    @Override
+    public Void createEndpoint(final String host, final int port, final int maxPoolSize) {
+        return null;
+    }
+
+    @Override
+    public void closeEndpoint(final String host, final int port, final Void endpointMetric) {
+
+    }
+
+    @Override
+    public Void enqueueRequest(final Void endpointMetric) {
+        return null;
+    }
+
+    @Override
+    public void dequeueRequest(final Void endpointMetric, final Void taskMetric) {
+
+    }
+
+    @Override
+    public void endpointConnected(final Void endpointMetric, final SocketAddress socketMetric) {
+
+    }
+
+    @Override
+    public void endpointDisconnected(final Void endpointMetric, final SocketAddress socketMetric) {
+
+    }
+
+
+    @Override
+    public void requestEnd(final HttpRequestMetrics requestMetric) {
+
+    }
+
+    @Override
+    public void responseBegin(final HttpRequestMetrics requestMetric, final HttpClientResponse response) {
+
+    }
+
+    @Override
+    public HttpRequestMetrics responsePushed(final Void endpointMetric,
+                                             final SocketAddress socketMetric,
+                                             final SocketAddress localAddress,
+                                             final SocketAddress remoteAddress,
+                                             final HttpClientRequest request) {
+        return null;
+    }
+
+    @Override
+    public void requestReset(final HttpRequestMetrics requestMetric) {
+
     }
 
     /**
@@ -75,7 +133,7 @@ public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClie
     }
 
     @Override
-    public SocketAddress connected(final SocketAddress socketMetric, final WebSocket webSocket) {
+    public SocketAddress connected(final Void endpointMetric, final SocketAddress socketMetric, final WebSocket webSocket) {
         return null;
     }
 

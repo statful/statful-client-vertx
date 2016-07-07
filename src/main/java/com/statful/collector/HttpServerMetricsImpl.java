@@ -5,6 +5,7 @@ import com.statful.metric.HttpClientDataPoint;
 import com.statful.metric.HttpServerDataPoint;
 import com.statful.sender.Sender;
 import com.statful.utils.Pair;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.ServerWebSocket;
@@ -124,5 +125,16 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
     @Override
     public void exceptionOccurred(final SocketAddress socketMetric, final SocketAddress remoteAddress, final Throwable t) {
 
+    }
+
+
+    @Override
+    public void requestReset(final HttpRequestMetrics requestMetric) {
+
+    }
+
+    @Override
+    public HttpRequestMetrics responsePushed(final SocketAddress socketMetric, final HttpMethod method, final String uri, final HttpServerResponse response) {
+        return null;
     }
 }

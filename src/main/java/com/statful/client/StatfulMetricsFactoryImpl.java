@@ -1,9 +1,6 @@
 package com.statful.client;
 
 import com.google.common.base.Strings;
-import com.statful.sender.Sender;
-import com.statful.sender.SenderFactory;
-import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.impl.FileResolver;
@@ -47,14 +44,12 @@ public class StatfulMetricsFactoryImpl implements VertxMetricsFactory {
             effective = buildFromFile(vertx, configPath);
         }
 
-        final Context context = vertx.getOrCreateContext();
-        final Sender sender = new SenderFactory().create(vertx, context, effective);
-
-        return new VertxMetricsImpl(sender, effective);
+        return new VertxMetricsImpl(vertx, effective);
     }
 
     /**
      * Loads configuration from a file
+     *
      * @throws RuntimeException if the file is invalid or non existent
      */
     private StatfulMetricsOptions buildFromFile(final Vertx vertx, final String configPath) {

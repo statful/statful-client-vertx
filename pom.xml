@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.statful.client</groupId>
@@ -25,7 +26,7 @@
     <mockito.version>1.10.19</mockito.version>
 
     <!-- project dependencies -->
-    <vertx.version>3.2.1</vertx.version>
+    <vertx.version>3.3.0</vertx.version>
     <guava.version>18.0</guava.version>
 
     <jsr305.version>3.0.1</jsr305.version>
@@ -37,12 +38,12 @@
     <repository>
       <id>mindera-releases</id>
       <name>Mindera Nexus Releases Repository</name>
-      <url>https://nexus.mindera.com/content/repositories/releases</url>
+      <url>http://nexus.internal.mindera.com/content/repositories/releases</url>
     </repository>
     <repository>
       <id>mindera-snapshots</id>
       <name>Mindera Nexus Snapshots Repository</name>
-      <url>https://nexus.mindera.com/content/repositories/snapshots</url>
+      <url>http://nexus.internal.mindera.com/content/repositories/snapshots</url>
     </repository>
   </repositories>
 
@@ -50,12 +51,12 @@
     <repository>
       <id>mindera-releases</id>
       <name>Mindera Nexus Releases Repository</name>
-      <url>https://nexus.mindera.com/content/repositories/releases</url>
+      <url>http://nexus.internal.mindera.com/content/repositories/releases</url>
     </repository>
     <snapshotRepository>
       <id>mindera-snapshots</id>
       <name>Mindera Nexus Snapshots Repository</name>
-      <url>https://nexus.mindera.com/content/repositories/snapshots</url>
+      <url>http://nexus.internal.mindera.com/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 

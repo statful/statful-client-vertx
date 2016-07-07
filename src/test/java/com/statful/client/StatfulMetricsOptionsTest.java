@@ -82,13 +82,13 @@ public class StatfulMetricsOptionsTest {
 
     @Test
     public void testDefaultSecure() {
-        assertTrue(victim.isSecure().booleanValue());
+        assertTrue(victim.isSecure());
     }
 
     @Test
     public void testSetSecure() {
         victim.setSecure(true);
-        assertTrue(victim.isSecure().booleanValue());
+        assertTrue(victim.isSecure());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class StatfulMetricsOptionsTest {
 
     @Test
     public void testSetApp() {
-        assertEquals("app", victim.setApp("app").getApp().get());
+        assertTrue(victim.setApp("app").getApp().filter(value -> value.equals("app")).isPresent());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class StatfulMetricsOptionsTest {
     public void testSetShallowCopyTags() {
         List<Pair<String, String>> tags = Lists.newArrayList(new Pair<>("tag1", "tag1Value"), new Pair<>("tag2", "tag2Value"), new Pair<>("tag1", "tag1Value"));
         victim.setTags(tags);
-        Pair<String,String> pair = new Pair<>("shouldNotExist", "shouldNotExist");
+        Pair<String, String> pair = new Pair<>("shouldNotExist", "shouldNotExist");
         tags.add(pair);
         assertFalse(victim.getTags().contains(pair));
     }
@@ -250,9 +250,14 @@ public class StatfulMetricsOptionsTest {
         assertFalse(victim.isSecure());
         assertEquals(victim.getTimeout(), 100);
         assertEquals(victim.getToken(), "token");
-        assertEquals(victim.getApp().get(), "tests");
+        assertTrue(victim.getApp().filter(value -> value.equals("tests")).isPresent());
         assertTrue(victim.isDryrun());
-        assertTrue(victim.getTags().containsAll(Lists.newArrayList(new Pair<>("tag1", "value1"), new Pair<>("tag2", "value2"))));
+
+        List<Pair<String, String>> tags = Lists.newArrayList();
+        tags.add(new Pair<>("tag1", "value1"));
+        tags.add(new Pair<>("tag2", "value2"));
+        assertTrue(victim.getTags().containsAll(tags));
+
         assertEquals(victim.getSampleRate(), 100);
         assertEquals(victim.getNamespace(), "ns");
         assertEquals(victim.getFlushSize(), 1);

@@ -115,4 +115,5 @@ into
 Please keep in mind that we are applying the regex to all urls so the more refex you want to apply the heavier the execution will be.
 
 ## Limitations
-Currently only supports UDP transport 
+Currently only supports UDP transport
+Does not support http2 metrics introduced by vertx version 3.3.0
