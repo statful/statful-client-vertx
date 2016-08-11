@@ -34,11 +34,6 @@ public abstract class HttpDataPoint implements DataPoint {
     }
 
     /**
-     * constant to transform milliseconds in unix timestamp
-     */
-    private static final long TIMESTAMP_DIVIDER = 1000L;
-
-    /**
      * Statful options to be used when building the metric line
      */
     private final StatfulMetricsOptions options;
@@ -124,13 +119,6 @@ public abstract class HttpDataPoint implements DataPoint {
         this.options.getTags().forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));
 
         return metricLineBuilder;
-    }
-
-    /**
-     * @return unix timestamp value
-     */
-    private long getUnixTimeStamp() {
-        return System.currentTimeMillis() / TIMESTAMP_DIVIDER;
     }
 
     /**

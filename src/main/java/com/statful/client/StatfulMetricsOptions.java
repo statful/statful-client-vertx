@@ -81,12 +81,22 @@ public class StatfulMetricsOptions extends MetricsOptions {
     /**
      * Default aggregations to be applied for Timer metrics
      */
-    private static final ArrayList<Aggregation> DEFAULT_TIMER_AGGREGATIONS = Lists.newArrayList(Aggregation.AVG, Aggregation.P90, Aggregation.COUNT);
+    private static final List<Aggregation> DEFAULT_TIMER_AGGREGATIONS = Lists.newArrayList(Aggregation.AVG, Aggregation.P90, Aggregation.COUNT);
+
+    /**
+     * Default aggregations to be applied for Gauge metrics
+     */
+    private static final List<Aggregation> DEFAULT_GAUGE_AGGREGATIONS = Lists.newArrayList(Aggregation.LAST, Aggregation.MAX, Aggregation.AVG);
 
     /**
      * Default value for Aggregations Frequency for Timer metrics
      */
     private static final AggregationFreq DEFAULT_TIMER_FREQUENCY = AggregationFreq.FREQ_10;
+
+    /**
+     * Default value for gauge reporting in milliseconds
+     */
+    private static final long DEFAULT_GAUGE_REPORTING_INTERVAL = 5000;
 
     /**
      * Statful host, default value {@value #DEFAULT_HOST}
@@ -149,6 +159,16 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private AggregationFreq timerFrequency = DEFAULT_TIMER_FREQUENCY;
 
     /**
+     * List of aggregations to be applied on Gauge metrics
+     */
+    private List<Aggregation> gaugeAggregations = DEFAULT_GAUGE_AGGREGATIONS;
+
+    /**
+     * Frequency of aggregation to be applied on Gauge metrics
+     */
+    private AggregationFreq gaugeFrequency;
+
+    /**
      * Global rate sampling. Valid range [1-100], default value {@link #DEFAULT_SAMPLE_RATE}
      */
     private int sampleRate = DEFAULT_SAMPLE_RATE;
@@ -185,6 +205,11 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private List<String> httpServerPathsIgnore = Collections.emptyList();
 
     /**
+     * Time in milliseconds to report gauges values
+     */
+    private long gaugeReportingInterval = DEFAULT_GAUGE_REPORTING_INTERVAL;
+
+    /**
      * Empty constructor that provides default values, all of which should be overridable
      */
     public StatfulMetricsOptions() {
@@ -214,6 +239,9 @@ public class StatfulMetricsOptions extends MetricsOptions {
         this.flushInterval = other.flushInterval;
         this.timerAggregations = other.timerAggregations;
         this.timerFrequency = other.timerFrequency;
+        this.gaugeFrequency = other.gaugeFrequency;
+        this.gaugeAggregations = other.gaugeAggregations;
+        this.gaugeReportingInterval = other.gaugeReportingInterval;
     }
 
 
@@ -246,25 +274,36 @@ public class StatfulMetricsOptions extends MetricsOptions {
         this.flushSize = config.getInteger("flushSize", DEFAULT_FLUSH_SIZE);
         this.flushInterval = config.getLong("flushInterval", DEFAULT_FLUSH_INTERVAL);
 
-        final JsonArray configTimerAggregations = config.getJsonArray("timerAggregations", new JsonArray());
-
-        if (configTimerAggregations != null && !configTimerAggregations.isEmpty()) {
-            this.timerAggregations = configTimerAggregations
-                    .stream()
-                    .map(String.class::cast)
-                    .map(Aggregation::valueOf)
-                    .collect(Collectors.toList());
-        }
+        this.timerAggregations = this.parseAggregationsConfiguration("timerAggregations", config, DEFAULT_TIMER_AGGREGATIONS);
+        this.gaugeAggregations = this.parseAggregationsConfiguration("gaugeAggregations", config, DEFAULT_GAUGE_AGGREGATIONS);
 
         this.timerFrequency = AggregationFreq.valueOf(config.getString("timerFrequency", DEFAULT_TIMER_FREQUENCY.toString()));
 
-        this.patterns = config.getJsonArray("http-server-url-patterns", new JsonArray()).stream()
+        this.gaugeFrequency = AggregationFreq.valueOf(config.getString("gaugeFrequency", DEFAULT_TIMER_FREQUENCY.toString()));
+
+        this.patterns = config.getJsonArray("http-server-url-patterns", new JsonArray(Collections.emptyList())).stream()
                 .map(JsonObject.class::cast)
                 .map(entry -> new Pair<>(entry.getString("pattern"), entry.getString("replacement")))
                 .collect(Collectors.toList());
 
-        this.httpServerPathsIgnore = config.getJsonArray("http-server-ignore-url-patterns", new JsonArray()).stream()
+        this.httpServerPathsIgnore = config.getJsonArray("http-server-ignore-url-patterns", new JsonArray(Collections.emptyList())).stream()
                 .map(String.class::cast)
+                .collect(Collectors.toList());
+
+        this.gaugeReportingInterval = config.getLong("gauge-reporting-interval", DEFAULT_GAUGE_REPORTING_INTERVAL);
+    }
+
+    private List<Aggregation> parseAggregationsConfiguration(final String key, final JsonObject config, final List<Aggregation> defaultConfig) {
+        JsonArray aggregations = config.getJsonArray(key, new JsonArray(Collections.emptyList()));
+
+        if (aggregations == null || aggregations.isEmpty()) {
+            return defaultConfig;
+        }
+
+        return aggregations
+                .stream()
+                .map(String.class::cast)
+                .map(Aggregation::valueOf)
                 .collect(Collectors.toList());
     }
 
@@ -563,6 +602,43 @@ public class StatfulMetricsOptions extends MetricsOptions {
         return this;
     }
 
+
+    /**
+     * @return a copy of the aggregations applied on timer metrics
+     */
+    @Nonnull
+    public List<Aggregation> getGaugeAggregations() {
+        return Lists.newArrayList(gaugeAggregations);
+    }
+
+    /**
+     * @param gaugeAggregations list of aggregations to apply
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Nonnull
+    public StatfulMetricsOptions setGaugeAggregations(@Nonnull final List<Aggregation> gaugeAggregations) {
+        this.gaugeAggregations = Lists.newArrayList(Objects.requireNonNull(gaugeAggregations));
+        return this;
+    }
+
+    /**
+     * @return the frequency to be applied on gauge metrics
+     */
+    @Nonnull
+    public AggregationFreq getGaugeFrequency() {
+        return gaugeFrequency;
+    }
+
+    /**
+     * @param gaugeFrequency the frequency to apply on the aggregations
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Nonnull
+    public StatfulMetricsOptions setGaugeFrequency(@Nonnull final AggregationFreq gaugeFrequency) {
+        this.gaugeFrequency = Objects.requireNonNull(gaugeFrequency);
+        return this;
+    }
+
     /**
      * Allows setting enabled as a jvm argument
      *
@@ -627,5 +703,19 @@ public class StatfulMetricsOptions extends MetricsOptions {
      */
     public List<String> getHttpServerPathsIgnore() {
         return httpServerPathsIgnore;
+    }
+
+    /**
+     * @param gaugeReportingInterval time in milliseconds to run the gauge reporting
+     */
+    public void setGaugeReportingInterval(final long gaugeReportingInterval) {
+        this.gaugeReportingInterval = gaugeReportingInterval;
+    }
+
+    /**
+     * @return gets value configured for gauge intervals
+     */
+    public long getGaugeReportingInterval() {
+        return gaugeReportingInterval;
     }
 }

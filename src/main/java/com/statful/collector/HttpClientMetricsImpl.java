@@ -17,7 +17,14 @@ import javax.annotation.Nullable;
 /**
  * HttpClient metrics collector
  */
-public final class HttpClientMetricsImpl extends HttpMetrics implements HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress, Void, Void> {
+public final class HttpClientMetricsImpl extends StatfulMetrics implements HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress, Void, Void> {
+
+    /**
+     * @param options options to latter be used by the metrics builder
+     */
+    public HttpClientMetricsImpl(final StatfulMetricsOptions options) {
+        super(options);
+    }
 
     /**
      * @param sender  responsible for holding the metrics and sending them
