@@ -52,9 +52,6 @@ public class PoolDataPoint implements DataPoint {
         this.unixTimeStamp = this.getUnixTimeStamp();
     }
 
-    // extranet.application.gauge.pool
-
-
     @Override
     public String toMetricLine() {
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
