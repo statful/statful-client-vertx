@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * HttpServer metrics collector
  */
-public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServerMetrics<HttpRequestMetrics, SocketAddress, SocketAddress> {
+public final class HttpServerMetricsImpl extends StatfulMetrics implements HttpServerMetrics<HttpRequestMetrics, SocketAddress, SocketAddress> {
 
     /**
      * Holds compiled regex and replacement patterns for urls
@@ -32,6 +32,20 @@ public final class HttpServerMetricsImpl extends HttpMetrics implements HttpServ
      * Holds compiled regex for urls that should not be tracked
      */
     private final List<Pattern> ignore;
+
+    /**
+     * @param options options to latter be used by the metrics builder
+     */
+    public HttpServerMetricsImpl(@Nonnull final StatfulMetricsOptions options) {
+
+        super(options);
+
+        this.replacements = options.getPatterns().stream()
+                .map(entry -> new Pair<>(Pattern.compile(entry.getLeft()), entry.getRight()))
+                .collect(Collectors.toList());
+
+        this.ignore = options.getHttpServerPathsIgnore().stream().map(Pattern::compile).collect(Collectors.toList());
+    }
 
     /**
      * @param sender  responsible for holding the metrics and sending them

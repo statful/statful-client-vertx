@@ -4,7 +4,7 @@ import com.statful.client.StatfulMetricsOptions;
 
 
 /**
- * Representation of an HttpClient DataPoint. Holds the that of a metric and builds
+ * Representation of an HttpClient DataPoint.
  */
 public final class HttpClientDataPoint extends HttpDataPoint {
 

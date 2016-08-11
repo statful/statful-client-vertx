@@ -74,6 +74,7 @@ Vertx Statful specific configurations
     * timerAggregations - aggregations to be applied to timer based metrics
     * http-server-url-patterns - patterns to transform urls for metrics collection
     * http-server-ignore-url-patterns - patterns of urls that you won't want tracked
+    * gauge-collection-interval - to avoid reporting gauges everytime it changes
 
 
 ###Metrics
