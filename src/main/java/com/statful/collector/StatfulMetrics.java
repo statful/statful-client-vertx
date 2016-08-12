@@ -74,4 +74,12 @@ public abstract class StatfulMetrics implements Metrics {
     public void setSender(@Nonnull  final Sender sender) {
         this.sender = Objects.requireNonNull(sender);
     }
+
+    /**
+     * Checks if a sender is already defined
+     * @return true if it has a sender false otherwise
+     */
+    public boolean hasSender() {
+        return this.sender != null;
+    }
 }

@@ -91,8 +91,10 @@ public class PoolMetricsImpl extends StatfulMetrics implements PoolMetrics<Long>
 
     @Override
     public void setSender(@Nonnull final Sender sender) {
-        super.setSender(sender);
-        this.initReporter();
+        if (!this.hasSender()) {
+            super.setSender(sender);
+            this.initReporter();
+        }
     }
 
     private void initReporter() {
