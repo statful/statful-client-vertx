@@ -4,14 +4,14 @@
 
   <groupId>com.statful.client</groupId>
   <artifactId>client-vertx</artifactId>
-  <version>1.0.0-alpha-5-SNAPSHOT</version>
+  <version>1.0.0-alpha-5</version>
   <packaging>jar</packaging>
 
   <scm>
     <connection>scm:git:ssh://bitbucket.org:mindera/statful-client-vertx.git</connection>
     <developerConnection>scm:git:git@bitbucket.org:mindera/statful-client-vertx.git</developerConnection>
     <url>https://bitbucket.org/mindera/statful-client-vertx</url>
-    <tag>HEAD</tag>
+    <tag>client-vertx-1.0.0-alpha-5</tag>
   </scm>
 
   <properties>
