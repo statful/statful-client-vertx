@@ -9,10 +9,6 @@ public enum Transport {
      */
     UDP,
     /**
-     * Value for TCP based transports
-     */
-    TCP,
-    /**
      * Value for HTTP based transports
      */
     HTTP
