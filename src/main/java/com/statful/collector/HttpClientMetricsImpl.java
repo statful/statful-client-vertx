@@ -173,4 +173,9 @@ public final class HttpClientMetricsImpl extends StatfulMetrics implements HttpC
     public void exceptionOccurred(final SocketAddress socketMetric, final SocketAddress remoteAddress, final Throwable t) {
 
     }
+
+    @Override
+    public boolean isEnabled() {
+        return this.getOptions().isEnableHttpClientMetrics();
+    }
 }

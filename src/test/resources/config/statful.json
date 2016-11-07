@@ -22,5 +22,10 @@
   ],
   "http-server-ignore-url-patterns": [
     "/static/.*"
-  ]
+  ],
+  "collectors": {
+    "pool": true,
+    "httpClient": true,
+    "httpServer": true
+  }
 }

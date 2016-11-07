@@ -15,6 +15,11 @@ import java.util.concurrent.atomic.LongAdder;
 public class PoolMetricsImpl extends StatfulMetrics implements PoolMetrics<Long> {
 
     /**
+     * Long to store the current periodic id
+     */
+    private long periodicTimerId;
+
+    /**
      * Adder to keep counter of in use connections to the pool
      */
     private LongAdder inUse = new LongAdder();
@@ -81,12 +86,12 @@ public class PoolMetricsImpl extends StatfulMetrics implements PoolMetrics<Long>
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.getOptions().isEnablePoolMetrics();
     }
 
     @Override
     public void close() {
-
+        this.vertx.cancelTimer(this.periodicTimerId);
     }
 
     @Override
@@ -98,7 +103,7 @@ public class PoolMetricsImpl extends StatfulMetrics implements PoolMetrics<Long>
     }
 
     private void initReporter() {
-        this.vertx.setPeriodic(this.getOptions().getGaugeReportingInterval(), event -> {
+        this.periodicTimerId = this.vertx.setPeriodic(this.getOptions().getGaugeReportingInterval(), event -> {
             this.addMetric(new PoolDataPoint(this.getOptions(), name, "inUse", String.valueOf(this.inUse.longValue())));
             this.addMetric(new PoolDataPoint(this.getOptions(), name, "queued", String.valueOf(this.queued.longValue())));
             this.addMetric(new PoolDataPoint(this.getOptions(), name, "max", this.maxPoolSize));

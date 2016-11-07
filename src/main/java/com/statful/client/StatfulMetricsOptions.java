@@ -99,6 +99,11 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private static final long DEFAULT_GAUGE_REPORTING_INTERVAL = 5000;
 
     /**
+     * Default to enable all the available collectors
+     */
+    private static final boolean DEFAULT_METRIC_COLLECTION = true;
+
+    /**
      * Statful host, default value {@value #DEFAULT_HOST}
      */
     private Optional<String> host = Optional.empty();
@@ -210,6 +215,21 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private long gaugeReportingInterval = DEFAULT_GAUGE_REPORTING_INTERVAL;
 
     /**
+     * Enable pool metrics collection
+     */
+    private boolean enablePoolMetrics = DEFAULT_METRIC_COLLECTION;
+
+    /**
+     * Enable http client metrics collection
+     */
+    private boolean enableHttpClientMetrics = DEFAULT_METRIC_COLLECTION;
+
+    /**
+     * Enable http server metrics collection
+     */
+    private boolean enableHttpServerMetrics = DEFAULT_METRIC_COLLECTION;
+
+    /**
      * Empty constructor that provides default values, all of which should be overridable
      */
     public StatfulMetricsOptions() {
@@ -242,6 +262,9 @@ public class StatfulMetricsOptions extends MetricsOptions {
         this.gaugeFrequency = other.gaugeFrequency;
         this.gaugeAggregations = other.gaugeAggregations;
         this.gaugeReportingInterval = other.gaugeReportingInterval;
+        this.enablePoolMetrics = other.enablePoolMetrics;
+        this.enableHttpClientMetrics = other.enableHttpClientMetrics;
+        this.enableHttpServerMetrics = other.enableHttpServerMetrics;
     }
 
 
@@ -291,6 +314,11 @@ public class StatfulMetricsOptions extends MetricsOptions {
                 .collect(Collectors.toList());
 
         this.gaugeReportingInterval = config.getLong("gauge-reporting-interval", DEFAULT_GAUGE_REPORTING_INTERVAL);
+
+        JsonObject collectors = config.getJsonObject("collectors");
+        this.enablePoolMetrics = collectors.getBoolean("pool", DEFAULT_METRIC_COLLECTION);
+        this.enableHttpClientMetrics = collectors.getBoolean("httpClient", DEFAULT_METRIC_COLLECTION);
+        this.enableHttpServerMetrics = collectors.getBoolean("httpServer", DEFAULT_METRIC_COLLECTION);
     }
 
     private List<Aggregation> parseAggregationsConfiguration(final String key, final JsonObject config, final List<Aggregation> defaultConfig) {
@@ -717,5 +745,56 @@ public class StatfulMetricsOptions extends MetricsOptions {
      */
     public long getGaugeReportingInterval() {
         return gaugeReportingInterval;
+    }
+
+    /**
+     * @return gets value configured for enable pool metrics
+     */
+    public boolean isEnablePoolMetrics() {
+        return enablePoolMetrics;
+    }
+
+    /**
+     * Enable pool metrics collection
+     * @param enablePoolMetrics flag to enable pool metric collection
+     * @return a reference to this, so the API can be used fluently
+     */
+    public StatfulMetricsOptions setEnablePoolMetrics(final boolean enablePoolMetrics) {
+        this.enablePoolMetrics = enablePoolMetrics;
+        return this;
+    }
+
+    /**
+     * @return gets value configured for enable http client metrics
+     */
+    public boolean isEnableHttpClientMetrics() {
+        return enableHttpClientMetrics;
+    }
+
+    /**
+     * Enable http client metrics collection
+     * @param enableHttpClientMetrics flag to enable http client metric collection
+     * @return a reference to this, so the API can be used fluently
+     */
+    public StatfulMetricsOptions setEnableHttpClientMetrics(final boolean enableHttpClientMetrics) {
+        this.enableHttpClientMetrics = enableHttpClientMetrics;
+        return this;
+    }
+
+    /**
+     * @return gets value configured for enable http server metrics
+     */
+    public boolean isEnableHttpServerMetrics() {
+        return enableHttpServerMetrics;
+    }
+
+    /**
+     * Enable http server metrics collection
+     * @param enableHttpServerMetrics flag to enable http server metric collection
+     * @return a reference to this, so the API can be used fluently
+     */
+    public StatfulMetricsOptions setEnableHttpServerMetrics(final boolean enableHttpServerMetrics) {
+        this.enableHttpServerMetrics = enableHttpServerMetrics;
+        return this;
     }
 }
