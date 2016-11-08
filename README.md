@@ -1,12 +1,38 @@
-# README
+Statful Client for Vertx
+==============
 
-Project that enables metrics collection for [Vert.x](http://vertx.io/) based projects and report them to [Statful](http://statful.com/)
+[![Build Status](https://travis-ci.org/statful/statful-client-vertx.svg?branch=master)](https://travis-ci.org/statful/statful-client-vertx)
+
+Statful client for Vertx. This client enables metrics collection for [Vert.x](http://vertx.io/) based projects and report them to [Statful](http://statful.com/)
 
 This client leverages the capabilities provided by [Vert.x SPI](http://vertx.io/docs/apidocs/io/vertx/core/spi/metrics/VertxMetrics.html) to collect metrics.
 
 Please check the project pom.xml to see Vert.x version dependency since this will be a moving target, the aim is to always support the latest stable version.
 
-## How to use
+## Table of Contents
+
+* [Supported Versions](#supported-versions)
+* [Requirements](#requirements)
+* [Quick Start](#quick-start)
+* [Configuration](#configuration)
+* [Reference](#reference)
+* [Limitations](#limitations)
+* [Authors](#authors)
+* [License](#license)
+
+## Supported Versions
+
+| Statful client version | Tested Java versions  | Tested Vertx versions
+|:---|:---|:---|
+| 1.x.x | `Java 8` | `3.3.3` |
+
+## Requirements
+
+This client has the following requirements:
+
+* [vert.x](http://vertx.io/) 
+
+## Quick start
 
 Add the client to your dependencies
 
@@ -18,11 +44,9 @@ Add the client to your dependencies
 
 [Vert.x](http://vertx.io/) handles the creation of the Metrics SPI for you.
 
-### Configuration
-
 There are two main ways to configure the client, programmatically or using a config file.
 
-#### Programmatically
+### Programmatically
 
 You create an instance of *StatfulMetricsOptions* set all the parameters that you want and and use it as an argument for *VertxOptions* when creation your *Vertx* instance.
 
@@ -33,7 +57,7 @@ Example:
     VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
     Vertx vertx = Vertx.vertx(vertxOptions);
 
-#### Config file
+### Configuration file
 
 You need to provide to parameters when launching your application, one to enable metrics and one to set the configuration file. Enable metrics will make *Vertx* init the metrics system which will then read the configuration file.
 
@@ -49,7 +73,7 @@ The configuration file is a simple json document, a sample can be seen bellow
         ...
     }
 
-### Configuration
+# Configuration
 
 General configuration for a Statful client.
 
@@ -67,27 +91,36 @@ General configuration for a Statful client.
     * flushSize [optional] [default: 10] - defines the periodicity of buffer flushes
     * flushInterval [optional] [default: 0] - Defines an interval to flush the metrics
 
-Vertx Statful specific configurations
+Vertx Statful specific configurations:
 
     * enabled - true if you want to enable metrics false otherwise
     * timerFrequency - aggregation frequency for timer based metrics
     * timerAggregations - aggregations to be applied to timer based metrics
     * http-server-url-patterns - patterns to transform urls for metrics collection
     * http-server-ignore-url-patterns - patterns of urls that you won't want tracked
-    * gauge-collection-interval - to avoid reporting gauges everytime it changes
+    * gauge-collection-interval - to avoid reporting gauges every time it changes
+    
+Metric collectors:
 
+    * collectors - list of boolean flags to enable or disable the available metric collectors
+     
+List of available collectors:
 
-###Metrics
+    * pool - collect metrics from application pools
+    * httpClient - collect metrics from http clients
+    * httpServer - collect metrics from http servers
+    
+## Reference
 
-Type of metrics collected
+Type of metrics collected:
 
-####Http Client
+### Http Client
 
 Track the time that takes to execute each request and it's response status code. Currently connection time is not reported
 
 To identify that a request should be tracked you need to add a request header to your request. The name of the header should be extracted from: *com.statful.tag.Tags.TRACK_HEADER*, the value should be set to whatever value you want to use for the tag
 
-####Http Server
+### Http Server
 
 By default all requests are tracked. To ignore a path configure a regex that matches that path. For instance, if you want to ignore anything that starts with */static* apply the following configuration:
 
@@ -112,10 +145,19 @@ into
 
     /user_uuid_/update
 
-#####Notes
-Please keep in mind that we are applying the regex to all urls so the more refex you want to apply the heavier the execution will be.
+> Please keep in mind that we are applying the regex to all urls so the more regex you want to apply the heavier the execution will be.
 
 ## Limitations
-Currently only supports UDP transport
 
-Does not support http2 metrics introduced by vertx version 3.3.0
+The current implementation has the following limitations:
+
+* only supports the UDP transport.
+* Does not support http2 metrics introduced by vertx version 3.3.0.
+
+## Authors
+
+[Mindera - Software Craft](https://github.com/Mindera)
+
+## License
+
+Statful Vertx Client is available under the MIT license. See the [LICENSE](https://raw.githubusercontent.com/statful/statful-client-vertx/master/LICENSE) file for more information.

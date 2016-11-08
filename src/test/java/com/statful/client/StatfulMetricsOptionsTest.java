@@ -196,6 +196,21 @@ public class StatfulMetricsOptionsTest {
         assertEquals(15, victim.setFlushSize(15).getFlushSize());
     }
 
+    @Test
+    public void testSetEnablePoolMetrics() {
+        assertTrue(victim.setEnablePoolMetrics(true).isEnablePoolMetrics());
+    }
+
+    @Test
+    public void testSetEnableHttpClientMetrics() {
+        assertTrue(victim.setEnableHttpClientMetrics(true).isEnableHttpClientMetrics());
+    }
+
+    @Test
+    public void testSetEnableHttpServerMetrics() {
+        assertFalse(victim.setEnableHttpServerMetrics(false).isEnableHttpServerMetrics());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCopyCtor() {
@@ -240,7 +255,8 @@ public class StatfulMetricsOptionsTest {
                 .put("flushSize", 1)
                 .put("flushInterval", 10)
                 .put("timerAggregations", Lists.newArrayList(Aggregation.AVG.toString(), Aggregation.COUNT.toString()))
-                .put("timerFrequency", AggregationFreq.FREQ_10.toString());
+                .put("timerFrequency", AggregationFreq.FREQ_10.toString())
+                .put("collectors", new JsonObject().put("pool", true).put("httpClient", true).put("httpServer", false));
 
         victim = new StatfulMetricsOptions(configuration);
         assertEquals(victim.getHost(), "host");
@@ -264,5 +280,8 @@ public class StatfulMetricsOptionsTest {
         assertEquals(victim.getFlushInterval(), 10);
         assertTrue(victim.getTimerAggregations().containsAll(Lists.newArrayList(Aggregation.AVG, Aggregation.COUNT)));
         assertEquals(victim.getTimerFrequency(), AggregationFreq.FREQ_10);
+        assertTrue(victim.isEnablePoolMetrics());
+        assertTrue(victim.isEnableHttpClientMetrics());
+        assertFalse(victim.isEnableHttpServerMetrics());
     }
 }

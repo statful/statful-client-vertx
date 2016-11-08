@@ -151,4 +151,9 @@ public final class HttpServerMetricsImpl extends StatfulMetrics implements HttpS
     public HttpRequestMetrics responsePushed(final SocketAddress socketMetric, final HttpMethod method, final String uri, final HttpServerResponse response) {
         return null;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return this.getOptions().isEnableHttpServerMetrics();
+    }
 }

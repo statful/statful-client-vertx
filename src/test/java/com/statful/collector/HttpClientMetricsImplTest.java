@@ -21,11 +21,12 @@ public class HttpClientMetricsImplTest {
 
     private HttpClientMetricsImpl victim;
     private Sender sender;
+    private StatfulMetricsOptions statfulMetricsOptions;
 
     @Before
     public void setup() {
         sender = mock(Sender.class);
-        StatfulMetricsOptions statfulMetricsOptions = mock(StatfulMetricsOptions.class);
+        statfulMetricsOptions = mock(StatfulMetricsOptions.class);
         victim = new HttpClientMetricsImpl(sender, statfulMetricsOptions);
     }
 
@@ -80,6 +81,13 @@ public class HttpClientMetricsImplTest {
 
     @Test
     public void testIsEnabled() throws Exception {
+        when(this.statfulMetricsOptions.isEnableHttpClientMetrics()).thenReturn(true);
         assertTrue(victim.isEnabled());
+    }
+
+    @Test
+    public void testIsNotEnabled() throws Exception {
+        when(this.statfulMetricsOptions.isEnableHttpClientMetrics()).thenReturn(false);
+        assertFalse(victim.isEnabled());
     }
 }

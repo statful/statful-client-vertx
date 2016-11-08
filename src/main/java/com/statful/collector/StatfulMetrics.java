@@ -58,11 +58,6 @@ public abstract class StatfulMetrics implements Metrics {
     }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    @Override
     public void close() {
 
     }
