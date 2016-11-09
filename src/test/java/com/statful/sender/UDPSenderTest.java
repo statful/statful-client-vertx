@@ -59,7 +59,7 @@ public class UDPSenderTest {
      * @param async used to finish the test
      */
     private void teardown(Async async) {
-        this.victim.close(event -> async.complete());
+        this.victim.close(victimClose -> this.receiver.close(receiverClose -> async.complete()));
     }
 
     @Test
