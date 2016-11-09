@@ -131,9 +131,17 @@ public class StatfulClientIntegrationTest {
             });
         });
 
-        this.setupHttpServer();
-
-        this.makeHttpRequests(vertx, context, requestsWithIgnore);
+        httpReceiver.requestHandler(request -> {
+            // create a delay to simulate a lengthy api call
+            long delay = ThreadLocalRandom.current().nextInt(200, 1000 + 1);
+            vertx.setTimer(delay, event -> request.response().end("hey!"));
+        }).listen(HTTP_PORT, HOST, listenResult -> {
+            if (listenResult.succeeded()) {
+                this.makeHttpRequests(vertx, context, requestsWithIgnore);
+            } else {
+                context.fail(listenResult.cause());
+            }
+        });
     }
 
     private void makeHttpRequests(Vertx vertx, TestContext context, List<String> requests) {
@@ -143,13 +151,5 @@ public class StatfulClientIntegrationTest {
             request.headers().add(Tags.TRACK_HEADER.toString(), requestValue);
             request.end();
         });
-    }
-
-    private void setupHttpServer() {
-        this.httpReceiver.requestHandler(request -> {
-            // create a delay to simulate a lengthy api call
-            long delay = ThreadLocalRandom.current().nextInt(200, 1000 + 1);
-            vertx.setTimer(delay, event -> request.response().end("hey!"));
-        }).listen(HTTP_PORT, HOST);
     }
 }
