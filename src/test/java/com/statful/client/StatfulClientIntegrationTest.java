@@ -53,6 +53,7 @@ public class StatfulClientIntegrationTest {
                 .setFlushSize(20)
                 .setPrefix("testing")
                 .setEnabled(true)
+                .setEnablePoolMetrics(false)
                 .setTags(Lists.newArrayList(new Pair<>("global", "value"), new Pair<>("global1", "value1")))
                 .setHttpServerMatchAndReplacePatterns(matchReplace)
                 .setHttpServerIgnorePaths(Lists.newArrayList(".*ignore.*"));
