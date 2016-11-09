@@ -114,9 +114,9 @@ public class UDPSenderTest {
             });
             receiver.endHandler(end -> receiver.close());
             receiver.exceptionHandler(context::fail);
-        });
 
-        victim.send(dataPoints);
+            victim.send(dataPoints);
+        });
     }
 
     @Test
@@ -134,7 +134,7 @@ public class UDPSenderTest {
             });
         });
 
-        // we will wait for 5 seconds and consider the test a success if nothing is relieved
+        // we will wait for 5 seconds and consider the test a success if nothing is received
         vertx.setTimer(5000, timer -> async.complete());
 
         final List<String> metricLines = Lists.newArrayList("line1", "line2");
@@ -153,10 +153,10 @@ public class UDPSenderTest {
         final List<String> metricLines = Lists.newArrayList("line1", "line2");
 
         List<DataPoint> dataPoints = metricLines.stream().map(DummyDataPoint::new).collect(Collectors.toList());
-        victim.send(dataPoints, result -> {
+        vertx.setTimer(1000, timer -> victim.send(dataPoints, result -> {
             context.assertTrue(result.succeeded());
             teardown(async);
-        });
+        }));
     }
 
     private static final class DummyDataPoint implements DataPoint {
