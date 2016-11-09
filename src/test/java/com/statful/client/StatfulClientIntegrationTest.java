@@ -99,7 +99,7 @@ public class StatfulClientIntegrationTest {
 
         this.metricsReceiver.listen(UDP_PORT, HOST, event -> {
             if (event.failed()) {
-                context.fail("a metric failed to be received");
+                context.fail(event.cause());
             }
 
             this.metricsReceiver.handler(packet -> {
