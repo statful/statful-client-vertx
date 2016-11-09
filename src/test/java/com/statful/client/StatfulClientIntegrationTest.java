@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
+
 @RunWith(VertxUnitRunner.class)
 public class StatfulClientIntegrationTest {
 
@@ -51,6 +53,7 @@ public class StatfulClientIntegrationTest {
                 .setFlushSize(20)
                 .setPrefix("testing")
                 .setEnabled(true)
+                .setEnablePoolMetrics(false)
                 .setTags(Lists.newArrayList(new Pair<>("global", "value"), new Pair<>("global1", "value1")))
                 .setHttpServerMatchAndReplacePatterns(matchReplace)
                 .setHttpServerIgnorePaths(Lists.newArrayList(".*ignore.*"));
@@ -68,8 +71,14 @@ public class StatfulClientIntegrationTest {
      *
      * @param async used to finish the test
      */
-    private void teardown(Async async) {
-        this.httpReceiver.close(aVoid -> this.metricsReceiver.close(aVoid1 -> async.complete()));
+    private void teardown(Async async, TestContext context, Throwable throwable) {
+        this.httpReceiver.close(aVoid -> this.metricsReceiver.close(aVoid1 -> {
+            if (nonNull(throwable)) {
+                context.fail(throwable);
+            } else {
+                async.complete();
+            }
+        }));
     }
 
     @Test
@@ -90,7 +99,7 @@ public class StatfulClientIntegrationTest {
     }
 
     protected void testTimerMetric(Vertx vertx, TestContext context, String tagMatcher, Optional<String> toIgnore) {
-        Async asnyc = context.async();
+        Async async = context.async();
 
         final List<String> requests = Lists.newArrayList("X-1-X", "X-2-X", "X-3-X", "X-4-X", "X-5-X");
         final List<String> requestsWithIgnore = Lists.newArrayList(requests);
@@ -99,7 +108,7 @@ public class StatfulClientIntegrationTest {
 
         this.metricsReceiver.listen(UDP_PORT, HOST, event -> {
             if (event.failed()) {
-                context.fail("a metric failed to be received");
+                teardown(async, context, event.cause());
             }
 
             this.metricsReceiver.handler(packet -> {
@@ -116,15 +125,23 @@ public class StatfulClientIntegrationTest {
                     requests.removeAll(toRemove);
 
                     if (requests.isEmpty()) {
-                        teardown(asnyc);
+                        teardown(async, context, null);
                     }
                 }
             });
         });
 
-        this.setupHttpServer();
-
-        this.makeHttpRequests(vertx, context, requestsWithIgnore);
+        httpReceiver.requestHandler(request -> {
+            // create a delay to simulate a lengthy api call
+            long delay = ThreadLocalRandom.current().nextInt(200, 1000 + 1);
+            vertx.setTimer(delay, event -> request.response().end("hey!"));
+        }).listen(HTTP_PORT, HOST, listenResult -> {
+            if (listenResult.succeeded()) {
+                this.makeHttpRequests(vertx, context, requestsWithIgnore);
+            } else {
+                context.fail(listenResult.cause());
+            }
+        });
     }
 
     private void makeHttpRequests(Vertx vertx, TestContext context, List<String> requests) {
@@ -134,13 +151,5 @@ public class StatfulClientIntegrationTest {
             request.headers().add(Tags.TRACK_HEADER.toString(), requestValue);
             request.end();
         });
-    }
-
-    private void setupHttpServer() {
-        this.httpReceiver.requestHandler(request -> {
-            // create a delay to simulate a lengthy api call
-            long delay = ThreadLocalRandom.current().nextInt(200, 1000 + 1);
-            vertx.setTimer(delay, event -> request.response().end("hey!"));
-        }).listen(HTTP_PORT, HOST);
     }
 }

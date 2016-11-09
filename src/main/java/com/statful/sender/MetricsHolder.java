@@ -90,7 +90,7 @@ abstract class MetricsHolder implements Sender {
 
         if (dryrun) {
             final String toSendMetrics = toBeSent.stream().map(DataPoint::toMetricLine).collect(Collectors.joining("\n"));
-            LOGGER.info("dryrun: {}", toSendMetrics);
+            LOGGER.debug("dryrun: {}", toSendMetrics);
         } else {
             this.send(toBeSent);
         }
