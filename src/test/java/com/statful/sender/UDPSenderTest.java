@@ -42,7 +42,7 @@ public class UDPSenderTest {
      */
     public void setup(boolean isDryRun, Optional<Long> flushInterval, Optional<Integer> flushSize) {
         StatfulMetricsOptions options = new StatfulMetricsOptions();
-        options.setPort(PORT).setHost(HOST).setDryrun(isDryRun);
+        options.setPort(PORT).setHost(HOST).setDryrun(isDryRun).setEnablePoolMetrics(false);
 
         flushInterval.ifPresent(options::setFlushInterval);
         flushSize.ifPresent(options::setFlushSize);
