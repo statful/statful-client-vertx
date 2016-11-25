@@ -61,12 +61,6 @@ final class VertxMetricsImpl extends DummyVertxMetrics {
         this.poolMetricsCollectors = new LinkedBlockingQueue<>();
     }
 
-//    @Override
-//    public EventBusMetrics createMetrics(final EventBus eventBus) {
-//        this.customMetricsConsumer = new CustomMetricsConsumer(eventBus, this.getOrCreateSender());
-//        return DummyEventBusMetrics.INSTANCE;
-//    }
-
     @Override
     public HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress, Void, Void> createMetrics(final HttpClient client,
                                                                                                          final HttpClientOptions options) {
