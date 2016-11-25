@@ -4,7 +4,7 @@ import com.statful.sender.Sender;
 import io.vertx.core.eventbus.EventBus;
 
 /**
- * Allows consumers to send custom metrics thought the event bus
+ * Allows consumers to send custom metrics through the event bus
  */
 public final class CustomMetricsConsumer {
 
