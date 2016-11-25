@@ -84,7 +84,7 @@ public class CustomMetric implements DataPoint {
         this.aggregations = builder.aggregations;
         this.frequency = builder.frequency;
 
-        this.unixTimeStamp = this.getUnixTimeStamp();
+        this.unixTimeStamp = this.calculateUnixTimestamp();
     }
 
     @Override
@@ -137,7 +137,6 @@ public class CustomMetric implements DataPoint {
         return frequency;
     }
 
-    @Override
     public long getUnixTimeStamp() {
         return unixTimeStamp;
     }
