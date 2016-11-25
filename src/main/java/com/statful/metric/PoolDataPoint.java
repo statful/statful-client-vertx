@@ -1,5 +1,6 @@
 package com.statful.metric;
 
+import com.statful.client.MetricType;
 import com.statful.client.StatfulMetricsOptions;
 
 /**
@@ -49,7 +50,7 @@ public class PoolDataPoint implements DataPoint {
         this.metricType = metricType;
         this.poolName = poolName;
         this.value = value;
-        this.unixTimeStamp = this.getUnixTimeStamp();
+        this.unixTimeStamp = this.calculateUnixTimestamp();
     }
 
     @Override
@@ -57,7 +58,7 @@ public class PoolDataPoint implements DataPoint {
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
                 .withPrefix(this.options.getPrefix())
                 .withNamespace(this.options.getNamespace())
-                .withMetricType("gauge")
+                .withMetricType(MetricType.GAUGE)
                 .withMetricName("pool")
                 .withValue(this.value)
                 .withTimestamp(this.unixTimeStamp)

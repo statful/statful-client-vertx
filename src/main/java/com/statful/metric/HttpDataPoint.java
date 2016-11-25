@@ -1,5 +1,6 @@
 package com.statful.metric;
 
+import com.statful.client.MetricType;
 import com.statful.client.StatfulMetricsOptions;
 
 /**
@@ -94,7 +95,7 @@ public abstract class HttpDataPoint implements DataPoint {
         this.verb = httpVerb;
         this.duration = duration;
         this.responseCode = responseCode;
-        this.unixTimeStamp = this.getUnixTimeStamp();
+        this.unixTimeStamp = this.calculateUnixTimestamp();
         this.type = type;
     }
 
@@ -103,7 +104,7 @@ public abstract class HttpDataPoint implements DataPoint {
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
                 .withPrefix(this.options.getPrefix())
                 .withNamespace(this.options.getNamespace())
-                .withMetricType("timer")
+                .withMetricType(MetricType.TIMER)
                 .withMetricName(this.metricName)
                 .withTag("transport", "http")
                 .withTag("type", this.type.value)

@@ -3,6 +3,7 @@ package com.statful.metric;
 import com.google.common.collect.Lists;
 import com.statful.client.Aggregation;
 import com.statful.client.AggregationFreq;
+import com.statful.client.MetricType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class MetricLineBuilderTest {
         victim = new MetricLineBuilder();
         victim.withPrefix("prefix");
         victim.withNamespace("namespace");
-        victim.withMetricType("timer");
+        victim.withMetricType(MetricType.TIMER);
         victim.withMetricName("execution");
         victim.withTag("tagName", "tagValue");
         victim.withTimestamp(1);
@@ -41,7 +42,7 @@ public class MetricLineBuilderTest {
         victim = new MetricLineBuilder();
         victim.withPrefix("prefix");
         victim.withNamespace("namespace");
-        victim.withMetricType("timer");
+        victim.withMetricType(MetricType.TIMER);
         victim.withMetricName("execution");
         victim.withTimestamp(1);
         victim.withValue("value");
