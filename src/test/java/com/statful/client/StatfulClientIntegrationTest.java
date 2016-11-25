@@ -83,7 +83,7 @@ public class StatfulClientIntegrationTest {
 
     @Test
     public void testHttpTimerClientMetrics(TestContext context) {
-        testTimerMetric(this.vertx, context, "type=client", Optional.<String>empty());
+        testTimerMetric(this.vertx, context, "type=client", Optional.empty());
     }
 
     @Test
@@ -98,7 +98,40 @@ public class StatfulClientIntegrationTest {
         testTimerMetric(metricsDisabled, context, "type=server", Optional.of("/should/ignore/"));
     }
 
-    protected void testTimerMetric(Vertx vertx, TestContext context, String tagMatcher, Optional<String> toIgnore) {
+    @Test
+    public void testCustomMetric(TestContext context) {
+        Async async = context.async();
+
+        this.metricsReceiver.listen(UDP_PORT, HOST, event -> {
+            if (event.failed()) {
+                teardown(async, context, event.cause());
+            }
+
+            this.metricsReceiver.handler(packet -> {
+                String metric = packet.data().toString();
+                context.assertTrue(metric.contains("customMetricName"));
+                context.assertTrue(metric.contains("value1"));
+                context.assertTrue(metric.contains("tagName=tagValue"));
+                teardown(async, context, null);
+            });
+        });
+
+        Pair<String, String> tag = new Pair<>("tagName", "tagValue");
+        List<Pair<String, String>> tags = Lists.newArrayList();
+        tags.add(tag);
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withAggregations(Lists.newArrayList(Aggregation.AVG))
+                .withFrequency(AggregationFreq.FREQ_10)
+                .withMetricType(MetricType.TIMER)
+                .withTags(tags)
+                .withValue(1L)
+                .build();
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    private void testTimerMetric(Vertx vertx, TestContext context, String tagMatcher, Optional<String> toIgnore) {
         Async async = context.async();
 
         final List<String> requests = Lists.newArrayList("X-1-X", "X-2-X", "X-3-X", "X-4-X", "X-5-X");

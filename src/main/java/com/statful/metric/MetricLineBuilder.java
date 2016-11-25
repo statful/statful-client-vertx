@@ -3,6 +3,7 @@ package com.statful.metric;
 import com.google.common.base.Strings;
 import com.statful.client.Aggregation;
 import com.statful.client.AggregationFreq;
+import com.statful.client.MetricType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +31,7 @@ public final class MetricLineBuilder {
     /**
      * Metric type to be set in the metric
      */
-    private String metricType;
+    private MetricType metricType;
 
     /**
      * Metric name to be added to the metric
@@ -77,7 +78,7 @@ public final class MetricLineBuilder {
             sb.append(".").append(this.namespace);
         }
 
-        sb.append(".").append(metricType);
+        sb.append(".").append(metricType.toString());
 
         sb.append(".").append(metricName);
 
@@ -91,10 +92,10 @@ public final class MetricLineBuilder {
         sb.append(" ").append(timestamp);
 
         toStringAggregations().ifPresent(stringAggregation ->
-                        sb.append(" ")
-                                .append(stringAggregation)
-                                .append(",")
-                                .append(frequency.getValue())
+                sb.append(" ")
+                        .append(stringAggregation)
+                        .append(",")
+                        .append(frequency.getValue())
         );
 
         return sb.toString();
@@ -165,7 +166,7 @@ public final class MetricLineBuilder {
      * @return a reference to this, so the API can be used fluently
      */
     @Nonnull
-    public MetricLineBuilder withMetricType(@Nonnull final String metricTypeToAdd) {
+    public MetricLineBuilder withMetricType(@Nonnull final MetricType metricTypeToAdd) {
         Objects.requireNonNull(metricTypeToAdd);
         this.metricType = metricTypeToAdd;
         return this;
