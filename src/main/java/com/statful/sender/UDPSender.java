@@ -74,7 +74,7 @@ public final class UDPSender extends MetricsHolder {
 
         socket.send(toSendMetrics, options.getPort(), options.getHost(), handler -> {
             if (handler.failed()) {
-                LOGGER.warn("Failed to send metrics {}", toSendMetrics);
+                LOGGER.error("Failed to send metrics {}", handler.cause(),  toSendMetrics);
                 endHandler.ifPresent(callerHandler -> callerHandler.handle(Future.failedFuture(handler.cause())));
             } else {
                 endHandler.ifPresent(callerHandler -> callerHandler.handle(Future.succeededFuture()));
