@@ -42,7 +42,7 @@ public class UDPSenderTest {
      */
     public void setup(boolean isDryRun, Optional<Long> flushInterval, Optional<Integer> flushSize) {
         StatfulMetricsOptions options = new StatfulMetricsOptions();
-        options.setPort(PORT).setHost(HOST).setDryrun(isDryRun).setEnablePoolMetrics(false);
+        options.setPort(PORT).setHost(HOST).setDryrun(isDryRun).setEnablePoolMetrics(false).setMaxBufferSize(5000);
 
         flushInterval.ifPresent(options::setFlushInterval);
         flushSize.ifPresent(options::setFlushSize);
@@ -70,10 +70,10 @@ public class UDPSenderTest {
         Async async = testContext.async();
 
         Vertx vertx = mock(Vertx.class);
-        when(vertx.setTimer(anyLong(), Matchers.<Handler<Long>>any())).thenReturn(1L);
+        when(vertx.setTimer(anyLong(), Matchers.any())).thenReturn(1L);
 
         Context context = mock(Context.class);
-        Mockito.doNothing().when(context).runOnContext(Matchers.<Handler<Void>>any());
+        Mockito.doNothing().when(context).runOnContext(Matchers.any());
 
         DatagramSocket datagramSocket = mock(DatagramSocket.class);
         when(vertx.createDatagramSocket()).thenReturn(datagramSocket);
@@ -81,11 +81,12 @@ public class UDPSenderTest {
         StatfulMetricsOptions options = mock(StatfulMetricsOptions.class);
         when(options.getFlushInterval()).thenReturn(10L);
         when(options.getFlushSize()).thenReturn(10);
+        when(options.getMaxBufferSize()).thenReturn(5000);
 
         UDPSender sender = new UDPSender(vertx, context, options);
         sender.send(Collections.emptyList());
 
-        verify(datagramSocket, times(0)).send(anyString(), anyInt(), anyString(), Matchers.<Handler<AsyncResult<DatagramSocket>>>any());
+        verify(datagramSocket, times(0)).send(anyString(), anyInt(), anyString(), Matchers.any());
 
         this.teardown(async);
     }
@@ -129,9 +130,7 @@ public class UDPSenderTest {
         // configure receiver and desired assertions
         this.receiver.listen(PORT, HOST, event -> {
             context.assertTrue(event.succeeded());
-            event.result().handler(packet -> {
-                context.fail("nothing should be sent since this is a dry run");
-            });
+            event.result().handler(packet -> context.fail("nothing should be sent since this is a dry run"));
         });
 
         // we will wait for 5 seconds and consider the test a success if nothing is received
@@ -163,7 +162,7 @@ public class UDPSenderTest {
 
         private final String line;
 
-        public DummyDataPoint(String line) {
+        DummyDataPoint(String line) {
             this.line = line;
         }
 

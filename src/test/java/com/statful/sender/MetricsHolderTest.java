@@ -20,6 +20,7 @@ public class MetricsHolderTest {
 
         StatfulMetricsOptions options = mock(StatfulMetricsOptions.class);
         when(options.isDryrun()).thenReturn(false);
+        when(options.getMaxBufferSize()).thenReturn(5000);
 
         Sampling sampling = mock(Sampling.class);
         when(sampling.shouldInsert()).thenReturn(false);
@@ -33,6 +34,7 @@ public class MetricsHolderTest {
 
         StatfulMetricsOptions options = mock(StatfulMetricsOptions.class);
         when(options.isDryrun()).thenReturn(false);
+        when(options.getMaxBufferSize()).thenReturn(5000);
 
         Sampling sampling = mock(Sampling.class);
         when(sampling.shouldInsert()).thenReturn(true);
@@ -44,7 +46,7 @@ public class MetricsHolderTest {
     private static final class DummyMetricsHolder extends MetricsHolder {
 
 
-        public DummyMetricsHolder(StatfulMetricsOptions options, Sampling sampler) {
+        DummyMetricsHolder(StatfulMetricsOptions options, Sampling sampler) {
             super(options, sampler);
         }
 
