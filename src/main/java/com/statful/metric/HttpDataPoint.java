@@ -114,7 +114,10 @@ public abstract class HttpDataPoint implements DataPoint {
                 .withTimestamp(this.unixTimeStamp)
                 .withAggregations(this.options.getTimerAggregations())
                 .withAggregationFrequency(this.options.getTimerFrequency())
-                .withApp(this.options.getApp());
+                .withSampleRate(this.options.getSampleRate());
+
+        // Add optional application
+        this.options.getApp().ifPresent(metricLineBuilder::withApp);
 
         // Add global list of tags
         this.options.getTags().forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));

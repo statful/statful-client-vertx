@@ -64,9 +64,12 @@ public class PoolDataPoint implements DataPoint {
                 .withTimestamp(this.unixTimeStamp)
                 .withAggregations(this.options.getGaugeAggregations())
                 .withAggregationFrequency(this.options.getGaugeFrequency())
-                .withApp(this.options.getApp())
                 .withTag("name", poolName)
-                .withTag("type", metricType);
+                .withTag("type", metricType)
+                .withSampleRate(this.options.getSampleRate());
+
+        // Add optional application
+        this.options.getApp().ifPresent(metricLineBuilder::withApp);
 
         // Add global list of tags
         this.options.getTags().forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));
