@@ -98,7 +98,10 @@ public class CustomMetric implements DataPoint {
                 .withTimestamp(this.unixTimeStamp)
                 .withAggregations(this.aggregations)
                 .withAggregationFrequency(this.frequency)
-                .withApp(this.options.getApp());
+                .withSampleRate(this.options.getSampleRate());
+
+        // Add optional application
+        this.options.getApp().ifPresent(metricLineBuilder::withApp);
 
         // Add list of tags
         this.tags.forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));

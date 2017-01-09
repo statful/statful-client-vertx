@@ -18,7 +18,7 @@ public final class MetricLineBuilder {
     /**
      * Optional application name to be added to the tag list
      */
-    private Optional<String> app;
+    private String app;
 
     /**
      * Prefix to be set in the metric
@@ -64,6 +64,11 @@ public final class MetricLineBuilder {
     private AggregationFreq frequency = AggregationFreq.FREQ_10;
 
     /**
+     * Applied sample rate
+     */
+    private int sampleRate;
+
+    /**
      * builds the metric following Statful spec
      *
      * @return String with the formatted metric
@@ -83,7 +88,7 @@ public final class MetricLineBuilder {
         sb.append(".").append(metricName);
 
         // merge application to the tag list
-        this.app.ifPresent(application -> this.tags.put("app", application));
+        getApp().ifPresent(application -> this.tags.put("app", application));
 
         toStringTags().ifPresent(stringTag -> sb.append(",").append(stringTag));
 
@@ -98,7 +103,13 @@ public final class MetricLineBuilder {
                         .append(frequency.getValue())
         );
 
+        sb.append(" ").append(sampleRate);
+
         return sb.toString();
+    }
+
+    private Optional<String> getApp() {
+        return Optional.ofNullable(app);
     }
 
     private Optional<String> toStringAggregations() {
@@ -122,7 +133,7 @@ public final class MetricLineBuilder {
      * @param application application name to be added to
      * @return a reference to this, so the API can be used fluently
      */
-    public MetricLineBuilder withApp(@Nonnull final Optional<String> application) {
+    public MetricLineBuilder withApp(final String application) {
         this.app = application;
         return this;
     }
@@ -226,6 +237,15 @@ public final class MetricLineBuilder {
     public MetricLineBuilder withAggregationFrequency(@Nonnull final AggregationFreq frequencyToAdd) {
         Objects.requireNonNull(frequencyToAdd);
         this.frequency = frequencyToAdd;
+        return this;
+    }
+
+    /**
+     * @param sampleRateToAdd to be added to the metric
+     * @return a reference to this, so the API can be used fluently
+     */
+    public MetricLineBuilder withSampleRate(final int sampleRateToAdd) {
+        this.sampleRate = sampleRateToAdd;
         return this;
     }
 }
