@@ -315,7 +315,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
 
         this.gaugeReportingInterval = config.getLong("gauge-reporting-interval", DEFAULT_GAUGE_REPORTING_INTERVAL);
 
-        JsonObject collectors = config.getJsonObject("collectors");
+        JsonObject collectors = config.getJsonObject("collectors", new JsonObject(Collections.emptyMap()));
         this.enablePoolMetrics = collectors.getBoolean("pool", DEFAULT_METRIC_COLLECTION);
         this.enableHttpClientMetrics = collectors.getBoolean("httpClient", DEFAULT_METRIC_COLLECTION);
         this.enableHttpServerMetrics = collectors.getBoolean("httpServer", DEFAULT_METRIC_COLLECTION);
