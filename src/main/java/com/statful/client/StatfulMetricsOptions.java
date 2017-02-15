@@ -104,6 +104,11 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private static final boolean DEFAULT_METRIC_COLLECTION = true;
 
     /**
+     * Default maximum theoretical buffer size that holds metrics in memory between flushes
+     */
+    private static final int DEFAULT_MAX_BUFFER_SIZE = 5000;
+
+    /**
      * Statful host, default value {@value #DEFAULT_HOST}
      */
     private Optional<String> host = Optional.empty();
@@ -230,6 +235,10 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private boolean enableHttpServerMetrics = DEFAULT_METRIC_COLLECTION;
 
     /**
+     * Maximum theoretical buffer size that holds metrics in memory between flushes
+     */
+    private int maxBufferSize = DEFAULT_MAX_BUFFER_SIZE;
+    /**
      * Empty constructor that provides default values, all of which should be overridable
      */
     public StatfulMetricsOptions() {
@@ -265,6 +274,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
         this.enablePoolMetrics = other.enablePoolMetrics;
         this.enableHttpClientMetrics = other.enableHttpClientMetrics;
         this.enableHttpServerMetrics = other.enableHttpServerMetrics;
+        this.maxBufferSize = other.maxBufferSize;
     }
 
 
@@ -315,10 +325,12 @@ public class StatfulMetricsOptions extends MetricsOptions {
 
         this.gaugeReportingInterval = config.getLong("gauge-reporting-interval", DEFAULT_GAUGE_REPORTING_INTERVAL);
 
-        JsonObject collectors = config.getJsonObject("collectors");
+        JsonObject collectors = config.getJsonObject("collectors", new JsonObject(Collections.emptyMap()));
         this.enablePoolMetrics = collectors.getBoolean("pool", DEFAULT_METRIC_COLLECTION);
         this.enableHttpClientMetrics = collectors.getBoolean("httpClient", DEFAULT_METRIC_COLLECTION);
         this.enableHttpServerMetrics = collectors.getBoolean("httpServer", DEFAULT_METRIC_COLLECTION);
+
+        this.maxBufferSize = config.getInteger("maxBufferSize", DEFAULT_MAX_BUFFER_SIZE);
     }
 
     private List<Aggregation> parseAggregationsConfiguration(final String key, final JsonObject config, final List<Aggregation> defaultConfig) {
@@ -795,6 +807,23 @@ public class StatfulMetricsOptions extends MetricsOptions {
      */
     public StatfulMetricsOptions setEnableHttpServerMetrics(final boolean enableHttpServerMetrics) {
         this.enableHttpServerMetrics = enableHttpServerMetrics;
+        return this;
+    }
+
+    /**
+     * @return gets the max number of metrics to be kept in memory
+     */
+    public int getMaxBufferSize() {
+        return this.maxBufferSize;
+    }
+
+    /**
+     * Sets the max number of metrics to be kept in memory
+     * @param maxBufferSize value to set
+     * @return a reference to this, so the API can be used fluently
+     */
+    public StatfulMetricsOptions setMaxBufferSize(final int maxBufferSize) {
+        this.maxBufferSize = maxBufferSize;
         return this;
     }
 }

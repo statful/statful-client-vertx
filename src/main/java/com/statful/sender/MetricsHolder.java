@@ -19,10 +19,6 @@ import java.util.stream.Collectors;
 abstract class MetricsHolder implements Sender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsHolder.class);
-    /**
-     * Maximum theoretical buffer size to old on to metrics before sending them
-     */
-    private static final int MAX_BUFFER_SIZE = 5000;
 
     /**
      * Buffer to hold metrics
@@ -51,7 +47,7 @@ abstract class MetricsHolder implements Sender {
 
         this.sampler = Objects.requireNonNull(sampler);
 
-        this.buffer = new ArrayBlockingQueue<>(MAX_BUFFER_SIZE);
+        this.buffer = new ArrayBlockingQueue<>(options.getMaxBufferSize());
     }
 
     /**

@@ -211,6 +211,18 @@ public class StatfulMetricsOptionsTest {
         assertFalse(victim.setEnableHttpServerMetrics(false).isEnableHttpServerMetrics());
     }
 
+    @Test
+    public void testDefaultBiggerThenZeroBufferSize() {
+        assertTrue(victim.getMaxBufferSize() > 0);
+    }
+
+    @Test
+    public void testSetMaxBufferSize() {
+        int newSize = victim.getMaxBufferSize() + 1;
+        victim.setMaxBufferSize(newSize);
+        assertEquals(newSize, victim.getMaxBufferSize());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCopyCtor() {

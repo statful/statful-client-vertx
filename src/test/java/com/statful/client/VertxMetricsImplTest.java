@@ -29,6 +29,7 @@ public class VertxMetricsImplTest {
         when(this.vertx.getOrCreateContext()).thenReturn(this.context);
         this.statfulMetricsOptions = mock(StatfulMetricsOptions.class);
         when(statfulMetricsOptions.getTransport()).thenReturn(Transport.UDP);
+        when(statfulMetricsOptions.getMaxBufferSize()).thenReturn(5000);
     }
 
 

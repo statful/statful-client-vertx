@@ -89,7 +89,8 @@ General configuration for a Statful client.
     * sampleRate [optional] [default: 100] [between: 1-100] - global rate sampling
     * namespace [optional] [default: ‘application’] - default namespace (can be overridden in method calls)
     * flushSize [optional] [default: 10] - defines the periodicity of buffer flushes
-    * flushInterval [optional] [default: 0] - Defines an interval to flush the metrics
+    * flushInterval [optional] [default: 0] - defines an interval to flush the metrics
+    * maxBufferSize [optional] [default: 5000] - defines how many metrics at max are kept in memory between flushes
 
 Vertx Statful specific configurations:
 
