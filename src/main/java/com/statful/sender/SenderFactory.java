@@ -34,7 +34,10 @@ public final class SenderFactory {
         if (Transport.UDP.equals(transport)) {
             LOGGER.info("creating udp sender");
             return new UDPSender(vertx, context, options);
+        } else if (Transport.HTTP.equals(transport)) {
+            LOGGER.info("creating http sender");
+            return new HttpSender(vertx, context, options);
         }
-        throw new UnsupportedOperationException("currently only UDP is supported. Requested: " + options.getTransport());
+        throw new UnsupportedOperationException("currently only UDP and HTTP are supported. Requested: " + options.getTransport());
     }
 }

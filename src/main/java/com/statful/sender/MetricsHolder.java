@@ -10,6 +10,7 @@ import io.vertx.core.logging.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.stream.Collectors;
 
@@ -90,5 +91,13 @@ abstract class MetricsHolder implements Sender {
         } else {
             this.send(toBeSent);
         }
+    }
+
+    Optional<String> bundleMetrics(final List<DataPoint> metrics) {
+        if (metrics == null || metrics.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(metrics.stream().map(DataPoint::toMetricLine).collect(Collectors.joining("\n")));
     }
 }

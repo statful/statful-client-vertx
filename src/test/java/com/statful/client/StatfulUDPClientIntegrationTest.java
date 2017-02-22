@@ -1,14 +1,10 @@
 package com.statful.client;
 
 import com.google.common.collect.Lists;
-import com.statful.tag.Tags;
 import com.statful.utils.Pair;
-import io.netty.util.internal.ThreadLocalRandom;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.datagram.DatagramSocket;
-import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.unit.Async;
@@ -26,16 +22,14 @@ import java.util.stream.Collectors;
 import static java.util.Objects.nonNull;
 
 @RunWith(VertxUnitRunner.class)
-public class StatfulClientIntegrationTest {
+public class StatfulUDPClientIntegrationTest extends IntegrationTestCase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatfulClientIntegrationTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatfulUDPClientIntegrationTest.class);
 
     private static final String HOST = "0.0.0.0";
     private static final int UDP_PORT = 1234;
-    private static final int HTTP_PORT = 1235;
 
     private DatagramSocket metricsReceiver;
-    private HttpServer httpReceiver;
     private Vertx vertx;
 
     @SuppressWarnings("unchecked")
@@ -63,7 +57,7 @@ public class StatfulClientIntegrationTest {
         this.vertx = Objects.requireNonNull(Vertx.vertx(vertxOptions));
 
         this.metricsReceiver = this.vertx.createDatagramSocket();
-        this.httpReceiver = this.vertx.createHttpServer();
+        this.setUpHttpReceiver(vertx);
     }
 
     /**
@@ -72,7 +66,7 @@ public class StatfulClientIntegrationTest {
      * @param async used to finish the test
      */
     private void teardown(Async async, TestContext context, Throwable throwable) {
-        this.httpReceiver.close(aVoid -> this.metricsReceiver.close(aVoid1 -> {
+        this.teardownHttpReceiver(aVoid -> this.metricsReceiver.close(aVoid1 -> {
             if (nonNull(throwable)) {
                 context.fail(throwable);
             } else {
@@ -164,25 +158,6 @@ public class StatfulClientIntegrationTest {
             });
         });
 
-        httpReceiver.requestHandler(request -> {
-            // create a delay to simulate a lengthy api call
-            long delay = ThreadLocalRandom.current().nextInt(200, 1000 + 1);
-            vertx.setTimer(delay, event -> request.response().end("hey!"));
-        }).listen(HTTP_PORT, HOST, listenResult -> {
-            if (listenResult.succeeded()) {
-                this.makeHttpRequests(vertx, context, requestsWithIgnore);
-            } else {
-                context.fail(listenResult.cause());
-            }
-        });
-    }
-
-    private void makeHttpRequests(Vertx vertx, TestContext context, List<String> requests) {
-        requests.forEach(requestValue -> {
-            // confirm that all requests have a 200 status code
-            HttpClientRequest request = vertx.createHttpClient().get(HTTP_PORT, HOST, "/" + requestValue, event -> context.assertTrue(event.statusCode() == 200));
-            request.headers().add(Tags.TRACK_HEADER.toString(), requestValue);
-            request.end();
-        });
+        this.configureHttpReceiver(vertx, context, requestsWithIgnore);
     }
 }

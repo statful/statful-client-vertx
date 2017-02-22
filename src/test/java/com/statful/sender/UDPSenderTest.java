@@ -35,7 +35,6 @@ public class UDPSenderTest {
 
     private Vertx vertx;
 
-
     /**
      * not using @junit @Before since not all tests want to the same configuration for vertx metrics.
      * Don't forget to call this in your method
