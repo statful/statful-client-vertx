@@ -73,7 +73,7 @@ public class HttpSender extends MetricsHolder {
     private void send(final Handler<AsyncResult<Void>> handler, final String toSendMetrics) {
         final Optional<Handler<AsyncResult<Void>>> endHandler = Optional.ofNullable(handler);
 
-        final HttpClientRequest request = client.request(HttpMethod.PUT, options.getMetricsPath(), response -> {
+        final HttpClientRequest request = client.request(HttpMethod.PUT, options.getHttpMetricsPath(), response -> {
             if (response.statusCode() != HttpResponseStatus.CREATED.code()) {
                 LOGGER.error("Failed to send metrics {}", response.statusMessage(), toSendMetrics);
                 endHandler.ifPresent(callerHandler -> callerHandler.handle(Future.failedFuture(response.statusMessage())));
@@ -91,10 +91,10 @@ public class HttpSender extends MetricsHolder {
 
         try {
             this.client.close();
-            closeHandler.ifPresent(h -> h.handle(Future.succeededFuture()));
+            closeHandler.ifPresent(close -> close.handle(Future.succeededFuture()));
         } catch (Exception e) {
             LOGGER.error("Failed to close http client", e);
-            closeHandler.ifPresent(h -> h.handle(Future.failedFuture(e)));
+            closeHandler.ifPresent(close -> close.handle(Future.failedFuture(e)));
         }
     }
 }

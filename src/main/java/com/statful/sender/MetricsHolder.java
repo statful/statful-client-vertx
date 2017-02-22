@@ -93,6 +93,11 @@ abstract class MetricsHolder implements Sender {
         }
     }
 
+    /**
+     * Collects a list of metrics into a single String separated by line breaks
+     * @param metrics a list of datapoints to be bundled
+     * @return An empty optional if the list is null or empty, or an optional containing the bundled metrics
+     */
     Optional<String> bundleMetrics(final List<DataPoint> metrics) {
         if (metrics == null || metrics.isEmpty()) {
             return Optional.empty();

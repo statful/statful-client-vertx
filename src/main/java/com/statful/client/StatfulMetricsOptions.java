@@ -111,7 +111,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
     /**
      * Default Http path to store metrics
      */
-    private static final String DEFAULT_METRICS_PATH = "/tel/v2.0/metrics";
+    private static final String DEFAULT_HTTP_METRICS_PATH = "/tel/v2.0/metrics";
 
     /**
      * Statful host, default value {@value #DEFAULT_HOST}
@@ -247,7 +247,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
     /**
      * Http path to store metrics
      */
-    private String metricsPath = DEFAULT_METRICS_PATH;
+    private String httpMetricsPath = DEFAULT_HTTP_METRICS_PATH;
 
     /**
      * Empty constructor that provides default values, all of which should be overridable
@@ -286,7 +286,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
         this.enableHttpClientMetrics = other.enableHttpClientMetrics;
         this.enableHttpServerMetrics = other.enableHttpServerMetrics;
         this.maxBufferSize = other.maxBufferSize;
-        this.metricsPath = other.metricsPath;
+        this.httpMetricsPath = other.httpMetricsPath;
     }
 
 
@@ -343,7 +343,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
         this.enableHttpServerMetrics = collectors.getBoolean("httpServer", DEFAULT_METRIC_COLLECTION);
 
         this.maxBufferSize = config.getInteger("maxBufferSize", DEFAULT_MAX_BUFFER_SIZE);
-        this.metricsPath = config.getString("metricsPath", DEFAULT_METRICS_PATH);
+        this.httpMetricsPath = config.getString("httpMetricsPath", DEFAULT_HTTP_METRICS_PATH);
     }
 
     private List<Aggregation> parseAggregationsConfiguration(final String key, final JsonObject config, final List<Aggregation> defaultConfig) {
@@ -843,17 +843,17 @@ public class StatfulMetricsOptions extends MetricsOptions {
     /**
      * @return gets the Http path to store metrics
      */
-    public String getMetricsPath() {
-        return this.metricsPath;
+    public String getHttpMetricsPath() {
+        return this.httpMetricsPath;
     }
 
     /**
      * Sets the Http path to store metrics
-     * @param metricsPath uri to store metrics
+     * @param httpMetricsPath uri to store metrics
      * @return a reference to this, so the API can be used fluently
      */
-    public StatfulMetricsOptions setMetricsPath(final String metricsPath) {
-        this.metricsPath = metricsPath;
+    public StatfulMetricsOptions setHttpMetricsPath(final String httpMetricsPath) {
+        this.httpMetricsPath = httpMetricsPath;
         return this;
     }
 }
