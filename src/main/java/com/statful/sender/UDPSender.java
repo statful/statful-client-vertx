@@ -10,10 +10,8 @@ import io.vertx.core.logging.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * Responsible for the UDP transport
@@ -64,14 +62,10 @@ public final class UDPSender extends MetricsHolder {
     }
 
     private void send(@Nonnull final List<DataPoint> metrics, final Optional<Handler<AsyncResult<Void>>> endHandler) {
-        Objects.requireNonNull(metrics);
+        this.bundleMetrics(metrics).ifPresent(toSendMetrics -> send(endHandler, toSendMetrics));
+    }
 
-        if (metrics.isEmpty()) {
-            // nothing to send
-            return;
-        }
-        final String toSendMetrics = metrics.stream().map(DataPoint::toMetricLine).collect(Collectors.joining("\n"));
-
+    private void send(final Optional<Handler<AsyncResult<Void>>> endHandler, final String toSendMetrics) {
         socket.send(toSendMetrics, options.getPort(), options.getHost(), handler -> {
             if (handler.failed()) {
                 LOGGER.error("Failed to send metrics {}", handler.cause(),  toSendMetrics);

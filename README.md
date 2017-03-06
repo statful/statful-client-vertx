@@ -100,6 +100,7 @@ Vertx Statful specific configurations:
     * http-server-url-patterns - patterns to transform urls for metrics collection
     * http-server-ignore-url-patterns - patterns of urls that you won't want tracked
     * gauge-collection-interval - to avoid reporting gauges every time it changes
+    * httpMetricsPath [optional] - path to send metrics to when http transport is set
     
 Metric collectors:
 

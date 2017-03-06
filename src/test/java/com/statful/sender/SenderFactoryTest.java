@@ -43,12 +43,12 @@ public class SenderFactoryTest {
         victim.create(vertx, context, null);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testUnsupportedTransport() {
+    @Test
+    public void testHttpSenderCreation() {
         StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setTransport(Transport.HTTP);
 
-        victim.create(vertx, context, options);
+        assertTrue(victim.create(vertx, context, options) instanceof HttpSender);
     }
 
     @Test
