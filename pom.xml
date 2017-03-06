@@ -7,7 +7,7 @@
   <version>1.0.0-alpha-11-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>spring-client-vertx</name>
+  <name>statful-client-vertx</name>
   <description>Vertx client to send metrics to Statful.</description>
   <url>http://www.statful.com</url>
 
