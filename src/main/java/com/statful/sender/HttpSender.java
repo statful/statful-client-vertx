@@ -27,6 +27,11 @@ public class HttpSender extends MetricsHolder {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpSender.class);
 
     /**
+     * Header for the authorization token
+     */
+    private static final String TOKEN_HEADER = "M-Api-Token";
+
+    /**
      * Statful options to configure the sender
      */
     private final StatfulMetricsOptions options;
@@ -49,7 +54,8 @@ public class HttpSender extends MetricsHolder {
         context.runOnContext(aVoid -> {
             final HttpClientOptions httpClientOptions = new HttpClientOptions()
                     .setDefaultHost(options.getHost())
-                    .setDefaultPort(options.getPort());
+                    .setDefaultPort(options.getPort())
+                    .setSsl(options.isSecure());
 
             this.client = vertx.createHttpClient(httpClientOptions);
             this.configureFlushInterval(vertx, this.options.getFlushInterval(), this.options.getFlushSize());
@@ -81,6 +87,8 @@ public class HttpSender extends MetricsHolder {
                 endHandler.ifPresent(callerHandler -> callerHandler.handle(Future.succeededFuture()));
             }
         });
+
+        request.putHeader(TOKEN_HEADER, options.getToken());
 
         request.end(toSendMetrics);
     }

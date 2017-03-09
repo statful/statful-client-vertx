@@ -49,7 +49,9 @@ public class HttpSenderTest {
                 .setHost(HOST)
                 .setDryrun(isDryRun)
                 .setEnablePoolMetrics(false)
-                .setMaxBufferSize(5000);
+                .setMaxBufferSize(5000)
+                .setToken("a token")
+                .setSecure(false);
 
         Optional.ofNullable(flushInterval).ifPresent(options::setFlushInterval);
         Optional.ofNullable(flushSize).ifPresent(options::setFlushSize);
@@ -70,7 +72,6 @@ public class HttpSenderTest {
     private void teardown(Async async) {
         this.victim.close(victimClose -> this.server.close(serverClose -> async.complete()));
     }
-
 
     @Test
     public void testNothingToSend(TestContext testContext) {
@@ -108,9 +109,9 @@ public class HttpSenderTest {
         final List<String> metricLines = Lists.newArrayList("line1", "line2");
         final List<DataPoint> dataPoints = metricLines.stream().map(HttpSenderTest.DummyDataPoint::new).collect(Collectors.toList());
 
-
         server.requestHandler(request -> {
             context.assertEquals("http://0.0.0.0:1239/tel/v2.0/metrics", request.absoluteURI());
+            context.assertEquals("a token", request.getHeader("M-Api-Token"));
 
             request.bodyHandler(body -> {
                 context.assertNotNull(body);
