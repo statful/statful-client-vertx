@@ -68,8 +68,8 @@ Example:
 The configuration file is a simple json document, a sample can be seen bellow
 
     {
-        "host": "statful.io",
-        "port": 1111,
+        "host": "api.statful.com",
+        "port": 443,
         ...
     }
 

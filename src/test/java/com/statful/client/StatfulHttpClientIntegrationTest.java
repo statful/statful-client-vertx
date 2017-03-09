@@ -45,6 +45,8 @@ public class StatfulHttpClientIntegrationTest extends IntegrationTestCase {
                 .setFlushInterval(1000)
                 .setFlushSize(20)
                 .setPrefix("testing")
+                .setSecure(false)
+                .setToken("a token")
                 .setEnabled(true)
                 .setEnablePoolMetrics(false)
                 .setTags(Lists.newArrayList(new Pair<>("global", "value"), new Pair<>("global1", "value1")))
