@@ -4,7 +4,7 @@
 
   <groupId>com.statful.client</groupId>
   <artifactId>client-vertx</artifactId>
-  <version>1.0.0-alpha-12</version>
+  <version>1.0.0-alpha-13-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>statful-client-vertx</name>
@@ -31,7 +31,7 @@
     <connection>scm:git:git@github.com:statful/statful-client-vertx.git</connection>
     <developerConnection>scm:git:git@github.com:statful/statful-client-vertx.git</developerConnection>
     <url>https://github.com/statful/statful-client-vertx.git</url>
-    <tag>client-vertx-1.0.0-alpha-12</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
