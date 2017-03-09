@@ -101,6 +101,7 @@ Vertx Statful specific configurations:
     * http-server-ignore-url-patterns - patterns of urls that you won't want tracked
     * gauge-collection-interval - to avoid reporting gauges every time it changes
     * httpMetricsPath [optional] - path to send metrics to when http transport is set
+    * transport [default: UDP] - type of transport to be used when sending metrics to statful (UDP/HTTP)
     
 Metric collectors:
 
@@ -153,7 +154,6 @@ into
 
 The current implementation has the following limitations:
 
-* only supports the UDP transport.
 * Does not support http2 metrics introduced by vertx version 3.3.0.
 
 ## Authors
