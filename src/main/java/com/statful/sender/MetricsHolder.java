@@ -72,7 +72,7 @@ abstract class MetricsHolder implements Sender {
 
         boolean inserted = this.buffer.offer(dataPoint);
 
-        this.shouldFlush(inserted);
+        this.flushOnCapacity(inserted);
 
         if (!inserted) {
             LOGGER.warn("metric could not be added to buffer, discarding it {} ", dataPoint.toMetricLine());
@@ -84,10 +84,8 @@ abstract class MetricsHolder implements Sender {
      * If a metric could not be added to the buffer tries to flush the buffer.
      * Also check if a the buffer has at least as many items as the flush size and tries to flush the buffer
      */
-    private void shouldFlush(final boolean inserted) {
-        if (!inserted) {
-            this.flush();
-        } else if (this.buffer.size() >= flushSize) {
+    private void flushOnCapacity(final boolean inserted) {
+        if (!inserted || this.buffer.size() >= flushSize) {
             this.flush();
         }
     }
