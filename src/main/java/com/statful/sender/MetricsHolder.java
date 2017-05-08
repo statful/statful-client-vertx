@@ -32,12 +32,17 @@ abstract class MetricsHolder implements Sender {
     private final boolean dryrun;
 
     /**
+     * Number of elements to remove from the buffer
+     */
+    private final int flushSize;
+
+    /**
      * Sampler to be used to decide if a metric should be added or not
      */
     private Sampling sampler;
 
     /**
-     * Initializes the internal buffer. Implementers must call {@link #configureFlushInterval(Vertx, long, int)} to init
+     * Initializes the internal buffer. Implementers must call {@link #configureFlushInterval(Vertx, long)} to init
      * the process of sending metrics
      *
      * @param options Statful configuration to decide if metrics should be sent or not
@@ -49,6 +54,8 @@ abstract class MetricsHolder implements Sender {
         this.sampler = Objects.requireNonNull(sampler);
 
         this.buffer = new ArrayBlockingQueue<>(options.getMaxBufferSize());
+
+        this.flushSize = options.getFlushSize();
     }
 
     /**
@@ -64,6 +71,9 @@ abstract class MetricsHolder implements Sender {
         }
 
         boolean inserted = this.buffer.offer(dataPoint);
+
+        this.flushOnCapacity(inserted);
+
         if (!inserted) {
             LOGGER.warn("metric could not be added to buffer, discarding it {} ", dataPoint.toMetricLine());
         }
@@ -71,19 +81,28 @@ abstract class MetricsHolder implements Sender {
     }
 
     /**
+     * If a metric could not be added to the buffer tries to flush the buffer.
+     * Also check if a the buffer has at least as many items as the flush size and tries to flush the buffer
+     */
+    private void flushOnCapacity(final boolean inserted) {
+        if (!inserted || this.buffer.size() >= flushSize) {
+            this.flush();
+        }
+    }
+
+    /**
      * Methods uses vertx instance to set a periodic interval
      *
      * @param vertx         instance to create the periodic interval on
      * @param flushInterval time between flushes
-     * @param flushSize     number of elements to clean from the buffer
      */
-    void configureFlushInterval(final Vertx vertx, final long flushInterval, final int flushSize) {
-        vertx.setPeriodic(flushInterval, timerId -> flush(flushSize));
+    void configureFlushInterval(final Vertx vertx, final long flushInterval) {
+        vertx.setPeriodic(flushInterval, timerId -> flush());
     }
 
-    private void flush(final int flushSize) {
-        List<DataPoint> toBeSent = Lists.newArrayListWithCapacity(flushSize);
-        buffer.drainTo(toBeSent, flushSize);
+    private void flush() {
+        List<DataPoint> toBeSent = Lists.newArrayListWithCapacity(this.flushSize);
+        buffer.drainTo(toBeSent, this.flushSize);
 
         if (dryrun) {
             final String toSendMetrics = toBeSent.stream().map(DataPoint::toMetricLine).collect(Collectors.joining("\n"));

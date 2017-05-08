@@ -58,7 +58,7 @@ public class HttpSender extends MetricsHolder {
                     .setSsl(options.isSecure());
 
             this.client = vertx.createHttpClient(httpClientOptions);
-            this.configureFlushInterval(vertx, this.options.getFlushInterval(), this.options.getFlushSize());
+            this.configureFlushInterval(vertx, this.options.getFlushInterval());
         });
     }
 
