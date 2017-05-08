@@ -47,7 +47,7 @@ public final class UDPSender extends MetricsHolder {
         // so that we can open a socket and configure a interval
         context.runOnContext(aVoid -> {
             this.socket = vertx.createDatagramSocket(new DatagramSocketOptions());
-            this.configureFlushInterval(vertx, this.options.getFlushInterval(), this.options.getFlushSize());
+            this.configureFlushInterval(vertx, this.options.getFlushInterval());
         });
     }
 
