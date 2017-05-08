@@ -87,11 +87,7 @@ abstract class MetricsHolder implements Sender {
     private void shouldFlush(final boolean inserted) {
         if (!inserted) {
             this.flush();
-            return;
-        }
-
-        int size = this.buffer.size();
-        if (size >= flushSize) {
+        } else if (this.buffer.size() >= flushSize) {
             this.flush();
         }
     }
