@@ -45,7 +45,6 @@ public class StatfulUDPClientIntegrationTest extends IntegrationTestCase {
                 .setTransport(Transport.UDP)
                 .setFlushInterval(1000)
                 .setFlushSize(20)
-                .setPrefix("testing")
                 .setEnabled(true)
                 .setEnablePoolMetrics(false)
                 .setTags(Lists.newArrayList(new Pair<>("global", "value"), new Pair<>("global1", "value1")))

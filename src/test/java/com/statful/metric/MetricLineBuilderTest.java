@@ -17,7 +17,6 @@ public class MetricLineBuilderTest {
     @Before
     public void setup() {
         victim = new MetricLineBuilder();
-        victim.withPrefix("prefix");
         victim.withNamespace("namespace");
         victim.withMetricType(MetricType.TIMER);
         victim.withMetricName("execution");
@@ -30,7 +29,7 @@ public class MetricLineBuilderTest {
     @Test
     public void testBuildWithoutAggregations() {
         String result = victim.build();
-        String expected = "prefix.namespace.timer.execution,tagName=tagValue value 1 100";
+        String expected = "namespace.timer.execution,tagName=tagValue value 1 100";
         assertEquals(expected, result);
     }
 
@@ -38,7 +37,6 @@ public class MetricLineBuilderTest {
     public void testBuildWithoutAggregationsWithoutTags() {
 
         victim = new MetricLineBuilder();
-        victim.withPrefix("prefix");
         victim.withNamespace("namespace");
         victim.withMetricType(MetricType.TIMER);
         victim.withMetricName("execution");
@@ -47,7 +45,7 @@ public class MetricLineBuilderTest {
         victim.withSampleRate(100);
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer.execution value 1 100";
+        String expected = "namespace.timer.execution value 1 100";
         assertEquals(expected, result);
     }
 
@@ -57,7 +55,7 @@ public class MetricLineBuilderTest {
         victim.withAggregationFrequency(AggregationFreq.FREQ_120);
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer.execution,tagName=tagValue value 1 100";
+        String expected = "namespace.timer.execution,tagName=tagValue value 1 100";
         assertEquals(expected, result);
     }
 
@@ -68,7 +66,7 @@ public class MetricLineBuilderTest {
         victim.withAggregationFrequency(AggregationFreq.FREQ_120);
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer.execution,tagName=tagValue value 1 avg,120 100";
+        String expected = "namespace.timer.execution,tagName=tagValue value 1 avg,120 100";
         assertEquals(expected, result);
     }
 
@@ -77,7 +75,7 @@ public class MetricLineBuilderTest {
         victim.withApp("test_app");
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer.execution,app=test_app,tagName=tagValue value 1 100";
+        String expected = "namespace.timer.execution,app=test_app,tagName=tagValue value 1 100";
         assertEquals(expected, result);
     }
 
@@ -86,7 +84,7 @@ public class MetricLineBuilderTest {
         victim.withSampleRate(50);
 
         String result = victim.build();
-        String expected = "prefix.namespace.timer.execution,tagName=tagValue value 1 50";
+        String expected = "namespace.timer.execution,tagName=tagValue value 1 50";
         assertEquals(expected, result);
     }
 }

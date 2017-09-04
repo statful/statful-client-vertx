@@ -90,7 +90,6 @@ public class CustomMetric implements DataPoint {
     @Override
     public String toMetricLine() {
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
-                .withPrefix(this.options.getPrefix())
                 .withNamespace(this.options.getNamespace())
                 .withMetricType(metricType)
                 .withMetricName(this.metricName)

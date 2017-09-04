@@ -77,7 +77,6 @@ The configuration file is a simple json document, a sample can be seen bellow
 
 General configuration for a Statful client.
 
-    * prefix [required] - global metrics prefix
     * host [optional] [default: '127.0.0.1']
     * port [optional] [default: 2013]
     * secure [not supported yet] [default: true] - enable or disable https

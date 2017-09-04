@@ -44,7 +44,6 @@ public class StatfulHttpClientIntegrationTest extends IntegrationTestCase {
                 .setTransport(Transport.HTTP)
                 .setFlushInterval(1000)
                 .setFlushSize(20)
-                .setPrefix("testing")
                 .setSecure(false)
                 .setToken("a token")
                 .setEnabled(true)

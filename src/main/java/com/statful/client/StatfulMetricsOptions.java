@@ -124,11 +124,6 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private Optional<Integer> port = Optional.empty();
 
     /**
-     * Prefix to be added to all metrics.
-     */
-    private String prefix;
-
-    /**
      * Defines the transport to be used to set which type of transport will be used to push the metrics.
      */
     private Transport transport = DEFAULT_TRANSPORT;
@@ -265,7 +260,6 @@ public class StatfulMetricsOptions extends MetricsOptions {
 
         this.host = other.host;
         this.port = other.port;
-        this.prefix = other.prefix;
         this.transport = other.transport;
         this.secure = other.secure;
         this.timeout = other.timeout;
@@ -300,7 +294,6 @@ public class StatfulMetricsOptions extends MetricsOptions {
 
         this.host = Optional.of(config.getString("host", DEFAULT_HOST));
         this.port = Optional.of(config.getInteger("port", DEFAULT_PORT));
-        this.prefix = config.getString("prefix");
         this.transport = Transport.valueOf(config.getString("transport", DEFAULT_TRANSPORT.toString()));
         this.secure = Optional.of(config.getBoolean("secure", DEFAULT_SECURE));
         this.timeout = Optional.of(config.getInteger("timeout", DEFAULT_TIMEOUT));
@@ -396,27 +389,6 @@ public class StatfulMetricsOptions extends MetricsOptions {
     @Nonnull
     public Integer getPort() {
         return port.orElse(DEFAULT_PORT);
-    }
-
-    /**
-     * @param prefix to be applied
-     * @return a reference to this, so the API can be used fluently
-     */
-    public StatfulMetricsOptions setPrefix(@Nonnull final String prefix) {
-        this.prefix = requireNonNull(prefix);
-        return this;
-    }
-
-    /**
-     * Get defined prefix
-     *
-     * @return String with the prefix
-     * @throws NullPointerException if prefix is undefined
-     */
-    @Nonnull
-    public String getPrefix() {
-        requireNonNull(prefix, "Prefix must be set");
-        return prefix;
     }
 
     /**

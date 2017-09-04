@@ -102,7 +102,6 @@ public abstract class HttpDataPoint implements DataPoint {
     protected MetricLineBuilder buildMetricLine() {
 
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
-                .withPrefix(this.options.getPrefix())
                 .withNamespace(this.options.getNamespace())
                 .withMetricType(MetricType.TIMER)
                 .withMetricName(this.metricName)
