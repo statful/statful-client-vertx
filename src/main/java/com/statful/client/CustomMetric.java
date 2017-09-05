@@ -8,6 +8,7 @@ import io.vertx.core.eventbus.MessageCodec;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Custom Metric object to be sent on the event bus
@@ -64,7 +65,7 @@ public class CustomMetric implements DataPoint {
         this.metricName = customMetric.getMetricName();
         this.value = customMetric.getValue();
         this.tags = customMetric.getTags();
-        this.metricType = customMetric.getMetricType();
+        this.metricType = customMetric.getMetricType().orElse(null);
         this.aggregations = customMetric.getAggregations();
         this.frequency = customMetric.getFrequency();
         this.unixTimeStamp = customMetric.getUnixTimeStamp();
@@ -80,10 +81,8 @@ public class CustomMetric implements DataPoint {
         this.value = builder.value;
         this.tags = builder.tags;
         this.metricType = builder.metricType;
-
         this.aggregations = builder.aggregations;
         this.frequency = builder.frequency;
-
         this.unixTimeStamp = this.calculateUnixTimestamp();
     }
 
@@ -91,13 +90,15 @@ public class CustomMetric implements DataPoint {
     public String toMetricLine() {
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
                 .withNamespace(this.options.getNamespace())
-                .withMetricType(this.metricType)
                 .withMetricName(this.metricName)
                 .withValue(String.valueOf(this.value))
                 .withTimestamp(this.unixTimeStamp)
                 .withAggregations(this.aggregations)
                 .withAggregationFrequency(this.frequency)
                 .withSampleRate(this.options.getSampleRate());
+
+        // Add optional metric type
+        getMetricType().ifPresent(metricLineBuilder::withMetricType);
 
         // Add optional application
         this.options.getApp().ifPresent(metricLineBuilder::withApp);
@@ -127,8 +128,8 @@ public class CustomMetric implements DataPoint {
         return tags;
     }
 
-    private MetricType getMetricType() {
-        return metricType;
+    private Optional<MetricType> getMetricType() {
+        return Optional.ofNullable(metricType);
     }
 
     private List<Aggregation> getAggregations() {
