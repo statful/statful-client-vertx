@@ -6,9 +6,12 @@ import com.statful.utils.Pair;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 /**
  * Custom Metric object to be sent on the event bus
@@ -104,7 +107,7 @@ public class CustomMetric implements DataPoint {
         this.options.getApp().ifPresent(metricLineBuilder::withApp);
 
         // Add list of tags
-        this.tags.forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));
+        getTags().forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));
 
         // Add global list of tags
         this.options.getTags().forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));
@@ -125,6 +128,10 @@ public class CustomMetric implements DataPoint {
     }
 
     private List<Pair<String, String>> getTags() {
+        if (isNull(tags)) {
+            return Collections.emptyList();
+        }
+
         return tags;
     }
 

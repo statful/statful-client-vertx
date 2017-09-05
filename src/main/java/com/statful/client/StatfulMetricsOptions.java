@@ -116,12 +116,12 @@ public class StatfulMetricsOptions extends MetricsOptions {
     /**
      * Statful host, default value {@value #DEFAULT_HOST}
      */
-    private Optional<String> host = Optional.empty();
+    private String host = DEFAULT_HOST;
 
     /**
      * Optional Statful default port, default value {@value #DEFAULT_PORT}
      */
-    private Optional<Integer> port = Optional.empty();
+    private int port = DEFAULT_PORT;
 
     /**
      * Defines the transport to be used to set which type of transport will be used to push the metrics.
@@ -131,22 +131,22 @@ public class StatfulMetricsOptions extends MetricsOptions {
     /**
      * Defines whether to use https or not, default value {@value #DEFAULT_SECURE}
      */
-    private Optional<Boolean> secure = Optional.of(DEFAULT_SECURE);
+    private boolean secure = DEFAULT_SECURE;
 
     /**
      * Defines timeout for the client reporter (http / tcp transports), default value {@value #DEFAULT_TIMEOUT}
      */
-    private Optional<Integer> timeout = Optional.of(DEFAULT_TIMEOUT);
+    private int timeout = DEFAULT_TIMEOUT;
 
     /**
      * Application token, to be used by the http transport
      */
-    private Optional<String> token = Optional.empty();
+    private String token;
 
     /**
      * Optional value to map to an extra TAG defining the application
      */
-    private Optional<String> app = Optional.empty();
+    private String app;
 
     /**
      * Optional configuration to not send any metrics when flushing the buffer, default value {@value #DEFAULT_DRY_RUN}
@@ -187,7 +187,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * Optional name space to to to be applied to the to all metrics, can be overridden in method calls,
      * default value {@value #DEFAULT_NAMESPACE}
      */
-    private Optional<String> namespace = Optional.empty();
+    private String namespace = DEFAULT_NAMESPACE;
 
     /**
      * Defined the periodicity (number of elements collected) of buffer flushes, default value {@value #DEFAULT_FLUSH_SIZE}
@@ -292,13 +292,13 @@ public class StatfulMetricsOptions extends MetricsOptions {
     public StatfulMetricsOptions(final JsonObject config) {
         super(config);
 
-        this.host = Optional.of(config.getString("host", DEFAULT_HOST));
-        this.port = Optional.of(config.getInteger("port", DEFAULT_PORT));
+        this.host = config.getString("host", DEFAULT_HOST);
+        this.port = config.getInteger("port", DEFAULT_PORT);
         this.transport = Transport.valueOf(config.getString("transport", DEFAULT_TRANSPORT.toString()));
-        this.secure = Optional.of(config.getBoolean("secure", DEFAULT_SECURE));
-        this.timeout = Optional.of(config.getInteger("timeout", DEFAULT_TIMEOUT));
-        this.token = Optional.ofNullable(config.getString("token"));
-        this.app = Optional.ofNullable(config.getString("app"));
+        this.secure = config.getBoolean("secure", DEFAULT_SECURE);
+        this.timeout = config.getInteger("timeout", DEFAULT_TIMEOUT);
+        this.token = config.getString("token");
+        this.app = config.getString("app");
         this.dryrun = config.getBoolean("dryrun", DEFAULT_DRY_RUN);
 
         this.tags = config.getJsonArray("tags", new JsonArray())
@@ -308,7 +308,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
                 .collect(Collectors.toList());
 
         this.sampleRate = config.getInteger("sampleRate", DEFAULT_SAMPLE_RATE);
-        this.namespace = Optional.ofNullable(config.getString("namespace", null));
+        this.namespace = config.getString("namespace", null);
         this.flushSize = config.getInteger("flushSize", DEFAULT_FLUSH_SIZE);
         this.flushInterval = config.getLong("flushInterval", DEFAULT_FLUSH_INTERVAL);
 
@@ -358,7 +358,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @return a reference to this, so the API can be used fluently
      */
     public StatfulMetricsOptions setHost(@Nonnull final String host) {
-        this.host = Optional.of(requireNonNull(host));
+        this.host = requireNonNull(host);
         return this;
     }
 
@@ -369,26 +369,25 @@ public class StatfulMetricsOptions extends MetricsOptions {
      */
     @Nonnull
     public String getHost() {
-        return host.orElse(DEFAULT_HOST);
+        return host;
     }
 
     /**
      * @param port target Statful port
      * @return a reference to this, so the API can be used fluently
      */
-    public StatfulMetricsOptions setPort(@Nonnull final Integer port) {
-        this.port = Optional.of(requireNonNull(port));
+    public StatfulMetricsOptions setPort(final int port) {
+        this.port = port;
         return this;
     }
 
     /**
      * Get defined port or the default value if none was set
      *
-     * @return Integer with port
+     * @return int with port
      */
-    @Nonnull
-    public Integer getPort() {
-        return port.orElse(DEFAULT_PORT);
+    public int getPort() {
+        return port;
     }
 
     /**
@@ -417,7 +416,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @return a reference to this, so the API can be used fluently
      */
     public StatfulMetricsOptions setSecure(final boolean secure) {
-        this.secure = Optional.of(secure);
+        this.secure = secure;
         return this;
     }
 
@@ -426,9 +425,8 @@ public class StatfulMetricsOptions extends MetricsOptions {
      *
      * @return true if secure is to be used, false otherwise
      */
-    @Nonnull
-    public Boolean isSecure() {
-        return secure.orElse(DEFAULT_SECURE);
+    public boolean isSecure() {
+        return secure;
     }
 
     /**
@@ -436,7 +434,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @return a reference to this, so the API can be used fluently
      */
     public StatfulMetricsOptions setTimeout(final int timeout) {
-        this.timeout = Optional.of(timeout);
+        this.timeout = timeout;
         return this;
     }
 
@@ -446,7 +444,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @return int value in milliseconds
      */
     public int getTimeout() {
-        return timeout.orElse(DEFAULT_TIMEOUT);
+        return timeout;
     }
 
     /**
@@ -454,7 +452,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @return a reference to this, so the API can be used fluently
      */
     public StatfulMetricsOptions setToken(@Nonnull final String token) {
-        this.token = Optional.of(requireNonNull(token));
+        this.token = requireNonNull(token);
         return this;
     }
 
@@ -465,7 +463,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @throws IllegalArgumentException if no token is configured
      */
     public String getToken() {
-        return token.orElseThrow(IllegalArgumentException::new);
+        return Optional.ofNullable(token).orElseThrow(() -> new IllegalArgumentException("No token provided."));
     }
 
     /**
@@ -473,7 +471,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @return a reference to this, so the API can be used fluently
      */
     public StatfulMetricsOptions setApp(@Nullable final String app) {
-        this.app = Optional.ofNullable(app);
+        this.app = app;
         return this;
     }
 
@@ -483,7 +481,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @return {@link Optional#empty()} if nothing is defined, string value if defined
      */
     public Optional<String> getApp() {
-        return app;
+        return Optional.ofNullable(app);
     }
 
     /**
@@ -547,7 +545,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * @return a reference to this, so the API can be used fluently
      */
     public StatfulMetricsOptions setNamespace(@Nonnull final String namespace) {
-        this.namespace = Optional.of(requireNonNull(namespace));
+        this.namespace = requireNonNull(namespace);
         return this;
     }
 
@@ -556,7 +554,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
      */
     @Nonnull
     public String getNamespace() {
-        return namespace.orElse(DEFAULT_NAMESPACE);
+        return namespace;
     }
 
     /**

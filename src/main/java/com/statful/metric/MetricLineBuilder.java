@@ -85,7 +85,7 @@ public final class MetricLineBuilder {
         sb.append(metricName);
 
         // merge application to the tag list
-        getApp().ifPresent(application -> this.tags.put("app", application));
+        getApp().ifPresent(application -> this.tags.putIfAbsent("app", application));
 
         toStringTags().ifPresent(stringTag -> sb.append(",").append(stringTag));
 
