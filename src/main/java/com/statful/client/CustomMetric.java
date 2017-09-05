@@ -82,7 +82,7 @@ public class CustomMetric implements DataPoint {
         this.metricName = Objects.requireNonNull(builder.metricName, "MetricName cannot be null");
         this.value = builder.value;
         this.tags = builder.tags;
-        this.metricType = Objects.requireNonNull(builder.metricType, "MetricType cannot be null");
+        this.metricType = builder.metricType;
         this.aggregations = builder.aggregations;
         this.frequency = builder.frequency;
         this.unixTimeStamp = this.calculateUnixTimestamp();
@@ -92,7 +92,7 @@ public class CustomMetric implements DataPoint {
     public String toMetricLine() {
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
                 .withNamespace(this.options.getNamespace())
-                .withMetricType(metricType)
+                .withMetricType(this.metricType)
                 .withMetricName(this.metricName)
                 .withValue(String.valueOf(this.value))
                 .withTimestamp(this.unixTimeStamp)

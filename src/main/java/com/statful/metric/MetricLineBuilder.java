@@ -24,8 +24,9 @@ public final class MetricLineBuilder {
      * Namespace to be set in the metric
      */
     private String namespace;
+
     /**
-     * Metric type to be set in the metric
+     * Optional metric type to be set in the metric
      */
     private MetricType metricType;
 
@@ -45,7 +46,7 @@ public final class MetricLineBuilder {
     private String value;
 
     /**
-     * timestamp of when the metric was collected
+     * Timestamp of when the metric was collected
      */
     private long timestamp;
 
@@ -65,7 +66,7 @@ public final class MetricLineBuilder {
     private int sampleRate;
 
     /**
-     * builds the metric following Statful spec
+     * Builds the metric following Statful spec
      *
      * @return String with the formatted metric
      */
@@ -77,7 +78,9 @@ public final class MetricLineBuilder {
             sb.append(this.namespace).append(".");
         }
 
-        sb.append(metricType.toString()).append(".");
+        if (!Objects.isNull(this.metricType)) {
+            sb.append(metricType.toString()).append(".");
+        }
 
         sb.append(metricName);
 
