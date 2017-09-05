@@ -22,7 +22,6 @@ public class HttpClientDataPointTest {
     @Before
     public void setup() {
         this.options = mock(StatfulMetricsOptions.class);
-        when(this.options.getPrefix()).thenReturn("prefix");
         when(this.options.getNamespace()).thenReturn("namespace");
         when(this.options.getTimerAggregations()).thenReturn(Lists.newArrayList(Aggregation.P95));
         when(this.options.getTimerFrequency()).thenReturn(AggregationFreq.FREQ_10);
@@ -36,7 +35,7 @@ public class HttpClientDataPointTest {
         HttpClientDataPoint victim = new HttpClientDataPoint(this.options,"execution", "name", "verb", 1000, 200, HttpClientDataPoint.Type.CLIENT);
         
         // using a regex for match since the metric will include a timestamp that we don't really want to test here
-        final String expected = "prefix\\.namespace\\.timer\\.execution,request=name,verb=verb,transport=http,type=client,statusCode=200 1000 \\d.* p95,10 100";
+        final String expected = "namespace\\.timer\\.execution,request=name,verb=verb,transport=http,type=client,statusCode=200 1000 \\d.* p95,10 100";
         final String actual = victim.toMetricLine();
         
         Matcher matcher = Pattern.compile(expected).matcher(victim.toMetricLine());

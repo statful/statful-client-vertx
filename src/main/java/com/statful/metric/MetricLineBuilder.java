@@ -21,10 +21,6 @@ public final class MetricLineBuilder {
     private String app;
 
     /**
-     * Prefix to be set in the metric
-     */
-    private String prefix;
-    /**
      * Namespace to be set in the metric
      */
     private String namespace;
@@ -77,15 +73,13 @@ public final class MetricLineBuilder {
     public String build() {
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(this.prefix);
-
         if (!Strings.isNullOrEmpty(this.namespace)) {
-            sb.append(".").append(this.namespace);
+            sb.append(this.namespace).append(".");
         }
 
-        sb.append(".").append(metricType.toString());
+        sb.append(metricType.toString()).append(".");
 
-        sb.append(".").append(metricName);
+        sb.append(metricName);
 
         // merge application to the tag list
         getApp().ifPresent(application -> this.tags.put("app", application));
@@ -135,17 +129,6 @@ public final class MetricLineBuilder {
      */
     public MetricLineBuilder withApp(final String application) {
         this.app = application;
-        return this;
-    }
-
-    /**
-     * @param prefixToAdd to be added to the metric
-     * @return a reference to this, so the API can be used fluently
-     */
-    @Nonnull
-    public MetricLineBuilder withPrefix(@Nonnull final String prefixToAdd) {
-        Objects.requireNonNull(prefixToAdd);
-        this.prefix = prefixToAdd;
         return this;
     }
 

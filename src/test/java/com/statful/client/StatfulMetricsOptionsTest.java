@@ -47,24 +47,6 @@ public class StatfulMetricsOptionsTest {
 
     @SuppressWarnings("all")
     @Test(expected = NullPointerException.class)
-    public void testSetNullPrefix() {
-        victim.setPrefix(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testMandatorySetPrefix() {
-        victim.getPrefix();
-    }
-
-    @Test
-    public void testSetPrefix() {
-        victim.setPrefix("prefix");
-        assertEquals("prefix", victim.getPrefix());
-    }
-
-
-    @SuppressWarnings("all")
-    @Test(expected = NullPointerException.class)
     public void testSetNullTransport() {
         victim.setTransport(null);
     }
@@ -227,7 +209,7 @@ public class StatfulMetricsOptionsTest {
     @Test
     public void testCopyCtor() {
         victim.setApp("app").setDryrun(true).setFlushSize(10).setHost("host").setNamespace("namespace")
-                .setPort(9999).setPrefix("prefix").setSampleRate(10).setSecure(true)
+                .setPort(9999).setSampleRate(10).setSecure(true)
                 .setTimeout(1000).setToken("token").setTransport(Transport.UDP).setEnabled(true)
                 .setTags(Lists.newArrayList(new Pair<>("tag", "value")));
 
@@ -237,7 +219,6 @@ public class StatfulMetricsOptionsTest {
         assertEquals(victim.getFlushSize(), copy.getFlushSize());
         assertEquals(victim.getNamespace(), copy.getNamespace());
         assertEquals(victim.getPort(), copy.getPort());
-        assertEquals(victim.getPrefix(), copy.getPrefix());
         assertEquals(victim.getSampleRate(), copy.getSampleRate());
         assertEquals(victim.isSecure(), copy.isSecure());
         assertTrue(victim.getTags().containsAll(copy.getTags()));
@@ -253,7 +234,6 @@ public class StatfulMetricsOptionsTest {
         JsonObject configuration = new JsonObject()
                 .put("host", "host")
                 .put("port", 1111)
-                .put("prefix", "prefix")
                 .put("transport", Transport.HTTP.toString())
                 .put("secure", false)
                 .put("timeout", 100)
@@ -273,7 +253,6 @@ public class StatfulMetricsOptionsTest {
         victim = new StatfulMetricsOptions(configuration);
         assertEquals(victim.getHost(), "host");
         assertEquals(victim.getPort(), new Integer(1111));
-        assertEquals(victim.getPrefix(), "prefix");
         assertEquals(victim.getTransport(), Transport.HTTP);
         assertFalse(victim.isSecure());
         assertEquals(victim.getTimeout(), 100);

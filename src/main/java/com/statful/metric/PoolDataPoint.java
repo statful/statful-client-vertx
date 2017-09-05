@@ -56,7 +56,6 @@ public class PoolDataPoint implements DataPoint {
     @Override
     public String toMetricLine() {
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
-                .withPrefix(this.options.getPrefix())
                 .withNamespace(this.options.getNamespace())
                 .withMetricType(MetricType.GAUGE)
                 .withMetricName("pool")
