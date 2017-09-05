@@ -35,14 +35,14 @@ public class StatfulMetricsOptionsTest {
     @Test
     public void testDefaultSetPort() {
         // check default host
-        assertEquals(Integer.valueOf(2013), victim.getPort());
+        assertEquals(2013, victim.getPort());
     }
 
     @Test
     public void testSetPort() {
         victim.setPort(1111);
         // check default host
-        assertEquals(Integer.valueOf(1111), victim.getPort());
+        assertEquals(1111, victim.getPort());
     }
 
     @SuppressWarnings("all")
@@ -252,7 +252,7 @@ public class StatfulMetricsOptionsTest {
 
         victim = new StatfulMetricsOptions(configuration);
         assertEquals(victim.getHost(), "host");
-        assertEquals(victim.getPort(), new Integer(1111));
+        assertEquals(victim.getPort(), 1111);
         assertEquals(victim.getTransport(), Transport.HTTP);
         assertFalse(victim.isSecure());
         assertEquals(victim.getTimeout(), 100);
