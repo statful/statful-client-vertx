@@ -70,7 +70,7 @@ public class CustomMetric implements DataPoint {
         this.tags = customMetric.getTags();
         this.metricType = customMetric.getMetricType().orElse(null);
         this.aggregations = customMetric.getAggregations();
-        this.frequency = customMetric.getFrequency();
+        this.frequency = customMetric.getFrequency().orElse(null);
         this.timestamp = customMetric.getTimestamp();
     }
 
@@ -105,6 +105,17 @@ public class CustomMetric implements DataPoint {
                 .withAggregationFrequency(this.frequency)
                 .withSampleRate(this.options.getSampleRate());
 
+        if (!getAggregations().isEmpty()) {
+            // Add optional aggregations
+            metricLineBuilder.withAggregations(getAggregations());
+        } else {
+            // Add global aggregations
+            metricLineBuilder.withAggregations(supplyGlobalAggregations());
+        }
+
+        // Add optional/global aggregation frequency
+        metricLineBuilder.withAggregationFrequency(getFrequency().orElseGet(this::supplyGlobalAggregationFrequency));
+
         // Add optional metric type
         getMetricType().ifPresent(metricLineBuilder::withMetricType);
 
@@ -118,6 +129,22 @@ public class CustomMetric implements DataPoint {
         this.options.getTags().forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));
 
         return metricLineBuilder.build();
+    }
+
+    private List<Aggregation> supplyGlobalAggregations() {
+        if (!getMetricType().isPresent()) {
+            return Collections.emptyList();
+        }
+
+        return getMetricType().get().getDefaultAggregationFromOptions(this.options);
+    }
+
+    private AggregationFreq supplyGlobalAggregationFrequency() {
+        if (!getMetricType().isPresent()) {
+            return StatfulMetricsOptions.getDefaultFrequency();
+        }
+
+        return getMetricType().get().getDefaultAggregationFrequencyFromOptions(this.options);
     }
 
     private StatfulMetricsOptions getOptions() {
@@ -145,11 +172,15 @@ public class CustomMetric implements DataPoint {
     }
 
     private List<Aggregation> getAggregations() {
+        if (isNull(aggregations)) {
+            return Collections.emptyList();
+        }
+
         return aggregations;
     }
 
-    private AggregationFreq getFrequency() {
-        return frequency;
+    private Optional<AggregationFreq> getFrequency() {
+        return Optional.ofNullable(frequency);
     }
 
     public long getTimestamp() {

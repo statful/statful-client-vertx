@@ -92,40 +92,6 @@ public class StatfulHttpClientIntegrationTest extends IntegrationTestCase {
         testTimerMetric(metricsDisabled, context, "type=server", Optional.of("/should/ignore/"));
     }
 
-    @Test
-    public void testCustomMetric(TestContext context) {
-        Async async = context.async();
-
-        this.httpMetricsReceiver.requestHandler(packet -> {
-            packet.bodyHandler(body -> {
-                String metric = body.toString();
-                context.assertTrue(metric.contains("customMetricName"));
-                context.assertTrue(metric.contains("value1"));
-                context.assertTrue(metric.contains("tagName=tagValue"));
-                teardown(async, context, null);
-            });
-        }).listen(HTTP_SENDER_PORT, HOST, event -> {
-            if (event.failed()) {
-                teardown(async, context, event.cause());
-            }
-        });
-
-        Pair<String, String> tag = new Pair<>("tagName", "tagValue");
-        List<Pair<String, String>> tags = Lists.newArrayList();
-        tags.add(tag);
-
-        CustomMetric metric = new CustomMetric.Builder()
-                .withMetricName("customMetricName")
-                .withAggregations(Lists.newArrayList(Aggregation.AVG))
-                .withFrequency(AggregationFreq.FREQ_10)
-                .withMetricType(MetricType.TIMER)
-                .withTags(tags)
-                .withValue(1L)
-                .build();
-
-        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
-    }
-
     private void testTimerMetric(Vertx vertx, TestContext context, String tagMatcher, Optional<String> toIgnore) {
         Async async = context.async();
 
