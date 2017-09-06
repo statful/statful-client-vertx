@@ -205,6 +205,90 @@ public class StatfulMetricsOptionsTest {
         assertEquals(newSize, victim.getMaxBufferSize());
     }
 
+    @Test
+    public void testDefaultTimerAggregations() {
+        List<Aggregation> expected = Lists.newArrayList(Aggregation.AVG, Aggregation.P90, Aggregation.COUNT);
+
+        assertEquals(3, victim.getTimerAggregations().size());
+        assertTrue(victim.getTimerAggregations().containsAll(expected));
+    }
+
+    @Test
+    public void testSetTimerAggregations() {
+        victim.setTimerAggregations(Lists.newArrayList(Aggregation.LAST));
+
+        assertEquals(1, victim.getTimerAggregations().size());
+        assertTrue(victim.getTimerAggregations().contains(Aggregation.LAST));
+    }
+
+    @Test
+    public void testDefaultGaugeAggregations() {
+        List<Aggregation> expected = Lists.newArrayList(Aggregation.LAST, Aggregation.MAX, Aggregation.AVG);
+
+        assertEquals(3, victim.getGaugeAggregations().size());
+        assertTrue(victim.getGaugeAggregations().containsAll(expected));
+    }
+
+    @Test
+    public void testSetGaugeAggregations() {
+        victim.setGaugeAggregations(Lists.newArrayList(Aggregation.LAST));
+
+        assertEquals(1, victim.getGaugeAggregations().size());
+        assertTrue(victim.getGaugeAggregations().contains(Aggregation.LAST));
+    }
+
+    @Test
+    public void testDefaultCounterAggregations() {
+        List<Aggregation> expected = Lists.newArrayList(Aggregation.COUNT, Aggregation.SUM);
+
+        assertEquals(2, victim.getCounterAggregations().size());
+        assertTrue(victim.getCounterAggregations().containsAll(expected));
+    }
+
+    @Test
+    public void testSetCounterAggregations() {
+        victim.setCounterAggregations(Lists.newArrayList(Aggregation.LAST));
+
+        assertEquals(1, victim.getCounterAggregations().size());
+        assertTrue(victim.getCounterAggregations().contains(Aggregation.LAST));
+    }
+    
+    @Test
+    public void testDefaultTimerAggregationFrequency() {
+        assertEquals(AggregationFreq.FREQ_10, victim.getTimerFrequency());
+    }
+    
+    @Test
+    public void testSetTimerAggregationFrequency() {
+        victim.setTimerFrequency(AggregationFreq.FREQ_120);
+        
+        assertEquals(AggregationFreq.FREQ_120, victim.getTimerFrequency());
+    }
+
+    @Test
+    public void testDefaultGaugeAggregationFrequency() {
+        assertEquals(AggregationFreq.FREQ_10, victim.getGaugeFrequency());
+    }
+
+    @Test
+    public void testSetGaugeAggregationFrequency() {
+        victim.setGaugeFrequency(AggregationFreq.FREQ_120);
+
+        assertEquals(AggregationFreq.FREQ_120, victim.getGaugeFrequency());
+    }
+    
+    @Test
+    public void testDefaultCounterAggregationFrequency() {
+        assertEquals(AggregationFreq.FREQ_10, victim.getCounterFrequency());
+    }
+
+    @Test
+    public void testSetCounterAggregationFrequency() {
+        victim.setCounterFrequency(AggregationFreq.FREQ_120);
+
+        assertEquals(AggregationFreq.FREQ_120, victim.getCounterFrequency());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCopyCtor() {

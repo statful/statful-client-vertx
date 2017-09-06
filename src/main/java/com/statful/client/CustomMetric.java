@@ -70,7 +70,7 @@ public class CustomMetric implements DataPoint {
         this.tags = customMetric.getTags();
         this.metricType = customMetric.getMetricType().orElse(null);
         this.aggregations = customMetric.getAggregations();
-        this.frequency = customMetric.getFrequency();
+        this.frequency = customMetric.getFrequency().orElse(null);
         this.unixTimeStamp = customMetric.getUnixTimeStamp();
     }
 
@@ -96,9 +96,18 @@ public class CustomMetric implements DataPoint {
                 .withMetricName(this.metricName)
                 .withValue(String.valueOf(this.value))
                 .withTimestamp(this.unixTimeStamp)
-                .withAggregations(this.aggregations)
-                .withAggregationFrequency(this.frequency)
                 .withSampleRate(this.options.getSampleRate());
+
+        if (!getAggregations().isEmpty()) {
+            // Add optional aggregations
+            metricLineBuilder.withAggregations(getAggregations());
+        } else {
+            // Add global aggregations
+            metricLineBuilder.withAggregations(supplyGlobalAggregations());
+        }
+
+        // Add optional/global aggregation frequency
+        metricLineBuilder.withAggregationFrequency(getFrequency().orElseGet(this::supplyGlobalAggregationFrequency));
 
         // Add optional metric type
         getMetricType().ifPresent(metricLineBuilder::withMetricType);
@@ -113,6 +122,40 @@ public class CustomMetric implements DataPoint {
         this.options.getTags().forEach(pair -> metricLineBuilder.withTag(pair.getLeft(), pair.getRight()));
 
         return metricLineBuilder.build();
+    }
+
+    private List<Aggregation> supplyGlobalAggregations() {
+        if (!getMetricType().isPresent()) {
+            return Collections.emptyList();
+        } else {
+            switch (getMetricType().get()) {
+                case GAUGE:
+                    return this.options.getGaugeAggregations();
+                case COUNTER:
+                    return this.options.getCounterAggregations();
+                case TIMER:
+                    return this.options.getTimerAggregations();
+                default:
+                    throw new IllegalArgumentException("Invalid metric type provided.");
+            }
+        }
+    }
+
+    private AggregationFreq supplyGlobalAggregationFrequency() {
+        if (!getMetricType().isPresent()) {
+            return StatfulMetricsOptions.getDefaultFrequency();
+        } else {
+            switch (getMetricType().get()) {
+                case GAUGE:
+                    return this.options.getGaugeFrequency();
+                case COUNTER:
+                    return this.options.getCounterFrequency();
+                case TIMER:
+                    return this.options.getTimerFrequency();
+                default:
+                    throw new IllegalArgumentException("Invalid metric type provided.");
+            }
+        }
     }
 
     private StatfulMetricsOptions getOptions() {
@@ -140,11 +183,15 @@ public class CustomMetric implements DataPoint {
     }
 
     private List<Aggregation> getAggregations() {
+        if (isNull(aggregations)) {
+            return Collections.emptyList();
+        }
+
         return aggregations;
     }
 
-    private AggregationFreq getFrequency() {
-        return frequency;
+    private Optional<AggregationFreq> getFrequency() {
+        return Optional.ofNullable(frequency);
     }
 
     public long getUnixTimeStamp() {
