@@ -22,7 +22,7 @@ public interface DataPoint {
      * Calculates current unix timestamp
      * @return long with value
      */
-    default long calculateUnixTimestamp() {
+    default long calculateEpochTimestamp() {
         return System.currentTimeMillis() / TIMESTAMP_DIVIDER;
     }
 }
