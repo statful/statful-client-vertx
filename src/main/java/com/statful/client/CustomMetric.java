@@ -101,8 +101,6 @@ public class CustomMetric implements DataPoint {
                 .withMetricName(this.metricName)
                 .withValue(String.valueOf(this.value))
                 .withTimestamp(this.timestamp)
-                .withAggregations(this.aggregations)
-                .withAggregationFrequency(this.frequency)
                 .withSampleRate(this.options.getSampleRate());
 
         if (!getAggregations().isEmpty()) {
