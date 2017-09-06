@@ -6,9 +6,10 @@ import com.statful.client.AggregationFreq;
 import com.statful.client.MetricType;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 /**
  * Statful metric line builder. Builds metrics lines according to Statful specification
@@ -74,18 +75,25 @@ public final class MetricLineBuilder {
     public String build() {
         final StringBuilder sb = new StringBuilder();
 
-        if (!Strings.isNullOrEmpty(this.namespace)) {
-            sb.append(this.namespace).append(".");
+        if (!Strings.isNullOrEmpty(namespace)) {
+            sb.append(namespace).append(".");
         }
 
-        if (!Objects.isNull(this.metricType)) {
+        if (!isNull(metricType)) {
             sb.append(metricType.toString()).append(".");
         }
 
         sb.append(metricName);
 
         // merge application to the tag list
-        getApp().ifPresent(application -> this.tags.putIfAbsent("app", application));
+        getApp().ifPresent(application -> {
+            if (isNull(tags)) {
+                tags = new HashMap<>();
+                tags.put("app", application);
+            }
+
+            tags.putIfAbsent("app", application);
+        });
 
         toStringTags().ifPresent(stringTag -> sb.append(",").append(stringTag));
 
@@ -130,8 +138,9 @@ public final class MetricLineBuilder {
      * @param application application name to be added to
      * @return a reference to this, so the API can be used fluently
      */
-    public MetricLineBuilder withApp(final String application) {
-        this.app = application;
+    @Nonnull
+    public MetricLineBuilder withApp(@Nonnull final String application) {
+        this.app = Objects.requireNonNull(application);
         return this;
     }
 
@@ -141,8 +150,7 @@ public final class MetricLineBuilder {
      */
     @Nonnull
     public MetricLineBuilder withNamespace(@Nonnull final String namespaceToAdd) {
-        Objects.requireNonNull(namespaceToAdd);
-        this.namespace = namespaceToAdd;
+        this.namespace = Objects.requireNonNull(namespaceToAdd);
         return this;
     }
 
@@ -152,8 +160,7 @@ public final class MetricLineBuilder {
      */
     @Nonnull
     public MetricLineBuilder withMetricName(@Nonnull final String metricNameToAdd) {
-        Objects.requireNonNull(metricNameToAdd);
-        this.metricName = metricNameToAdd;
+        this.metricName = Objects.requireNonNull(metricNameToAdd);
         return this;
     }
 
@@ -164,8 +171,7 @@ public final class MetricLineBuilder {
      */
     @Nonnull
     public MetricLineBuilder withMetricType(@Nonnull final MetricType metricTypeToAdd) {
-        Objects.requireNonNull(metricTypeToAdd);
-        this.metricType = metricTypeToAdd;
+        this.metricType = Objects.requireNonNull(metricTypeToAdd);
         return this;
     }
 
@@ -190,9 +196,9 @@ public final class MetricLineBuilder {
      * @param valueToAdd to be added to the metric
      * @return a reference to this, so the API can be used fluently
      */
+    @Nonnull
     public MetricLineBuilder withValue(@Nonnull final String valueToAdd) {
-        Objects.requireNonNull(valueToAdd);
-        this.value = valueToAdd;
+        this.value = Objects.requireNonNull(valueToAdd);
         return this;
     }
 
@@ -200,6 +206,7 @@ public final class MetricLineBuilder {
      * @param timestampToAdd to be added to the metric
      * @return a reference to this, so the API can be used fluently
      */
+    @Nonnull
     public MetricLineBuilder withTimestamp(final long timestampToAdd) {
         this.timestamp = timestampToAdd;
         return this;
@@ -209,10 +216,9 @@ public final class MetricLineBuilder {
      * @param aggregationsToAdd to be added to the metric
      * @return a reference to this, so the API can be used fluently
      */
-    public MetricLineBuilder withAggregations(@Nullable final List<Aggregation> aggregationsToAdd) {
-        if (aggregationsToAdd != null) {
-            this.aggregations.addAll(aggregationsToAdd);
-        }
+    @Nonnull
+    public MetricLineBuilder withAggregations(@Nonnull final List<Aggregation> aggregationsToAdd) {
+        this.aggregations.addAll(Objects.requireNonNull(aggregationsToAdd));
         return this;
     }
 
@@ -220,9 +226,9 @@ public final class MetricLineBuilder {
      * @param frequencyToAdd to be added to the metric
      * @return a reference to this, so the API can be used fluently
      */
+    @Nonnull
     public MetricLineBuilder withAggregationFrequency(@Nonnull final AggregationFreq frequencyToAdd) {
-        Objects.requireNonNull(frequencyToAdd);
-        this.frequency = frequencyToAdd;
+        this.frequency = Objects.requireNonNull(frequencyToAdd);
         return this;
     }
 
@@ -230,6 +236,7 @@ public final class MetricLineBuilder {
      * @param sampleRateToAdd to be added to the metric
      * @return a reference to this, so the API can be used fluently
      */
+    @Nonnull
     public MetricLineBuilder withSampleRate(final int sampleRateToAdd) {
         this.sampleRate = sampleRateToAdd;
         return this;

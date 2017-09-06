@@ -89,6 +89,11 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private static final List<Aggregation> DEFAULT_GAUGE_AGGREGATIONS = Lists.newArrayList(Aggregation.LAST, Aggregation.MAX, Aggregation.AVG);
 
     /**
+     * Default aggregations to be applied for Counter metrics
+     */
+    private static final List<Aggregation> DEFAULT_COUNTER_AGGREGATIONS = Lists.newArrayList(Aggregation.COUNT, Aggregation.SUM);
+
+    /**
      * Default value for Aggregations Frequency for metrics
      */
     private static final AggregationFreq DEFAULT_FREQUENCY = AggregationFreq.FREQ_10;
@@ -177,6 +182,16 @@ public class StatfulMetricsOptions extends MetricsOptions {
      * Frequency of aggregation to be applied on Gauge metrics
      */
     private AggregationFreq gaugeFrequency = DEFAULT_FREQUENCY;
+
+    /**
+     * List of aggregations to be applied on Counter metrics
+     */
+    private List<Aggregation> counterAggregations = DEFAULT_COUNTER_AGGREGATIONS;
+
+    /**
+     * Frequency of aggregation to be applied on Counter metrics
+     */
+    private AggregationFreq counterFrequency = DEFAULT_FREQUENCY;
 
     /**
      * Global rate sampling. Valid range [1-100], default value {@link #DEFAULT_SAMPLE_RATE}
@@ -314,10 +329,11 @@ public class StatfulMetricsOptions extends MetricsOptions {
 
         this.timerAggregations = this.parseAggregationsConfiguration("timerAggregations", config, DEFAULT_TIMER_AGGREGATIONS);
         this.gaugeAggregations = this.parseAggregationsConfiguration("gaugeAggregations", config, DEFAULT_GAUGE_AGGREGATIONS);
+        this.counterAggregations = this.parseAggregationsConfiguration("counterAggregations", config, DEFAULT_COUNTER_AGGREGATIONS);
 
         this.timerFrequency = AggregationFreq.valueOf(config.getString("timerFrequency", DEFAULT_FREQUENCY.toString()));
-
         this.gaugeFrequency = AggregationFreq.valueOf(config.getString("gaugeFrequency", DEFAULT_FREQUENCY.toString()));
+        this.counterFrequency = AggregationFreq.valueOf(config.getString("counterFrequency", DEFAULT_FREQUENCY.toString()));
 
         this.patterns = config.getJsonArray("http-server-url-patterns", new JsonArray(Collections.emptyList())).stream()
                 .map(JsonObject.class::cast)
@@ -342,10 +358,17 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private List<Aggregation> parseAggregationsConfiguration(final String key, final JsonObject config, final List<Aggregation> defaultConfig) {
         JsonArray aggregations = config.getJsonArray(key, new JsonArray(Collections.emptyList()));
 
-        if (aggregations == null || aggregations.isEmpty()) {
+        // If not aggregations config specified return the default config
+        if (aggregations == null) {
             return defaultConfig;
         }
 
+        // If aggregations config is set to an empty array return and empty aggregations list
+        if (aggregations.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // If aggregations config is set to a non-empty array return a list of aggregations values
         return aggregations
                 .stream()
                 .map(String.class::cast)
@@ -660,6 +683,50 @@ public class StatfulMetricsOptions extends MetricsOptions {
     public StatfulMetricsOptions setGaugeFrequency(@Nonnull final AggregationFreq gaugeFrequency) {
         this.gaugeFrequency = Objects.requireNonNull(gaugeFrequency);
         return this;
+    }
+
+    /**
+     * @return a copy of the aggregations applied on counter metrics
+     */
+    @Nonnull
+    public List<Aggregation> getCounterAggregations() {
+        return Lists.newArrayList(counterAggregations);
+    }
+
+    /**
+     * @param counterAggregations list of aggregations to apply
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Nonnull
+    public StatfulMetricsOptions setCounterAggregations(@Nonnull final List<Aggregation> counterAggregations) {
+        this.counterAggregations = Lists.newArrayList(Objects.requireNonNull(counterAggregations));
+        return this;
+    }
+
+    /**
+     * @return the frequency to be applied on counter metrics
+     */
+    @Nonnull
+    public AggregationFreq getCounterFrequency() {
+        return counterFrequency;
+    }
+
+    /**
+     * @param counterFrequency the frequency to apply on the aggregations
+     * @return a reference to this, so the API can be used fluently
+     */
+    @Nonnull
+    public StatfulMetricsOptions setCounterFrequency(@Nonnull final AggregationFreq counterFrequency) {
+        this.counterFrequency = Objects.requireNonNull(counterFrequency);
+        return this;
+    }
+
+    /**
+     * @return the default frequency to be applied on metrics
+     */
+    @Nonnull
+    public static AggregationFreq getDefaultFrequency() {
+        return DEFAULT_FREQUENCY;
     }
 
     /**
