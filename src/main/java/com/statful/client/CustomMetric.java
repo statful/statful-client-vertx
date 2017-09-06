@@ -127,35 +127,17 @@ public class CustomMetric implements DataPoint {
     private List<Aggregation> supplyGlobalAggregations() {
         if (!getMetricType().isPresent()) {
             return Collections.emptyList();
-        } else {
-            switch (getMetricType().get()) {
-                case GAUGE:
-                    return this.options.getGaugeAggregations();
-                case COUNTER:
-                    return this.options.getCounterAggregations();
-                case TIMER:
-                    return this.options.getTimerAggregations();
-                default:
-                    throw new IllegalArgumentException("Invalid metric type provided.");
-            }
         }
+
+        return getMetricType().get().getDefaultAggregationFromOptions(this.options);
     }
 
     private AggregationFreq supplyGlobalAggregationFrequency() {
         if (!getMetricType().isPresent()) {
             return StatfulMetricsOptions.getDefaultFrequency();
-        } else {
-            switch (getMetricType().get()) {
-                case GAUGE:
-                    return this.options.getGaugeFrequency();
-                case COUNTER:
-                    return this.options.getCounterFrequency();
-                case TIMER:
-                    return this.options.getTimerFrequency();
-                default:
-                    throw new IllegalArgumentException("Invalid metric type provided.");
-            }
         }
+
+        return getMetricType().get().getDefaultAggregationFrequencyFromOptions(this.options);
     }
 
     private StatfulMetricsOptions getOptions() {
