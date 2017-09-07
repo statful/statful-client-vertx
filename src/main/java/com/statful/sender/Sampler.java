@@ -26,7 +26,7 @@ public final class Sampler implements Sampling {
      * @param random  instance to generate numbers from
      */
     public Sampler(@Nonnull final StatfulMetricsOptions options, @Nonnull final Random random) {
-        this.sampleRate = Objects.requireNonNull(options.getSampleRate());
+        this.sampleRate = options.getSampleRate();
         this.random = Objects.requireNonNull(random);
     }
 

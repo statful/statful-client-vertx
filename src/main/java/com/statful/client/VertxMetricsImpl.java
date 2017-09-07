@@ -45,11 +45,6 @@ final class VertxMetricsImpl extends DummyVertxMetrics {
     private final LinkedBlockingQueue<StatfulMetrics> poolMetricsCollectors;
 
     /**
-     * Custom metrics consumer
-     */
-    private CustomMetricsConsumer customMetricsConsumer;
-
-    /**
      * Constructor to be used for configuration and creation of a sender
      *
      * @param vertx                 vertx instance
@@ -95,7 +90,7 @@ final class VertxMetricsImpl extends DummyVertxMetrics {
 
     @Override
     public void eventBusInitialized(final EventBus bus) {
-        this.customMetricsConsumer = new CustomMetricsConsumer(bus, this.getOrCreateSender(), statfulMetricsOptions);
+        new CustomMetricsConsumer(bus, this.getOrCreateSender(), statfulMetricsOptions);
     }
 
     private Sender getOrCreateSender() {
