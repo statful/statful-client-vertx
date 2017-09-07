@@ -74,8 +74,9 @@ abstract class MetricsHolder implements Sender {
 
         this.flushOnCapacity(inserted);
 
-        if (!inserted) {
-            LOGGER.warn("metric could not be added to buffer, discarding it {} ", dataPoint.toMetricLine());
+        if (!inserted && LOGGER.isDebugEnabled()) {
+            // FIXME: This should try to discard older metrics instead
+            LOGGER.debug("Metric could not be added to buffer, discarding: " +  dataPoint.toMetricLine());
         }
         return inserted;
     }
@@ -106,7 +107,7 @@ abstract class MetricsHolder implements Sender {
 
         if (dryrun) {
             final String toSendMetrics = toBeSent.stream().map(DataPoint::toMetricLine).collect(Collectors.joining("\n"));
-            LOGGER.debug("dryrun: {}", toSendMetrics);
+            LOGGER.debug("Dryrun: " + toSendMetrics);
         } else {
             this.send(toBeSent);
         }
