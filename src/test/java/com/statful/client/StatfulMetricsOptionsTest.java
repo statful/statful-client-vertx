@@ -23,7 +23,7 @@ public class StatfulMetricsOptionsTest {
     @Test
     public void testDefaultHost() {
         // check default host
-        assertEquals("127.0.0.1", victim.getHost());
+        assertEquals("api.statful.com", victim.getHost());
     }
 
     @Test
@@ -35,7 +35,7 @@ public class StatfulMetricsOptionsTest {
     @Test
     public void testDefaultSetPort() {
         // check default host
-        assertEquals(2013, victim.getPort());
+        assertEquals(443, victim.getPort());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class StatfulMetricsOptionsTest {
 
     @Test
     public void testMandatorySetDefaultTransport() {
-        assertEquals(Transport.UDP, victim.getTransport());
+        assertEquals(Transport.HTTP, victim.getTransport());
     }
 
     @Test

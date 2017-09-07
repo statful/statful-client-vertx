@@ -47,6 +47,8 @@ public class StatfulUDPClientIntegrationTest extends IntegrationTestCase {
                 .setFlushSize(20)
                 .setEnabled(true)
                 .setEnablePoolMetrics(false)
+                .setEnableHttpServerMetrics(true)
+                .setEnableHttpClientMetrics(true)
                 .setTags(Lists.newArrayList(new Pair<>("global", "value"), new Pair<>("global1", "value1")))
                 .setHttpServerMatchAndReplacePatterns(matchReplace)
                 .setHttpServerIgnorePaths(Lists.newArrayList(".*ignore.*"));
