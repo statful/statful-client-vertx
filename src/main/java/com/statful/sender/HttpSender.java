@@ -81,7 +81,7 @@ public class HttpSender extends MetricsHolder {
 
         final HttpClientRequest request = client.request(HttpMethod.PUT, options.getHttpMetricsPath(), response -> {
             if (response.statusCode() != HttpResponseStatus.CREATED.code()) {
-                LOGGER.error("Failed to send metrics {}", response.statusMessage(), toSendMetrics);
+                LOGGER.error("Failed to send metrics: " + response.statusMessage() + " - Payload: " + toSendMetrics);
                 endHandler.ifPresent(callerHandler -> callerHandler.handle(Future.failedFuture(response.statusMessage())));
             } else {
                 endHandler.ifPresent(callerHandler -> callerHandler.handle(Future.succeededFuture()));
