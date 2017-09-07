@@ -370,6 +370,35 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
         this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
     }
 
+    @Test
+    public void testCustomMetricWithCustomTimestamp(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setUpVertxTestContext(options);
+
+        Async async = context.async();
+
+        this.httpMetricsReceiver.requestHandler(packet -> packet.bodyHandler(body -> {
+            String metric = body.toString();
+            context.assertTrue(metric.contains("customMetricName"));
+            context.assertTrue(metric.contains("123456789"));
+
+            teardown(async, context, null);
+        })).listen(HTTP_SENDER_PORT, HOST, event -> {
+            if (event.failed()) {
+                teardown(async, context, event.cause());
+            }
+        });
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withTimestamp(123456789L)
+                .withValue(1L)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
     private StatfulMetricsOptions getCommonStatfulMetricsOptions() {
         StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setPort(HTTP_SENDER_PORT)

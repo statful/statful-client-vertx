@@ -95,7 +95,7 @@ public abstract class HttpDataPoint implements DataPoint {
         this.verb = httpVerb;
         this.duration = duration;
         this.responseCode = responseCode;
-        this.unixTimeStamp = this.calculateUnixTimestamp();
+        this.unixTimeStamp = this.calculateEpochTimestamp();
         this.type = type;
     }
 

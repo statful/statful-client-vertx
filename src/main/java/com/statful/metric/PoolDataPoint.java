@@ -50,7 +50,7 @@ public class PoolDataPoint implements DataPoint {
         this.metricType = metricType;
         this.poolName = poolName;
         this.value = value;
-        this.unixTimeStamp = this.calculateUnixTimestamp();
+        this.unixTimeStamp = this.calculateEpochTimestamp();
     }
 
     @Override

@@ -24,7 +24,7 @@ public class CustomMetric implements DataPoint {
     private StatfulMetricsOptions options;
 
     /**
-     * Metric name to collect
+     * Metric metricName to collect
      */
     private final String metricName;
 
@@ -56,7 +56,7 @@ public class CustomMetric implements DataPoint {
     /**
      * Timestamp of metric creation
      */
-    private final long unixTimeStamp;
+    private final long timestamp;
 
     /**
      * Copy constructor
@@ -71,7 +71,7 @@ public class CustomMetric implements DataPoint {
         this.metricType = customMetric.getMetricType().orElse(null);
         this.aggregations = customMetric.getAggregations();
         this.frequency = customMetric.getFrequency().orElse(null);
-        this.unixTimeStamp = customMetric.getUnixTimeStamp();
+        this.timestamp = customMetric.getTimestamp();
     }
 
     /**
@@ -86,7 +86,12 @@ public class CustomMetric implements DataPoint {
         this.metricType = builder.metricType;
         this.aggregations = builder.aggregations;
         this.frequency = builder.frequency;
-        this.unixTimeStamp = this.calculateUnixTimestamp();
+
+        if (isNull(builder.timestamp)) {
+            this.timestamp = this.calculateEpochTimestamp();
+        } else {
+            this.timestamp = builder.timestamp;
+        }
     }
 
     @Override
@@ -95,7 +100,7 @@ public class CustomMetric implements DataPoint {
                 .withNamespace(this.options.getNamespace())
                 .withMetricName(this.metricName)
                 .withValue(String.valueOf(this.value))
-                .withTimestamp(this.unixTimeStamp)
+                .withTimestamp(this.timestamp)
                 .withSampleRate(this.options.getSampleRate());
 
         if (!getAggregations().isEmpty()) {
@@ -176,8 +181,8 @@ public class CustomMetric implements DataPoint {
         return Optional.ofNullable(frequency);
     }
 
-    public long getUnixTimeStamp() {
-        return unixTimeStamp;
+    public long getTimestamp() {
+        return timestamp;
     }
 
     public void setOptions(final StatfulMetricsOptions metricsOptions) {
@@ -190,14 +195,19 @@ public class CustomMetric implements DataPoint {
     public static class Builder {
 
         /**
-         * Metric name to collect
+         * Metric metricName to collect
          */
         private String metricName;
 
         /**
          * Value to collect
          */
-        private long value;
+        private Long value;
+
+        /**
+         * Timestamp to apply
+         */
+        private Long timestamp;
 
         /**
          * List of tags to apply to the request
@@ -235,7 +245,7 @@ public class CustomMetric implements DataPoint {
         }
 
         /**
-         * @param name name of the metric
+         * @param name metricName of the metric
          * @return a reference to self
          */
         public Builder withMetricName(final String name) {
@@ -249,6 +259,15 @@ public class CustomMetric implements DataPoint {
          */
         public Builder withValue(final long metricValue) {
             this.value = metricValue;
+            return this;
+        }
+
+        /**
+         * @param timestampValue of the metric
+         * @return a reference to self
+         */
+        public Builder withTimestamp(final long timestampValue) {
+            this.timestamp = timestampValue;
             return this;
         }
 
