@@ -21,12 +21,12 @@ public class StatfulMetricsOptions extends MetricsOptions {
     /**
      * Default Statful host constant
      */
-    private static final String DEFAULT_HOST = "127.0.0.1";
+    private static final String DEFAULT_HOST = "api.statful.com";
 
     /**
      * Default port Statful port
      */
-    private static final int DEFAULT_PORT = 2013;
+    private static final int DEFAULT_PORT = 443;
 
     /**
      * Default value for a secure connection (https)
@@ -76,7 +76,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
     /**
      * Default transport definition
      */
-    private static final Transport DEFAULT_TRANSPORT = Transport.UDP;
+    private static final Transport DEFAULT_TRANSPORT = Transport.HTTP;
 
     /**
      * Default aggregations to be applied for Timer metrics
@@ -104,9 +104,9 @@ public class StatfulMetricsOptions extends MetricsOptions {
     private static final long DEFAULT_GAUGE_REPORTING_INTERVAL = 5000;
 
     /**
-     * Default to enable all the available collectors
+     * Default to enable/disable all the available collectors
      */
-    private static final boolean DEFAULT_METRIC_COLLECTION = true;
+    private static final boolean DEFAULT_METRIC_COLLECTION = false;
 
     /**
      * Default maximum theoretical buffer size that holds metrics in memory between flushes
