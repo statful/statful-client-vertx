@@ -17,8 +17,8 @@ public final class HttpClientDataPoint extends HttpDataPoint {
      * @param responseCode Http code to be added as tag
      * @param type         if this metric belongs to http server or client
      */
-    public HttpClientDataPoint(final StatfulMetricsOptions options, final String metricName, final String name, final String httpVerb,
-                               final long duration, final int responseCode, final Type type) {
+    public HttpClientDataPoint(final StatfulMetricsOptions options, final String metricName, final String name,
+                               final String httpVerb, final String duration, final int responseCode, final Type type) {
         super(options, metricName, name, httpVerb, duration, responseCode, type);
     }
 

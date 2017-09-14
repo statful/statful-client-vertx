@@ -45,7 +45,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
     public void testCustomMetric(TestContext context) throws Exception {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -68,11 +68,101 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
     }
 
     @Test
+    public void testCustomMetricWithIntValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue(12345)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
+    public void testCustomMetricWithLongValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue(12345L)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
+    public void testCustomMetricWithDoubleValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue(12345D)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
+    public void testCustomMetricWithFloatValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue(12345F)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
+    public void testCustomMetricWithStringValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue("12345")
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
     public void testCustomMetricWithNamespace(TestContext context) throws Exception {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
         options.setNamespace("customNamespace");
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -100,7 +190,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
         options.setApp("customApp");
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -131,7 +221,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
         options.setTags(globalTags);
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -164,7 +254,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
     public void testCustomMetricWithCustomTags(TestContext context) throws Exception {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -201,7 +291,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
         options.setTags(globalTags);
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -229,7 +319,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
     public void testCustomMetricWithGlobalDefaultTimerAggregations(TestContext context) throws Exception {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -258,7 +348,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
         options.setTimerAggregations(Collections.emptyList());
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -286,7 +376,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
     public void testCustomMetricWithoutCustomAggregationsAndDefaultFrequency(TestContext context) throws Exception {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -315,7 +405,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
     public void testCustomMetricWithCustomAggregationsAndCustomFrequency(TestContext context) throws Exception {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -345,7 +435,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
     public void testCustomMetricWithDefaultTimerAggregationsAndCustomFrequency(TestContext context) throws Exception {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -374,7 +464,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
     public void testCustomMetricWithCustomTimestamp(TestContext context) throws Exception {
         StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
 
-        setUpVertxTestContext(options);
+        setupVertxTestContext(options);
 
         Async async = context.async();
 
@@ -415,12 +505,25 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
         return options;
     }
 
-    private void setUpVertxTestContext(StatfulMetricsOptions options) throws Exception {
+    private void setupVertxTestContext(StatfulMetricsOptions options) throws Exception {
         VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
 
         this.vertx = Objects.requireNonNull(Vertx.vertx(vertxOptions));
         this.httpMetricsReceiver = this.vertx.createHttpServer();
 
         this.setUpHttpReceiver(vertx);
+    }
+
+    private void setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(TestContext context, Async async) {
+        this.httpMetricsReceiver.requestHandler(packet -> packet.bodyHandler(body -> {
+            String metric = body.toString();
+            context.assertTrue(metric.contains("customMetricName"));
+            context.assertTrue(metric.contains("12345"));
+            teardown(async, context, null);
+        })).listen(HTTP_SENDER_PORT, HOST, event -> {
+            if (event.failed()) {
+                teardown(async, context, event.cause());
+            }
+        });
     }
 }

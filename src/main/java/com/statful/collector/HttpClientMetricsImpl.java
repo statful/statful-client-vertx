@@ -130,12 +130,11 @@ public final class HttpClientMetricsImpl extends StatfulMetrics implements HttpC
             return;
         }
 
-        final long responseTime = requestMetric.elapsed();
+        String responseTime = String.valueOf(requestMetric.elapsed());
 
         super.addMetric(
                 new HttpClientDataPoint(super.getOptions(), "execution", requestMetric.getRequestTag(),
-                        requestMetric.getMethod(), responseTime,
-                        response.statusCode(), HttpClientDataPoint.Type.CLIENT)
+                        requestMetric.getMethod(), responseTime, response.statusCode(), HttpClientDataPoint.Type.CLIENT)
         );
     }
 

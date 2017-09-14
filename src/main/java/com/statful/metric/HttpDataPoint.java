@@ -57,7 +57,7 @@ public abstract class HttpDataPoint implements DataPoint {
     /**
      * Duration of the request
      */
-    private final long duration;
+    private final String duration;
 
     /**
      * Http code to be added as tag
@@ -85,9 +85,8 @@ public abstract class HttpDataPoint implements DataPoint {
      * @param responseCode Http code to be added as tag
      * @param type         if this metric belongs to http server or client
      */
-    public HttpDataPoint(final StatfulMetricsOptions options, final String metricName, final String name, final String httpVerb, final long duration,
-                         final int responseCode,
-                         final Type type) {
+    public HttpDataPoint(final StatfulMetricsOptions options, final String metricName, final String name,
+                         final String httpVerb, final String duration, final int responseCode, final Type type) {
 
         this.options = options;
         this.metricName = metricName;
@@ -109,7 +108,7 @@ public abstract class HttpDataPoint implements DataPoint {
                 .withTag("type", this.type.value)
                 .withTag("verb", this.verb)
                 .withTag("statusCode", String.valueOf(this.responseCode))
-                .withValue(String.valueOf(this.duration))
+                .withValue(this.duration)
                 .withTimestamp(this.unixTimeStamp)
                 .withAggregations(this.options.getTimerAggregations())
                 .withAggregationFrequency(this.options.getTimerFrequency())
