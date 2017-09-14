@@ -31,7 +31,7 @@ public class CustomMetric implements DataPoint {
     /**
      * Value to collect
      */
-    private final long value;
+    private final String value;
 
     /**
      * List of tags to apply to the request
@@ -99,7 +99,7 @@ public class CustomMetric implements DataPoint {
         final MetricLineBuilder metricLineBuilder = new MetricLineBuilder()
                 .withNamespace(this.options.getNamespace())
                 .withMetricName(this.metricName)
-                .withValue(String.valueOf(this.value))
+                .withValue(this.value)
                 .withTimestamp(this.timestamp)
                 .withSampleRate(this.options.getSampleRate());
 
@@ -153,7 +153,7 @@ public class CustomMetric implements DataPoint {
         return metricName;
     }
 
-    private long getValue() {
+    private String getValue() {
         return value;
     }
 
@@ -202,7 +202,7 @@ public class CustomMetric implements DataPoint {
         /**
          * Value to collect
          */
-        private Long value;
+        private String value;
 
         /**
          * Timestamp to apply
@@ -257,7 +257,43 @@ public class CustomMetric implements DataPoint {
          * @param metricValue of the metric
          * @return a reference to self
          */
+        public Builder withValue(final int metricValue) {
+            this.value = String.valueOf(metricValue);
+            return this;
+        }
+
+        /**
+         * @param metricValue of the metric
+         * @return a reference to self
+         */
         public Builder withValue(final long metricValue) {
+            this.value = String.valueOf(metricValue);
+            return this;
+        }
+
+        /**
+         * @param metricValue of the metric
+         * @return a reference to self
+         */
+        public Builder withValue(final float metricValue) {
+            this.value = String.valueOf(metricValue);
+            return this;
+        }
+
+        /**
+         * @param metricValue of the metric
+         * @return a reference to self
+         */
+        public Builder withValue(final double metricValue) {
+            this.value = String.valueOf(metricValue);
+            return this;
+        }
+
+        /**
+         * @param metricValue of the metric
+         * @return a reference to self
+         */
+        public Builder withValue(final String metricValue) {
             this.value = metricValue;
             return this;
         }

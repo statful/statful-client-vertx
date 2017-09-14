@@ -17,7 +17,7 @@ public final class HttpServerDataPoint extends HttpDataPoint {
      * @param type         if this metric belongs to http server or client
      */
     public HttpServerDataPoint(final StatfulMetricsOptions options, final String metricName, final String name, final String httpVerb,
-                               final long duration, final int responseCode, final Type type) {
+                               final String duration, final int responseCode, final Type type) {
         super(options, metricName, name, httpVerb, duration, responseCode, type);
     }
 

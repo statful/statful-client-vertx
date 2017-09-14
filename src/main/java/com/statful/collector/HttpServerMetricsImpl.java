@@ -93,11 +93,11 @@ public final class HttpServerMetricsImpl extends StatfulMetrics implements HttpS
             return;
         }
 
-        final long responseTime = requestMetric.elapsed();
+        final String responseTime = String.valueOf(requestMetric.elapsed());
 
         super.addMetric(
-                new HttpServerDataPoint(getOptions(), "execution", requestMetric.getRequestTag(), requestMetric.getMethod(), responseTime,
-                        response.getStatusCode(), HttpClientDataPoint.Type.SERVER)
+                new HttpServerDataPoint(getOptions(), "execution", requestMetric.getRequestTag(),
+                        requestMetric.getMethod(), responseTime, response.getStatusCode(), HttpClientDataPoint.Type.SERVER)
         );
     }
 
