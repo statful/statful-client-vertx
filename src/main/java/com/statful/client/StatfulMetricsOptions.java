@@ -323,7 +323,7 @@ public class StatfulMetricsOptions extends MetricsOptions {
                 .collect(Collectors.toList());
 
         this.sampleRate = config.getInteger("sampleRate", DEFAULT_SAMPLE_RATE);
-        this.namespace = config.getString("namespace", null);
+        this.namespace = config.getString("namespace", DEFAULT_NAMESPACE);
         this.flushSize = config.getInteger("flushSize", DEFAULT_FLUSH_SIZE);
         this.flushInterval = config.getLong("flushInterval", DEFAULT_FLUSH_INTERVAL);
 
