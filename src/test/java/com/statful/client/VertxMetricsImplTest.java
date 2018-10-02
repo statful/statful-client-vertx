@@ -1,6 +1,5 @@
 package com.statful.client;
 
-import com.statful.sender.Sender;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;

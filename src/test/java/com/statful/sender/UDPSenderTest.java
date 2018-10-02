@@ -3,7 +3,7 @@ package com.statful.sender;
 import com.google.common.collect.Lists;
 import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.DataPoint;
-import io.vertx.core.*;
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.datagram.DatagramSocket;
@@ -12,7 +12,7 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(VertxUnitRunner.class)
@@ -39,12 +38,12 @@ public class UDPSenderTest {
      * not using @junit @Before since not all tests want to the same configuration for vertx metrics.
      * Don't forget to call this in your method
      */
-    public void setup(boolean isDryRun, Optional<Long> flushInterval, Optional<Integer> flushSize) {
+    public void setup(boolean isDryRun, Long flushInterval, Integer flushSize) {
         StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setPort(PORT).setHost(HOST).setDryrun(isDryRun).setEnablePoolMetrics(false).setMaxBufferSize(5000);
 
-        flushInterval.ifPresent(options::setFlushInterval);
-        flushSize.ifPresent(options::setFlushSize);
+        Optional.ofNullable(flushInterval).ifPresent(options::setFlushInterval);
+        Optional.ofNullable(flushSize).ifPresent(options::setFlushSize);
 
         vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(options));
 
@@ -64,15 +63,15 @@ public class UDPSenderTest {
     @Test
     public void testNothingToSend(TestContext testContext) {
 
-        this.setup(false, Optional.empty(), Optional.empty());
+        this.setup(false, null, null);
 
         Async async = testContext.async();
 
         Vertx vertx = mock(Vertx.class);
-        when(vertx.setTimer(anyLong(), Matchers.any())).thenReturn(1L);
+        when(vertx.setTimer(anyLong(), ArgumentMatchers.any())).thenReturn(1L);
 
         Context context = mock(Context.class);
-        Mockito.doNothing().when(context).runOnContext(Matchers.any());
+        Mockito.doNothing().when(context).runOnContext(ArgumentMatchers.any());
 
         DatagramSocket datagramSocket = mock(DatagramSocket.class);
         when(vertx.createDatagramSocket()).thenReturn(datagramSocket);
@@ -85,14 +84,14 @@ public class UDPSenderTest {
         UDPSender sender = new UDPSender(vertx, context, options);
         sender.send(Collections.emptyList());
 
-        verify(datagramSocket, times(0)).send(anyString(), anyInt(), anyString(), Matchers.any());
+        verify(datagramSocket, times(0)).send(anyString(), anyInt(), anyString(), ArgumentMatchers.any());
 
         this.teardown(async);
     }
 
     @Test
-    public void testSend(TestContext context) throws Exception {
-        this.setup(false, Optional.empty(), Optional.empty());
+    public void testSend(TestContext context) {
+        this.setup(false, null, null);
         Async async = context.async();
 
         final List<String> metricLines = Lists.newArrayList("line1", "line2");
@@ -110,7 +109,7 @@ public class UDPSenderTest {
                 context.assertEquals(2, metrics.size());
 
                 context.assertTrue(metrics.containsAll(metricLines));
-                this.receiver.close(ignore -> this.teardown(async));
+                this.receiver.close(ignore -> this.victim.close(victimClose -> async.complete()));
             });
             receiver.endHandler(end -> receiver.close());
             receiver.exceptionHandler(context::fail);
@@ -122,7 +121,7 @@ public class UDPSenderTest {
     @Test
     public void testDryRunMetricsNotSent(TestContext context) {
 
-        this.setup(true, Optional.of(1000L), Optional.of(1));
+        this.setup(true, 1000L, 1);
 
         final Async async = context.async();
 
@@ -142,9 +141,9 @@ public class UDPSenderTest {
     }
 
     @Test
-    public void testSendNoListenerSuccess(TestContext context) throws Exception {
+    public void testSendNoListenerSuccess(TestContext context) {
 
-        this.setup(true, Optional.empty(), Optional.empty());
+        this.setup(true, null, null);
 
         Async async = context.async();
 
