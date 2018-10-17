@@ -45,7 +45,7 @@
     <mockito.version>2.22.0</mockito.version>
 
     <!-- project dependencies -->
-    <vertx.version>3.5.3</vertx.version>
+    <vertx.version>3.5.4</vertx.version>
     <guava.version>26.0-jre</guava.version>
 
     <jsr305.version>3.0.1</jsr305.version>
