@@ -42,11 +42,11 @@
     <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jacoco-maven-plugin.version>0.7.4.201502262128</jacoco-maven-plugin.version>
-    <mockito.version>1.10.19</mockito.version>
+    <mockito.version>2.22.0</mockito.version>
 
     <!-- project dependencies -->
-    <vertx.version>3.4.2</vertx.version>
-    <guava.version>19.0</guava.version>
+    <vertx.version>3.5.4</vertx.version>
+    <guava.version>26.0-jre</guava.version>
 
     <jsr305.version>3.0.1</jsr305.version>
     <junit.version>4.12</junit.version>
@@ -81,18 +81,18 @@
       </dependency>
 
       <dependency>
-        <!-- TODO - check if we can assume this dependency is provided-->
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-codegen</artifactId>
-        <version>${vertx.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
         <scope>provided</scope>
         <optional>true</optional>
         <version>${jsr305.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-unit</artifactId>
+        <version>${vertx.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -105,14 +105,7 @@
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>testtools</artifactId>
-        <scope>test</scope>
         <version>${testtools.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-unit</artifactId>
-        <version>${vertx.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -120,6 +113,13 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-codegen</artifactId>
+        <version>${vertx.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -136,11 +136,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-codegen</artifactId>
     </dependency>
 
     <dependency>
@@ -166,6 +161,11 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen</artifactId>
     </dependency>
 
   </dependencies>

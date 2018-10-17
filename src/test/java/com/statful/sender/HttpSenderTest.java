@@ -15,7 +15,7 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
@@ -80,10 +77,10 @@ public class HttpSenderTest {
         Async async = testContext.async();
 
         Vertx vertx = mock(Vertx.class);
-        when(vertx.setTimer(anyLong(), Matchers.any())).thenReturn(1L);
+        when(vertx.setTimer(anyLong(), ArgumentMatchers.any())).thenReturn(1L);
 
         Context context = mock(Context.class);
-        Mockito.doNothing().when(context).runOnContext(Matchers.any());
+        Mockito.doNothing().when(context).runOnContext(ArgumentMatchers.any());
 
         HttpClient client = mock(HttpClient.class);
         when(vertx.createHttpClient(any(HttpClientOptions.class))).thenReturn(client);
@@ -96,13 +93,13 @@ public class HttpSenderTest {
         HttpSender sender = new HttpSender(vertx, context, options);
         sender.send(Collections.emptyList());
 
-        verify(client, times(0)).request(any(HttpMethod.class), anyInt(), anyString(), Matchers.any());
+        verify(client, times(0)).request(any(HttpMethod.class), anyInt(), anyString(), ArgumentMatchers.any());
 
         this.teardown(async);
     }
 
     @Test
-    public void testSend(TestContext context) throws Exception {
+    public void testSend(TestContext context) {
         this.setup(false, null, null);
         Async async = context.async();
 
