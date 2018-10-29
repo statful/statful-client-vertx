@@ -75,7 +75,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
 
         Async async = context.async();
 
-        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithDefaultValue(context, async);
 
         CustomMetric metric = new CustomMetric.Builder()
                 .withMetricName("customMetricName")
@@ -93,7 +93,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
 
         Async async = context.async();
 
-        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithDefaultValue(context, async);
 
         CustomMetric metric = new CustomMetric.Builder()
                 .withMetricName("customMetricName")
@@ -111,11 +111,47 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
 
         Async async = context.async();
 
-        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithDefaultValue(context, async);
 
         CustomMetric metric = new CustomMetric.Builder()
                 .withMetricName("customMetricName")
                 .withValue(12345D)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
+    public void testCustomMetricWithLargeDoubleValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async, "1234567891011");
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue(1234567891011D)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
+    public void testCustomMetricWithSmallDoubleValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async, "0.0000000001");
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue(0.0000000001D)
                 .build();
 
         this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
@@ -129,11 +165,47 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
 
         Async async = context.async();
 
-        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithDefaultValue(context, async);
 
         CustomMetric metric = new CustomMetric.Builder()
                 .withMetricName("customMetricName")
                 .withValue(12345F)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
+    public void testCustomMetricWithLargeFloatValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async, "123456792");
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue(123456792F)
+                .build();
+
+        this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
+    }
+
+    @Test
+    public void testCustomMetricWithSmallFloatValue(TestContext context) throws Exception {
+        StatfulMetricsOptions options = getCommonStatfulMetricsOptions();
+
+        setupVertxTestContext(options);
+
+        Async async = context.async();
+
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async, "0.0000000001");
+
+        CustomMetric metric = new CustomMetric.Builder()
+                .withMetricName("customMetricName")
+                .withValue(0.0000000001F)
                 .build();
 
         this.vertx.eventBus().send(CustomMetricsConsumer.ADDRESS, metric);
@@ -147,7 +219,7 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
 
         Async async = context.async();
 
-        setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async);
+        setupHttpMetricsReceiverExpectationsForCustomMetricWithDefaultValue(context, async);
 
         CustomMetric metric = new CustomMetric.Builder()
                 .withMetricName("customMetricName")
@@ -514,11 +586,15 @@ public class StatfulCustomMetricIntegrationTest extends IntegrationTestCase {
         this.setUpHttpReceiver(vertx);
     }
 
-    private void setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(TestContext context, Async async) {
+    private void setupHttpMetricsReceiverExpectationsForCustomMetricWithDefaultValue(TestContext context, Async async) {
+        this.setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(context, async, "12345");
+    }
+
+    private void setupHttpMetricsReceiverExpectationsForCustomMetricWithValue(TestContext context, Async async, String expectedValue) {
         this.httpMetricsReceiver.requestHandler(packet -> packet.bodyHandler(body -> {
             String metric = body.toString();
             context.assertTrue(metric.contains("customMetricName"));
-            context.assertTrue(metric.contains("12345"));
+            context.assertTrue(metric.contains(expectedValue));
             teardown(async, context, null);
         })).listen(HTTP_SENDER_PORT, HOST, event -> {
             if (event.failed()) {

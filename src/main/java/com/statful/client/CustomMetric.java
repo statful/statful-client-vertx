@@ -6,6 +6,7 @@ import com.statful.utils.Pair;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;
 
+import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +18,16 @@ import static java.util.Objects.isNull;
  * Custom Metric object to be sent on the event bus
  */
 public class CustomMetric implements DataPoint {
+
+    /**
+     * Formatter to avoid scientific notation for decimal values
+     */
+    private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance();
+
+    static {
+        NUMBER_FORMAT.setMaximumFractionDigits(Integer.MAX_VALUE);
+        NUMBER_FORMAT.setGroupingUsed(false);
+    }
 
     /**
      * Statful options to be used when building the metric line
@@ -276,7 +287,7 @@ public class CustomMetric implements DataPoint {
          * @return a reference to self
          */
         public Builder withValue(final float metricValue) {
-            this.value = String.valueOf(metricValue);
+            this.value = NUMBER_FORMAT.format(metricValue);
             return this;
         }
 
@@ -285,7 +296,7 @@ public class CustomMetric implements DataPoint {
          * @return a reference to self
          */
         public Builder withValue(final double metricValue) {
-            this.value = String.valueOf(metricValue);
+            this.value = NUMBER_FORMAT.format(metricValue);
             return this;
         }
 
