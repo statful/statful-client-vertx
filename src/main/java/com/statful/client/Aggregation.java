@@ -33,6 +33,10 @@ public enum Aggregation {
      */
     P95("p95"),
     /**
+     * Percentile 99 aggregation
+     */
+    P99("p99"),
+    /**
      * Aggregate by min value
      */
     MIN("min"),
