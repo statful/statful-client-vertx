@@ -1,38 +1,44 @@
-Statful Client for Vertx
+Statful Client for Vert.x
 ==============
 
 [![Build Status](https://travis-ci.org/statful/statful-client-vertx.svg?branch=master)](https://travis-ci.org/statful/statful-client-vertx)
 
-Statful client for Vertx. This client enables pushing custom metrics as well as metrics collection for [Vert.x](http://vertx.io/) based projects and report them to [Statful](http://statful.com/)
+Statful client for Vert.x written in Java. This client enables pushing custom metrics as well as metrics collection for [Vert.x](http://vertx.io/) based projects and sends them to [Statful.](http://statful.com/)
 
 This client leverages the capabilities provided by [Vert.x SPI](http://vertx.io/docs/apidocs/io/vertx/core/spi/metrics/VertxMetrics.html) to collect metrics.
 
-Please check the project pom.xml to see Vert.x version dependency since this will be a moving target, the aim is to always support the latest stable version.
+Please check the project’s [pom.xml](https://github.com/statful/statful-client-vertx/blob/master/pom.xml) file to see the current Vert.x version dependency since we aim always to support the latest stable version.
 
 ## Table of Contents
 
 * [Supported Versions](#supported-versions)
 * [Requirements](#requirements)
 * [Quick Start](#quick-start)
-* [Configuration](#configuration)
+	* [Programmatically](#programmatically)
+	* [Configuration File](#configuration-file)
+* [Configurations](#configurations)
+	* [Global Configurations](#global-configurations)
+	* [Vert.x Specific Configurations](#vertx-specific-configurations)
 * [Usage](#usage)
+	* [Custom Metrics](#custom-metrics)
+	* [Metrics Collection](#metrics-collection)
 * [Limitations](#limitations)
 * [Authors](#authors)
 * [License](#license)
 
 ## Supported Versions
 
-| Statful client version | Tested Java versions  | Tested Vertx versions
+| Statful Client version | Tested Java versions  | Tested Vert.x versions
 |:---|:---|:---|
 | 1.x.x | `Java 8` | `3.4.2` |
 
 ## Requirements
 
-This client has the following requirements:
+This client has the following requirement:
 
-* [vert.x](http://vertx.io/) 
+* [Vert.x](http://vertx.io/) 
 
-## Quick start
+## Quick Start
 
 Add the client to the project dependencies:
 
@@ -42,13 +48,13 @@ Add the client to the project dependencies:
       <version>${version-number}</version>
     </dependency>
 
-[Vert.x](http://vertx.io/) handles the creation of the Metrics SPI.
+Vert.x handles the creation of the Metrics Service Provider Interface ([SPI](https://vertx.io/docs/vertx-dropwizard-metrics/java/)).
 
-There are two main ways to configure the client, programmatically or using a configuration file.
+From this point, you can set up the client in two ways, programmatically or by using a configuration file.
 
 ### Programmatically
 
-Create an instance of *StatfulMetricsOptions* and set all the desired parameters and use it as an argument for *VertxOptions* when creating the *Vertx* instance.
+Create an instance of *StatfulMetricsOptions* and set all the desired parameters. Use the configured instance as an argument for *VertxOptions* when creating the *Vertx* instance.
 
 Set the `StatfulMetricsFactoryImpl` factory to be used by the Metrics SPI.
 
@@ -61,7 +67,7 @@ Example:
     VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(options);
     Vertx vertx = Vertx.vertx(vertxOptions);
     
-When using a custom `Launcher` that implements the `VertxLifecycleHooks` interface the `beforeStartingVertx` method should be overwritten.
+When using a custom `Launcher` that implements the `VertxLifecycleHooks` interface, it’s expected of the user to override the `beforeStartingVertx` method.
 
 Example:
 
@@ -72,15 +78,15 @@ Example:
                 .setFactory(new StatfulMetricsFactoryImpl()));
     }
 
-### Configuration file
+### Configuration File
 
-You need to provide two parameters when launching your application, one to enable metrics and one to set the configuration file. Enable metrics will make *Vertx* init the metrics system which will then read the configuration file.
+You need to provide two parameters when launching your application, one to enable metrics and another to set the configuration file. Enabling metrics triggers *Vertx* to init the metrics system which will then read the configuration file.
 
 Example:
 
     -Dvertx.metrics.options.enabled=true -Dvertx.metrics.options.configPath=config/statful.json
 
-The configuration file is a simple json document, a sample can be seen bellow:
+The configuration file is a simple JSON document, like the sample shown below:
 
     {
       "host": "api.statful.com",
@@ -115,56 +121,67 @@ The configuration file is a simple json document, a sample can be seen bellow:
       }
     }
 
-## Configuration
+## Configurations
+The following section presents detailed information on the available options for setup in the configuration parameters.
 
-General configuration for a Statful client.
+### Global Configurations
 
-    * host [optional] [default: 'api.statful.com']
-    * port [optional] [default: 443]
-    * secure [not supported yet] [default: true] - enable or disable https
-    * timeout [not supported yet] [default: 2000ms] - timeout for http transport
-    * token - An authentication token to send to Statful
-    * app [optional] - if specified set a tag ‘app=foo’
-    * dryrun [optional] [default: false] - debug log metrics when flushing the buffer
-    * tags [optional] - global list of tags to set, these are merged with custom tags set on method calls with priority to custom tags
-    * sampleRate [optional] [default: 100] [between: 1-100] - global rate sampling
-    * namespace [optional] [default: 'application'] - default namespace
-    * flushSize [optional] [default: 10] - defines the periodicity of buffer flushes by buffer size
-    * flushInterval [optional] [default: 0] - defines an interval to periodically flush the buffer based on time
-    * maxBufferSize [optional] [default: 5000] - defines how many metrics at max are kept in the buffer between forced flushes
+| Option | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|
+| _host_ | Defines the hostname to where the metrics are sent. | `string` | `api.statful.com` | **NO** |
+| _port_ | Defines the port to where the metrics are sent. | `string` | `443` | **NO** |
+| _secure_ | Enables or disables https. <br><br>Not yet supported. | `boolean` | `true` | **NO** |
+| _timeout_ | Defines the timeout for http transport, in **milliseconds**.<br><br>Not yet supported. | `number` | `2000` | **NO** |
+| _token_ | Defines the token used to match incoming data to Statful.| `string` | **none** | **YES** |
+| _app_ | Defines the application's global name. When specified, it sets a global tag like `app=setValue`. | `string` | **none** | **NO** |
+| _dryRun_ | Defines if metrics should be output to the logger instead of being sent to Statful (useful for testing/debugging purposes). | `boolean` | `false` | **NO** |
+| _tags_ | Object for setting the global tags. | `object` | `{}` | **NO** |
+| _sampleRate_ | Defines the rate sampling. <br><br>**It should be a number between [1, 100]**. | `number` | `100` | **NO** |
+| _namespace_ | Defines the global namespace. A prefix could be set if the user sends metrics through Statful. | `string` | `application` | **NO** |
+| _flushSize_ | Defines the maximum buffer size before performing a flush. | `number` | `10` | **NO** |
+| _flushInterval_ | Defines an interval to periodically flush the buffer based on time. | `number` | `30000` | **NO** |
+| _maxBufferSize_ | Defines how many metrics at max are kept in the buffer between forced flushes. | `number` | `5000` | **NO** |
 
-Vertx Statful specific configurations:
 
-    * enabled [optional] [default: true] - enable/disable the client
-    * timerAggregations [optional] [default: [Aggregation.AVG, Aggregation.P90, Aggregation.COUNT] ] - aggregations to be applied to timer based metrics
-    * timerFrequency [optional] [default: AggregationFreq.FREQ_10] - aggregation frequency for timer based metrics
-    * counterAggregations [optional] [default: [Aggregation.COUNT, Aggregation.SUM] ] - aggregations to be applied to counter based metrics
-    * counterFrequency [optional] [default: AggregationFreq.FREQ_10] - aggregation frequency for counter based metrics
-    * gaugeAggregations [optional] [default: [Aggregation.LAST, Aggregation.MAX, Aggregation.AVG] ] - aggregations to be applied to gauge based metrics
-    * gaugeFrequency [optional] [default: AggregationFreq.FREQ_10] - aggregation frequency for gauge based metrics
-    * http-server-url-patterns [optional] - patterns to transform urls for metrics collection
-    * http-server-ignore-url-patterns [optional] - patterns of urls that you won't want tracked
-    * gauge-collection-interval [optional] [default: ] - to avoid reporting gauges every time it changes
-    * httpMetricsPath [optional] [default: '/tel/v2.0/metrics'] - path to send metrics to when http transport is set
-    * transport [optional] [default: HTTP] - type of transport to be used when sending metrics to statful (UDP/HTTP)
+### Vert.x Specific Configurations
+
+| Option | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|
+| _enabled_ | Enables or disables the client. | `boolean` | `true` | **NO** |
+| _timerAggregations_ | Defines the aggregations to apply to timer-based metrics. | `string` | `[Aggregation.AVG, Aggregation.P90, Aggregation.COUNT]` | **NO** |
+| _counterAggregations_ | Defines the aggregations to apply to counter-based metrics. | `string` | `[Aggregation.COUNT, Aggregation.SUM]` | **NO** |
+| _counterFrequency_ | Defines the aggregation frequency for counter-based metrics. | `string` | `[AggregationFreq.FREQ_10]` | **NO** |
+| _gaugeAggregations_ | Defines the aggregations to apply to gauge-based metrics. | `string` | ` [Aggregation.LAST, Aggregation.MAX, Aggregation.AVG]` | **NO** |
+| _gaugeFrequency_ | Defines the aggregation frequency for gauge-based metrics. | `string` | `[AggregationFreq.FREQ_10]` | **NO** |
+| _http-server-url-patterns_ | Defines patterns to transform URLs for metrics collection. | `string` | **none** | **NO** |
+| _http-server-ignore-url-patterns_ | Defines patterns of URLs that you don't want to be tracked. | `string` | **none** | **NO** |
+| _gauge-reporting-interval_ | Defines the value for gauge reporting in **milliseconds.** | `number` | `5000` | **NO** |
+| _httpMetricsPath_ | Defines the path to send metrics when the http transport is set. | `string` | `/tel/v2.0/metrics` | **NO** |
+| _transport_ | Defines the transport type to use when sending metrics to Statful. <br><br>**Valid Transports:**`UDP, HTTP`| `string` | `HTTP` | **NO** |
+
+> To disable aggregations for a type of metric, set the value of the aggregations' configuration to an empty list.
     
-> To disable aggregations for a type of metric set the value of the aggregations configuration to an empty list.
-    
-Metric collectors:
+#### Metric collectors
+To enable metric collection, you must set the option with the flags of the available collectors.
 
-    * collectors [optional] - list of boolean flags to enable or disable the available metric collectors
+| Option | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|
+| _collectors_ | Object to employ metric collectors. | `object` | **none** | **NO** |
      
 List of available collectors:
 
-    * pool [optional] [default: false] - collect metrics from application pools
-    * httpClient [optional] [default: false] - collect metrics from http clients
-    * httpServer [optional] [default: false] - collect metrics from http servers
-    
+| Option | Description | Type | Default | Required |
+|:---|:---|:---|:---|:---|
+| _pool_ | Enables the collection of metrics from application pools. | `boolean` | `false` | **NO** |
+| _httpClient_ | Enables the collection of metrics from http clients. | `boolean` | `false` | **NO** |
+| _httpServer_ | Enables the collection of metrics from http servers. | `boolean` | `false` | **NO** |
+
+
 ## Usage
 
 ### Custom Metrics
 
-In order to save custom metrics send a message to the *eventBus* such as:
+To save custom metrics, send a message to the *eventBus* such as:
 
     EventBus eventBus = vertx.eventBus();
     eventBus.send(CustomMetricsConsumer.ADDRESS, 
@@ -175,27 +192,27 @@ In order to save custom metrics send a message to the *eventBus* such as:
             .withTags(getTags())
             .build();
 
-A `CustomMetricsConsumer` subscribes to the `CustomMetricsConsumer.ADDRESS` and is responsible for saving the metrics to the in memory buffer.
+A `CustomMetricsConsumer` subscribes to the `CustomMetricsConsumer.ADDRESS` and is responsible for saving the metrics to the in-memory buffer.
 
-Only `metricName` and `value` are required for a valid metric. Please refer to the `CustomMetric` class for more details. 
+Only the `metricName` and `value` are required for a valid metric. Please refer to the `CustomMetric` class for more details. 
     
-### Metric Collection
+### Metrics Collection
 
 #### Http Client
 
-Track the time that takes to execute each request and it's response status code. Currently connection time is not reported.
+Track the time that takes to execute each request and its response status code. Currently, the connection time is not reported.
 
-To identify that a request should be tracked add a request header to a request. The name of the header should be extracted from: *com.statful.tag.Tags.TRACK_HEADER*, the value should be set to whatever value desired for the tag.
+To identify a request that you want to track, add a request header to that request. The pattern used to recognize and extract the request header is *Tags.TRACK_HEADER*, where its value (of the header) should be set to the desired value at the *com/statful/tag/Tags.java* file.
 
 #### Http Server
 
-By default all requests are tracked. To ignore a path configure a regex that matches that path. For instance, to ignore anything that starts with */static* apply the following configuration:
+By default, all requests are tracked. To ignore a path, configure a regex that matches that path. For instance, to ignore a request that starts with */static* apply the following configuration:
 
     "http-server-ignore-url-patterns": [
       "\/static\/.*"
     ]
 
-URLs will be used as a TAG, so in order to avoid creating tags with IDs, or any other type of variable in your URLs you can configure transformation regex to be applied. An example would be removing UUIDs from the URLs on a restful API:
+It’s possible to use URLs as tag values. To avoid creating tags with IDs, or any other unexpected identifier from your URLs, you can configure the transformation regex to be applied. Here’s an example of how to remove UUIDs from the URLs on a restful API:
 
     "http-server-url-patterns": [
       {
@@ -204,7 +221,7 @@ URLs will be used as a TAG, so in order to avoid creating tags with IDs, or any 
       }
     ]
 
-This configuration would transform:
+This configuration transforms:
 
     /user/095b1cac-c153-4c6b-a09c-1bd4a1220019/update
 
@@ -212,17 +229,18 @@ Into:
 
     /user_uuid_/update
 
+> Please keep in mind that any regex will be applied to all existing URLs so, the more regex there are to be applied, the heavier the execution will be.
+
 #### Pools
 
-Track *Vertx* *ConnectionPool* usage metrics.
+It’s possible to track *Vertx* *ConnectionPool* usage metrics.
 
-> Please keep in mind that regex are applied to all urls so the more regex are to apply the heavier the execution will be.
 
 ## Limitations
 
-The current implementation has the following limitations:
+The current implementation has the following limitation:
 
-* Does not support http2 metrics introduced by vertx version 3.3.0.
+* It does not support http2 metrics introduced by Vert.x version 3.3.0.
 
 ## Authors
 
