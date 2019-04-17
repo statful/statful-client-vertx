@@ -76,6 +76,10 @@ final class VertxMetricsImpl implements VertxMetrics {
         return httpClientMetrics;
     }
 
+    /**
+     * We lazy load the pool metrics sender because it needs a vertx instance, and it is called before it is created because
+     * of vertx's own thread pool instantiated on creation.
+     */
     @Override
     public PoolMetrics<?> createPoolMetrics(final String poolType, final String poolName, final int maxPoolSize) {
         PoolMetricsImpl poolMetrics = null;
