@@ -3,21 +3,19 @@ package com.statful.client;
 import com.statful.collector.*;
 import com.statful.sender.Sender;
 import com.statful.sender.SenderFactory;
-import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
-import io.vertx.core.datagram.DatagramSocketOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.net.NetClientOptions;
-import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
-import io.vertx.core.spi.metrics.*;
+import io.vertx.core.spi.metrics.HttpClientMetrics;
+import io.vertx.core.spi.metrics.HttpServerMetrics;
+import io.vertx.core.spi.metrics.PoolMetrics;
+import io.vertx.core.spi.metrics.VertxMetrics;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * VertxMetrics SPI implementation for statful metrics collection
- * Extending DummyVertxMetrics to avoid having to extend all methods even if we don't want to implement them
  */
 final class VertxMetricsImpl implements VertxMetrics {
 
@@ -58,27 +56,6 @@ final class VertxMetricsImpl implements VertxMetrics {
     }
 
     @Override
-    public void verticleDeployed(final Verticle verticle) {
-    }
-
-    @Override
-    public void verticleUndeployed(final Verticle verticle) {
-    }
-
-    @Override
-    public void timerCreated(final long id) {
-    }
-
-    @Override
-    public void timerEnded(final long id, final boolean cancelled) {
-    }
-
-    @Override
-    public EventBusMetrics createEventBusMetrics() {
-        return null;
-    }
-
-    @Override
     public HttpServerMetrics<HttpRequestMetrics, SocketAddress, SocketAddress> createHttpServerMetrics(final HttpServerOptions options,
                                                                                                        final SocketAddress localAddress) {
         HttpServerMetricsImpl httpServerMetrics = null;
@@ -97,21 +74,6 @@ final class VertxMetricsImpl implements VertxMetrics {
             httpClientMetrics.setSender(this.getOrCreateSender(vertx));
         }
         return httpClientMetrics;
-    }
-
-    @Override
-    public TCPMetrics<?> createNetServerMetrics(final NetServerOptions options, final SocketAddress localAddress) {
-        return null;
-    }
-
-    @Override
-    public TCPMetrics<?> createNetClientMetrics(final NetClientOptions options) {
-        return null;
-    }
-
-    @Override
-    public DatagramSocketMetrics createDatagramSocketMetrics(final DatagramSocketOptions options) {
-        return null;
     }
 
     @Override
@@ -140,5 +102,4 @@ final class VertxMetricsImpl implements VertxMetrics {
         }
         return sender;
     }
-
 }
