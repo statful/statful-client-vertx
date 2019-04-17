@@ -55,7 +55,7 @@ public class HttpSenderTest {
 
         this.vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(options));
 
-        this.victim = new HttpSender(vertx, vertx.getOrCreateContext(), options);
+        this.victim = new HttpSender(vertx, options);
         this.server = vertx.createHttpServer();
     }
 
@@ -90,7 +90,7 @@ public class HttpSenderTest {
         when(options.getFlushSize()).thenReturn(10);
         when(options.getMaxBufferSize()).thenReturn(5000);
 
-        HttpSender sender = new HttpSender(vertx, context, options);
+        HttpSender sender = new HttpSender(vertx, options);
         sender.send(Collections.emptyList());
 
         verify(client, times(0)).request(any(HttpMethod.class), anyInt(), anyString(), ArgumentMatchers.any());

@@ -2,7 +2,7 @@ package com.statful.client;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClient;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 import org.junit.Before;
@@ -26,16 +26,18 @@ public class VertxMetricsImplTest {
         this.vertx = mock(Vertx.class);
         this.context = mock(Context.class);
         when(this.vertx.getOrCreateContext()).thenReturn(this.context);
+        when(this.vertx.eventBus()).thenReturn(mock(EventBus.class));
         this.statfulMetricsOptions = mock(StatfulMetricsOptions.class);
         when(statfulMetricsOptions.getTransport()).thenReturn(Transport.UDP);
         when(statfulMetricsOptions.getMaxBufferSize()).thenReturn(5000);
     }
 
-
     @Test
     public void testHttpClientMetricCreation() {
-        VertxMetricsImpl victim = new VertxMetricsImpl(vertx, statfulMetricsOptions);
-        HttpClientMetrics createdMetrics = victim.createMetrics(mock(HttpClient.class), mock(HttpClientOptions.class));
+        when(statfulMetricsOptions.isEnableHttpClientMetrics()).thenReturn(true);
+        VertxMetricsImpl victim = new VertxMetricsImpl(statfulMetricsOptions);
+        victim.vertxCreated(vertx);
+        HttpClientMetrics createdMetrics = victim.createHttpClientMetrics(mock(HttpClientOptions.class));
         assertNotNull(createdMetrics);
     }
 }

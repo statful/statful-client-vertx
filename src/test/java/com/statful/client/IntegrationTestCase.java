@@ -17,7 +17,7 @@ class IntegrationTestCase {
 
     private HttpServer httpReceiver;
 
-    void setUpHttpReceiver(Vertx vertx) throws Exception {
+    void setUpHttpReceiver(Vertx vertx) {
         this.httpReceiver = vertx.createHttpServer();
     }
 

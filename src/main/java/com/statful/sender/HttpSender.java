@@ -42,16 +42,15 @@ public class HttpSender extends MetricsHolder {
     private HttpClient client;
 
     /**
-     * @param vertx   vertx instance to create the socket from
-     * @param context of execution to run operations that need vertx initialized
+     * @param vertx Vertx instance to create the http client
      * @param options Statful options to configure host and port
      */
-    public HttpSender(final Vertx vertx, final Context context, final StatfulMetricsOptions options) {
+    public HttpSender(final Vertx vertx, final StatfulMetricsOptions options) {
         super(options, new Sampler(options, new Random()));
 
         this.options = options;
 
-        context.runOnContext(aVoid -> {
+        vertx.runOnContext(aVoid -> {
             final HttpClientOptions httpClientOptions = new HttpClientOptions()
                     .setDefaultHost(options.getHost())
                     .setDefaultPort(options.getPort())

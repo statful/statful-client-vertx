@@ -14,12 +14,10 @@ public class SenderFactoryTest {
 
     private SenderFactory victim;
 
-    private Context context;
     private Vertx vertx;
 
     @Before
     public void setup() {
-        context = mock(Context.class);
         vertx = mock(Vertx.class);
 
         victim = new SenderFactory();
@@ -28,19 +26,13 @@ public class SenderFactoryTest {
     @SuppressWarnings("all")
     @Test(expected = NullPointerException.class)
     public void testNullVertx() {
-        victim.create(null, null, null);
-    }
-
-    @SuppressWarnings("all")
-    @Test(expected = NullPointerException.class)
-    public void testNullContext() {
-        victim.create(vertx, null, null);
+        victim.create(null, null);
     }
 
     @SuppressWarnings("all")
     @Test(expected = NullPointerException.class)
     public void testNullOptions() {
-        victim.create(vertx, context, null);
+        victim.create(vertx, null);
     }
 
     @Test
@@ -48,7 +40,7 @@ public class SenderFactoryTest {
         StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setTransport(Transport.HTTP);
 
-        assertTrue(victim.create(vertx, context, options) instanceof HttpSender);
+        assertTrue(victim.create(vertx, options) instanceof HttpSender);
     }
 
     @Test
@@ -56,6 +48,6 @@ public class SenderFactoryTest {
         StatfulMetricsOptions options = new StatfulMetricsOptions();
         options.setTransport(Transport.UDP);
 
-        assertTrue(victim.create(vertx, context, options) instanceof UDPSender);
+        assertTrue(victim.create(vertx, options) instanceof UDPSender);
     }
 }

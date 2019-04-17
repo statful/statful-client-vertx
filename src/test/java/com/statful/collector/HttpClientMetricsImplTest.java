@@ -21,13 +21,11 @@ public class HttpClientMetricsImplTest {
 
     private HttpClientMetricsImpl victim;
     private Sender sender;
-    private StatfulMetricsOptions statfulMetricsOptions;
 
     @Before
     public void setup() {
         sender = mock(Sender.class);
-        statfulMetricsOptions = mock(StatfulMetricsOptions.class);
-        victim = new HttpClientMetricsImpl(sender, statfulMetricsOptions);
+        victim = new HttpClientMetricsImpl(sender, mock(StatfulMetricsOptions.class));
     }
 
     @Test
@@ -66,7 +64,7 @@ public class HttpClientMetricsImplTest {
     }
 
     @Test
-    public void testRequestEnd() throws InterruptedException {
+    public void testRequestEnd() {
 
         SocketAddress remoteAddress = mock(SocketAddress.class);
         HttpClientResponse response = mock(HttpClientResponse.class);
@@ -77,17 +75,5 @@ public class HttpClientMetricsImplTest {
         ArgumentCaptor<HttpClientDataPoint> captor = ArgumentCaptor.forClass(HttpClientDataPoint.class);
         verify(sender,times(1)).addMetric(captor.capture());
         assertNotNull(captor.getValue());
-    }
-
-    @Test
-    public void testIsEnabled() throws Exception {
-        when(this.statfulMetricsOptions.isEnableHttpClientMetrics()).thenReturn(true);
-        assertTrue(victim.isEnabled());
-    }
-
-    @Test
-    public void testIsNotEnabled() throws Exception {
-        when(this.statfulMetricsOptions.isEnableHttpClientMetrics()).thenReturn(false);
-        assertFalse(victim.isEnabled());
     }
 }

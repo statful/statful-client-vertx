@@ -1,9 +1,8 @@
 package com.statful.client;
 
 import com.google.common.base.Strings;
-import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.impl.FileResolver;
+import io.vertx.core.file.impl.FileResolver;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -25,7 +24,7 @@ public class StatfulMetricsFactoryImpl implements VertxMetricsFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatfulMetricsFactoryImpl.class);
 
     @Override
-    public final VertxMetrics metrics(@Nonnull final Vertx vertx, @Nonnull final VertxOptions options) {
+    public final VertxMetrics metrics(@Nonnull final VertxOptions options) {
         final MetricsOptions metricsOptions = options.getMetricsOptions();
 
         final StatfulMetricsOptions statfulMetricsOptions;
@@ -41,10 +40,10 @@ public class StatfulMetricsFactoryImpl implements VertxMetricsFactory {
         if (Strings.isNullOrEmpty(configPath)) {
             effective = statfulMetricsOptions;
         } else {
-            effective = buildFromFile(vertx, configPath);
+            effective = buildFromFile(configPath);
         }
 
-        return new VertxMetricsImpl(vertx, effective);
+        return new VertxMetricsImpl(effective);
     }
 
     /**
@@ -52,9 +51,9 @@ public class StatfulMetricsFactoryImpl implements VertxMetricsFactory {
      *
      * @throws RuntimeException if the file is invalid or non existent
      */
-    private StatfulMetricsOptions buildFromFile(final Vertx vertx, final String configPath) {
+    private StatfulMetricsOptions buildFromFile(final String configPath) {
 
-        FileResolver fileResolver = new FileResolver(vertx);
+        FileResolver fileResolver = new FileResolver();
         File file = fileResolver.resolveFile(configPath);
 
         try (Scanner scanner = new Scanner(file)) {

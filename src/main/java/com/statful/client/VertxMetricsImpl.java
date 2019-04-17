@@ -3,17 +3,15 @@ package com.statful.client;
 import com.statful.collector.*;
 import com.statful.sender.Sender;
 import com.statful.sender.SenderFactory;
+import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.http.HttpClient;
+import io.vertx.core.datagram.DatagramSocketOptions;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.metrics.impl.DummyVertxMetrics;
+import io.vertx.core.net.NetClientOptions;
+import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
-import io.vertx.core.spi.metrics.HttpClientMetrics;
-import io.vertx.core.spi.metrics.HttpServerMetrics;
-import io.vertx.core.spi.metrics.PoolMetrics;
+import io.vertx.core.spi.metrics.*;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -21,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * VertxMetrics SPI implementation for statful metrics collection
  * Extending DummyVertxMetrics to avoid having to extend all methods even if we don't want to implement them
  */
-final class VertxMetricsImpl extends DummyVertxMetrics {
+final class VertxMetricsImpl implements VertxMetrics {
 
     /**
      * Collectors and client configuration
@@ -34,15 +32,10 @@ final class VertxMetricsImpl extends DummyVertxMetrics {
     private Sender sender;
 
     /**
-     * Vertx instance to be used to create the sender
-     */
-    private final Vertx vertx;
-
-    /**
-     * Holds all poolMetricsCollectors created to lazy load the client.
+     * Holds all collectors created to lazy load the client.
      * Since metrics can be created by different eventloop threads or worker threads we need handle concurrency here
      */
-    private final LinkedBlockingQueue<StatfulMetrics> poolMetricsCollectors;
+    private final LinkedBlockingQueue<StatfulMetrics> collectors;
 
     /**
      * Custom metrics consumer
@@ -50,57 +43,100 @@ final class VertxMetricsImpl extends DummyVertxMetrics {
     private CustomMetricsConsumer customMetricsConsumer;
 
     /**
+     * Vertx instance used for periodic timers and senders
+     */
+    private Vertx vertx;
+
+    /**
      * Constructor to be used for configuration and creation of a sender
      *
-     * @param vertx                 vertx instance
      * @param statfulMetricsOptions configuration object
      */
-    VertxMetricsImpl(final Vertx vertx, final StatfulMetricsOptions statfulMetricsOptions) {
-        this.vertx = vertx;
+    VertxMetricsImpl(final StatfulMetricsOptions statfulMetricsOptions) {
         this.statfulMetricsOptions = statfulMetricsOptions;
-        this.poolMetricsCollectors = new LinkedBlockingQueue<>();
+        this.collectors = new LinkedBlockingQueue<>();
     }
 
     @Override
-    public HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress, Void, Void> createMetrics(final HttpClient client,
-                                                                                                         final HttpClientOptions options) {
-        HttpClientMetricsImpl httpClientMetricsImpl = new HttpClientMetricsImpl(statfulMetricsOptions);
-        httpClientMetricsImpl.setSender(this.getOrCreateSender());
-        this.poolMetricsCollectors.forEach(collector -> collector.setSender(this.getOrCreateSender()));
-        return httpClientMetricsImpl;
+    public void verticleDeployed(final Verticle verticle) {
     }
 
     @Override
-    public HttpServerMetrics createMetrics(final HttpServer server, final SocketAddress localAddress, final HttpServerOptions options) {
-        HttpServerMetricsImpl httpServerMetricsImpl = new HttpServerMetricsImpl(statfulMetricsOptions);
-        httpServerMetricsImpl.setSender(this.getOrCreateSender());
-        this.poolMetricsCollectors.forEach(collector -> collector.setSender(this.getOrCreateSender()));
-        return httpServerMetricsImpl;
+    public void verticleUndeployed(final Verticle verticle) {
     }
 
     @Override
-    public <P> PoolMetrics<?> createMetrics(final P pool, final String poolType, final String poolName, final int maxPoolSize) {
+    public void timerCreated(final long id) {
+    }
 
-        // When creating pool metrics we cannot create the sender because vertx is not completely initialized
-        // This is an hack and the reporter will need to be decoupled from the poolMetricsCollectors
-        PoolMetricsImpl poolMetrics = new PoolMetricsImpl(statfulMetricsOptions, vertx, poolType, poolName, maxPoolSize);
-        this.poolMetricsCollectors.add(poolMetrics);
+    @Override
+    public void timerEnded(final long id, final boolean cancelled) {
+    }
+
+    @Override
+    public EventBusMetrics createEventBusMetrics() {
+        return null;
+    }
+
+    @Override
+    public HttpServerMetrics<HttpRequestMetrics, SocketAddress, SocketAddress> createHttpServerMetrics(final HttpServerOptions options,
+                                                                                                       final SocketAddress localAddress) {
+        HttpServerMetricsImpl httpServerMetrics = null;
+        if (statfulMetricsOptions.isEnableHttpServerMetrics()) {
+            httpServerMetrics = new HttpServerMetricsImpl(statfulMetricsOptions);
+            httpServerMetrics.setSender(this.getOrCreateSender(vertx));
+        }
+        return httpServerMetrics;
+    }
+
+    @Override
+    public HttpClientMetrics<HttpRequestMetrics, SocketAddress, SocketAddress, Void, Void> createHttpClientMetrics(final HttpClientOptions options) {
+        HttpClientMetricsImpl httpClientMetrics = null;
+        if (statfulMetricsOptions.isEnableHttpClientMetrics()) {
+            httpClientMetrics = new HttpClientMetricsImpl(statfulMetricsOptions);
+            httpClientMetrics.setSender(this.getOrCreateSender(vertx));
+        }
+        return httpClientMetrics;
+    }
+
+    @Override
+    public TCPMetrics<?> createNetServerMetrics(final NetServerOptions options, final SocketAddress localAddress) {
+        return null;
+    }
+
+    @Override
+    public TCPMetrics<?> createNetClientMetrics(final NetClientOptions options) {
+        return null;
+    }
+
+    @Override
+    public DatagramSocketMetrics createDatagramSocketMetrics(final DatagramSocketOptions options) {
+        return null;
+    }
+
+    @Override
+    public PoolMetrics<?> createPoolMetrics(final String poolType, final String poolName, final int maxPoolSize) {
+        PoolMetricsImpl poolMetrics = null;
+        if (statfulMetricsOptions.isEnablePoolMetrics()) {
+            poolMetrics = new PoolMetricsImpl(statfulMetricsOptions, poolType, poolName, maxPoolSize);
+            collectors.add(poolMetrics);
+        }
         return poolMetrics;
     }
 
     @Override
-    public boolean isEnabled() {
-        return this.statfulMetricsOptions.isEnabled();
+    public void vertxCreated(final Vertx createdVertx) {
+        this.vertx = createdVertx;
+        this.customMetricsConsumer = new CustomMetricsConsumer(createdVertx.eventBus(), this.getOrCreateSender(createdVertx), statfulMetricsOptions);
+        this.collectors.forEach(collector -> {
+            collector.setVertx(createdVertx);
+            collector.setSender(this.getOrCreateSender(createdVertx));
+        });
     }
 
-    @Override
-    public void eventBusInitialized(final EventBus bus) {
-        this.customMetricsConsumer = new CustomMetricsConsumer(bus, this.getOrCreateSender(), statfulMetricsOptions);
-    }
-
-    private Sender getOrCreateSender() {
+    private Sender getOrCreateSender(final Vertx senderVertx) {
         if (this.sender == null) {
-            this.sender = new SenderFactory().create(this.vertx, this.vertx.getOrCreateContext(), statfulMetricsOptions);
+            this.sender = new SenderFactory().create(senderVertx, statfulMetricsOptions);
         }
         return sender;
     }
