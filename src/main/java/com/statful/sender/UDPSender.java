@@ -34,18 +34,17 @@ public final class UDPSender extends MetricsHolder {
     private DatagramSocket socket;
 
     /**
-     * @param vertx   vertx instance to create the socket from
-     * @param context of execution to run operations that need vertx initialized
+     * @param vertx Vertx instance to create the socket
      * @param options Statful options to configure host and port
      */
-    public UDPSender(final Vertx vertx, final Context context, final StatfulMetricsOptions options) {
+    public UDPSender(final Vertx vertx, final StatfulMetricsOptions options) {
         super(options, new Sampler(options, new Random()));
 
         this.options = options;
 
         // the following code is being executed asynchronously on the same context, to make sure that vertx is properly initialized
         // so that we can open a socket and configure a interval
-        context.runOnContext(aVoid -> {
+        vertx.runOnContext(aVoid -> {
             this.socket = vertx.createDatagramSocket(new DatagramSocketOptions());
             this.configureFlushInterval(vertx, this.options.getFlushInterval());
         });

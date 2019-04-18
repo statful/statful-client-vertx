@@ -41,22 +41,19 @@ public class PoolMetricsImpl extends StatfulMetrics implements PoolMetrics<Long>
     /**
      * Vertx instance to be used to create the period to flush gauges
      */
-    private final Vertx vertx;
+    private Vertx vertx;
 
     /**
      * @param options     options to latter be used by the metrics builder
-     * @param vertx       vertx instance to kick start the collector
      * @param poolType    type of the pool
      * @param poolName    name of the pool
      * @param maxPoolSize value of the maximum pool size
      */
     public PoolMetricsImpl(@Nonnull final StatfulMetricsOptions options,
-                           @Nonnull final Vertx vertx,
                            @Nonnull final String poolType,
                            @Nonnull final String poolName,
                            final int maxPoolSize) {
         super(options);
-        this.vertx = vertx;
         this.maxPoolSize = String.valueOf(maxPoolSize);
         this.name = poolType + "." + poolName;
     }
@@ -85,18 +82,18 @@ public class PoolMetricsImpl extends StatfulMetrics implements PoolMetrics<Long>
     }
 
     @Override
-    public boolean isEnabled() {
-        return this.getOptions().isEnablePoolMetrics();
-    }
-
-    @Override
     public void close() {
         this.vertx.cancelTimer(this.periodicTimerId);
     }
 
     @Override
+    public void setVertx(@Nonnull final Vertx vertx) {
+        this.vertx = vertx;
+    }
+
+    @Override
     public void setSender(@Nonnull final Sender sender) {
-        if (!this.hasSender() && this.isEnabled()) {
+        if (!this.hasSender()) {
             super.setSender(sender);
             this.initReporter();
         }

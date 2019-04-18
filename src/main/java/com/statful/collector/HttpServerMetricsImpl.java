@@ -88,6 +88,11 @@ public final class HttpServerMetricsImpl extends StatfulMetrics implements HttpS
     }
 
     @Override
+    public void responseBegin(final HttpRequestMetrics requestMetric, final HttpServerResponse response) {
+
+    }
+
+    @Override
     public void responseEnd(final HttpRequestMetrics requestMetric, final HttpServerResponse response) {
         if (requestMetric == null) {
             return;
@@ -102,12 +107,7 @@ public final class HttpServerMetricsImpl extends StatfulMetrics implements HttpS
     }
 
     @Override
-    public SocketAddress upgrade(final HttpRequestMetrics requestMetric, final ServerWebSocket serverWebSocket) {
-        return requestMetric.getAddress();
-    }
-
-    @Override
-    public SocketAddress connected(final SocketAddress socketMetric, final ServerWebSocket serverWebSocket) {
+    public SocketAddress connected(final SocketAddress socketMetric, final HttpRequestMetrics requestMetrics, final ServerWebSocket serverWebSocket) {
         return socketMetric;
     }
 
@@ -150,10 +150,5 @@ public final class HttpServerMetricsImpl extends StatfulMetrics implements HttpS
     @Override
     public HttpRequestMetrics responsePushed(final SocketAddress socketMetric, final HttpMethod method, final String uri, final HttpServerResponse response) {
         return null;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.getOptions().isEnableHttpServerMetrics();
     }
 }

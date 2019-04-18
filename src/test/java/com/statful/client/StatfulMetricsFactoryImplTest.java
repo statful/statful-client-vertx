@@ -4,6 +4,7 @@ import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
+import io.vertx.core.spi.metrics.VertxMetrics;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -11,8 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,9 +45,14 @@ public class StatfulMetricsFactoryImplTest {
     @Test
     public void testCreationWithNonStatfulOptionsShouldBeDisabledByDefault() {
 
-        when(vertxOptions.getMetricsOptions()).thenReturn(mock(MetricsOptions.class));
+        when(vertxOptions.getMetricsOptions())
+                .thenReturn(mock(MetricsOptions.class));
 
-        assertFalse(victim.metrics(vertx, vertxOptions).isEnabled());
+        final VertxMetrics metrics = victim.metrics(vertxOptions);
+        assertNotNull(metrics);
+        assertNull(metrics.createPoolMetrics("", "", 0));
+        assertNull(metrics.createHttpClientMetrics(null));
+        assertNull(metrics.createHttpServerMetrics(null, null));
     }
 
     @Test
@@ -55,10 +60,13 @@ public class StatfulMetricsFactoryImplTest {
 
         when(statfulMetricsOptions.getTransport()).thenReturn(Transport.UDP);
         when(statfulMetricsOptions.isEnabled()).thenReturn(true);
+        when(statfulMetricsOptions.isEnablePoolMetrics()).thenReturn(true);
 
         when(vertxOptions.getMetricsOptions()).thenReturn(statfulMetricsOptions);
 
-        assertTrue(victim.metrics(vertx, vertxOptions).isEnabled());
+        final VertxMetrics metrics = victim.metrics(vertxOptions);
+        assertNotNull(metrics);
+        assertNotNull(metrics.createPoolMetrics("", "", 0));
     }
 
     @Test
@@ -75,7 +83,7 @@ public class StatfulMetricsFactoryImplTest {
 
         StatfulMetricsFactoryImpl victim = new StatfulMetricsFactoryImpl();
 
-        assertTrue(victim.metrics(vertx, vertxOptions).isEnabled());
+        assertNotNull(victim.metrics(vertxOptions));
 
         vertx.close(close -> async.complete());
     }
@@ -95,7 +103,7 @@ public class StatfulMetricsFactoryImplTest {
         StatfulMetricsFactoryImpl victim = new StatfulMetricsFactoryImpl();
 
         try {
-            victim.metrics(vertx, vertxOptions);
+            victim.metrics(vertxOptions);
             context.assertTrue(false, "should never run, an exception should've been thrown");
         } catch (RuntimeException e) {
             vertx.close(close -> async.complete());
@@ -117,7 +125,7 @@ public class StatfulMetricsFactoryImplTest {
         StatfulMetricsFactoryImpl victim = new StatfulMetricsFactoryImpl();
 
         try {
-            victim.metrics(vertx, vertxOptions);
+            victim.metrics(vertxOptions);
             context.assertTrue(false, "should never run, an exception should've been thrown");
         } catch (RuntimeException e) {
             vertx.close(close -> async.complete());

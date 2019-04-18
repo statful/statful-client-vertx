@@ -3,6 +3,7 @@ package com.statful.collector;
 import com.statful.client.StatfulMetricsOptions;
 import com.statful.metric.DataPoint;
 import com.statful.sender.Sender;
+import io.vertx.core.Vertx;
 import io.vertx.core.spi.metrics.Metrics;
 
 import javax.annotation.Nonnull;
@@ -66,12 +67,20 @@ public abstract class StatfulMetrics implements Metrics {
      * Allows externally setting the sender instance
      * @param sender fully instantiated sender
      */
-    public void setSender(@Nonnull  final Sender sender) {
+    public void setSender(@Nonnull final Sender sender) {
         this.sender = Objects.requireNonNull(sender);
     }
 
     /**
+     * Allows externally setting the vertx instance for collectors that need it
+     * @param vertx fully instantiated vertx instance
+     */
+    public void setVertx(@Nonnull final Vertx vertx) {
+    }
+
+    /**
      * Checks if a sender is already defined
+     *
      * @return true if it has a sender false otherwise
      */
     public boolean hasSender() {

@@ -47,7 +47,7 @@ public class UDPSenderTest {
 
         vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(options));
 
-        this.victim = new UDPSender(vertx, vertx.getOrCreateContext(), options);
+        this.victim = new UDPSender(vertx, options);
         this.receiver = vertx.createDatagramSocket();
     }
 
@@ -81,7 +81,7 @@ public class UDPSenderTest {
         when(options.getFlushSize()).thenReturn(10);
         when(options.getMaxBufferSize()).thenReturn(5000);
 
-        UDPSender sender = new UDPSender(vertx, context, options);
+        UDPSender sender = new UDPSender(vertx, options);
         sender.send(Collections.emptyList());
 
         verify(datagramSocket, times(0)).send(anyString(), anyInt(), anyString(), ArgumentMatchers.any());
