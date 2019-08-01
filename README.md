@@ -7,7 +7,7 @@ Statful client for Vert.x written in Java. This client enables pushing custom me
 
 This client leverages the capabilities provided by [Vert.x SPI](http://vertx.io/docs/apidocs/io/vertx/core/spi/metrics/VertxMetrics.html) to collect metrics.
 
-Please check the project’s [pom.xml](https://github.com/statful/statful-client-vertx/blob/master/pom.xml) file to see the current Vert.x version dependency since we aim always to support the latest stable version.
+Please check the project’s [pom.xml](https://github.com/statful/statful-client-vertx/blob/master/pom.xml) file to see the current Vert.x version dependency since we always aim to support the latest stable version.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ Please check the project’s [pom.xml](https://github.com/statful/statful-client
 	* [Configuration File](#configuration-file)
 * [Configurations](#configurations)
 	* [Global Configurations](#global-configurations)
-	* [Vert.x Specific Configurations](#vertx-specific-configurations)
+	* [Statful's Configurations Specific to Vert.x](#statfuls-configurations-specific-to-vert.x)
 * [Usage](#usage)
 	* [Custom Metrics](#custom-metrics)
 	* [Metrics Collection](#metrics-collection)
@@ -48,7 +48,7 @@ Add the client to the project dependencies:
       <version>${version-number}</version>
     </dependency>
 
-Vert.x handles the creation of the Metrics Service Provider Interface ([SPI](https://vertx.io/docs/vertx-dropwizard-metrics/java/)).
+Vert.x handles the creation of the Metrics Service Provider Interface ([SPI](https://vertx.io/docs/vertx-core/java/#_metrics_spi)).
 
 From this point, you can set up the client in two ways, programmatically or by using a configuration file.
 
@@ -130,7 +130,7 @@ The following section presents detailed information on the available options for
 |:---|:---|:---|:---|:---|
 | _host_ | Defines the hostname to where the metrics are sent. | `string` | `api.statful.com` | **NO** |
 | _port_ | Defines the port to where the metrics are sent. | `string` | `443` | **NO** |
-| _secure_ | Enables or disables https. <br><br>Not yet supported. | `boolean` | `true` | **NO** |
+| _secure_ | Enables or disables https. | `boolean` | `true` | **NO** |
 | _timeout_ | Defines the timeout for http transport, in **milliseconds**.<br><br>Not yet supported. | `number` | `2000` | **NO** |
 | _token_ | Defines the token used to match incoming data to Statful.| `string` | **none** | **YES** |
 | _app_ | Defines the application's global name. When specified, it sets a global tag like `app=setValue`. | `string` | **none** | **NO** |
@@ -143,7 +143,7 @@ The following section presents detailed information on the available options for
 | _maxBufferSize_ | Defines how many metrics at max are kept in the buffer between forced flushes. | `number` | `5000` | **NO** |
 
 
-### Vert.x Specific Configurations
+### Statful's Configurations Specific to Vert.x
 
 | Option | Description | Type | Default | Required |
 |:---|:---|:---|:---|:---|
@@ -212,7 +212,7 @@ By default, all requests are tracked. To ignore a path, configure a regex that m
       "\/static\/.*"
     ]
 
-It’s possible to use URLs as tag values. To avoid creating tags with IDs, or any other unexpected identifier from your URLs, you can configure the transformation regex to be applied. Here’s an example of how to remove UUIDs from the URLs on a restful API:
+URLs are used as tag values. To avoid creating tags with IDs, or any other unexpected identifier from your URLs, you can configure the transformation regex to be applied. Here’s an example of how to remove UUIDs from the URLs on a restful API:
 
     "http-server-url-patterns": [
       {
@@ -248,4 +248,4 @@ The current implementation has the following limitation:
 
 ## License
 
-Statful Vertx Client is available under the MIT license. See the [LICENSE](https://raw.githubusercontent.com/statful/statful-client-vertx/master/LICENSE) file for more information.
+Statful's Vert.x Client is available under the MIT license. See the [LICENSE](https://raw.githubusercontent.com/statful/statful-client-vertx/master/LICENSE) file for more information.
